@@ -1,7 +1,7 @@
 ﻿
 CREATE TABLE [dbo].[Job](
 	[JobId] [bigint] IDENTITY(1,1) NOT NULL,
-	[JobType] [int] NOT NULL,
+	[JobType] SMALLINT NOT NULL,
 	[FileName] [varchar](50) NULL,
 	[Priority] [smallint] NOT NULL,
 	[DateTimeSubmittedUTC] [datetime] NOT NULL,

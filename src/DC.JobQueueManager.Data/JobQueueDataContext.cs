@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using DC.JobQueueManager.Data.Entities;
-using DC.JobQueueManager.Interfaces;
-using DC.JobQueueManager.Models;
+using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace DC.JobQueueManager.Data
+namespace ESFA.DC.JobQueueManager.Data
 {
     public sealed class JobQueueDataContext : DbContext
     {
-        private readonly string _connectionstring;
+        private readonly string _connectionString;
 
-        public JobQueueDataContext(string connectionstring)
+        public JobQueueDataContext(string connectionString)
         {
-            _connectionstring = connectionstring;
+            _connectionString = connectionString;
         }
 
         public DbSet<JobEntity> Jobs { get; set; }
@@ -23,7 +22,7 @@ namespace DC.JobQueueManager.Data
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(
-                    _connectionstring,
+                    _connectionString,
                     options => options.EnableRetryOnFailure(3, TimeSpan.FromSeconds(3), new List<int>()));
             }
 

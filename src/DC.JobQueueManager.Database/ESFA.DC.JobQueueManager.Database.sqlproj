@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Name>DC.JobQueueManager.Database</Name>
+    <Name>ESFA.DC.JobQueueManager.Database</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{f47d5346-f204-445a-a624-4e9934457c77}</ProjectGuid>

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DC.JobQueueManager.Data;
-using DC.JobQueueManager.Data.Entities;
-using DC.JobQueueManager.Interfaces;
-using DC.JobQueueManager.Models;
-using DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Interfaces;
+using ESFA.DC.JobQueueManager.Models;
+using ESFA.DC.JobQueueManager.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace DC.JobQueueManager
+namespace ESFA.DC.JobQueueManager
 {
     public sealed class JobQueueManager : IJobQueueManager
     {

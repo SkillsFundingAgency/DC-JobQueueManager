@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace DC.JobQueueManager.Data.Entities
+namespace ESFA.DC.JobQueueManager.Data.Entities
 {
-   public class JobEntity
+    public class JobEntity
     {
         [Key]
         public long JobId { get; set; }

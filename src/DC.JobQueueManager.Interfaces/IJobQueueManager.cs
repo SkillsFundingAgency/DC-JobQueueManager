@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using DC.JobQueueManager.Models;
-using DC.JobQueueManager.Models.Enums;
+﻿using System.Collections.Generic;
+using ESFA.DC.JobQueueManager.Models;
+using ESFA.DC.JobQueueManager.Models.Enums;
 
-namespace DC.JobQueueManager.Interfaces
+namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IJobQueueManager
     {
