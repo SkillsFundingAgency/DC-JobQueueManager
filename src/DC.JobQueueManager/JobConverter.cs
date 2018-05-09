@@ -9,6 +9,11 @@ namespace ESFA.DC.JobQueueManager
     {
         public static JobEntity Convert(Job source)
         {
+            if (source == null)
+            {
+                return null;
+            }
+
             var entity = new JobEntity();
             Convert(source, entity);
             return entity;
@@ -16,6 +21,11 @@ namespace ESFA.DC.JobQueueManager
 
         public static Job Convert(JobEntity source)
         {
+            if (source == null)
+            {
+                return null;
+            }
+
             var entity = new Job();
             Convert(source, entity);
             return entity;

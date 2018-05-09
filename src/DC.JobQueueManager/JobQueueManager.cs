@@ -44,12 +44,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool AnyInProgressReferenceJob()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<Job> GetAllJobs()
+       public IEnumerable<Job> GetAllJobs()
         {
             var jobs = new List<Job>();
             using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
@@ -85,7 +80,11 @@ namespace ESFA.DC.JobQueueManager
 
         public Job GetJobByPriority()
         {
-            throw new System.NotImplementedException();
+            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            {
+                var job = context.Jobs.FromSql("sp_GetJobByPriority").FirstOrDefault();
+                return JobConverter.Convert(job);
+            }
         }
 
         public void RemoveJobFromQueue(long jobId)

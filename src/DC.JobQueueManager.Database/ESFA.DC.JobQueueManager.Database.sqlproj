@@ -60,5 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Job.sql" />
+    <Build Include="sp_GetJobByPriority.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ESFA.DC.JobQueueManager.Database.publish.xml" />
   </ItemGroup>
 </Project>

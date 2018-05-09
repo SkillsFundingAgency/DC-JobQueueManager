@@ -14,8 +14,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 
         Job GetJobById(long jobId);
 
-        bool AnyInProgressReferenceJob();
-
         long AddJob(Job job);
 
         bool UpdateJob(Job job);
