@@ -1,7 +1,7 @@
 ﻿using System;
-using DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobQueueManager.Models.Enums;
 
-namespace DC.JobQueueManager.Models
+namespace ESFA.DC.JobQueueManager.Models
 {
     public class Job
     {
@@ -23,6 +23,6 @@ namespace DC.JobQueueManager.Models
 
         public JobStatus Status { get; set; }
 
-        public byte[] RowVersion { get; set; }
+        public string RowVersion { get; set; }
     }
 }

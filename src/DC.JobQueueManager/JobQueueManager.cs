@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DC.JobQueueManager.Data;
-using DC.JobQueueManager.Data.Entities;
-using DC.JobQueueManager.Interfaces;
-using DC.JobQueueManager.Models;
-using DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Interfaces;
+using ESFA.DC.JobQueueManager.Models;
+using ESFA.DC.JobQueueManager.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace DC.JobQueueManager
+namespace ESFA.DC.JobQueueManager
 {
     public sealed class JobQueueManager : IJobQueueManager
     {
@@ -44,12 +44,7 @@ namespace DC.JobQueueManager
             }
         }
 
-        public bool AnyInProgressReferenceJob()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<Job> GetAllJobs()
+       public IEnumerable<Job> GetAllJobs()
         {
             var jobs = new List<Job>();
             using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
@@ -85,7 +80,11 @@ namespace DC.JobQueueManager
 
         public Job GetJobByPriority()
         {
-            throw new System.NotImplementedException();
+            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            {
+                var job = context.Jobs.FromSql("sp_GetJobByPriority").FirstOrDefault();
+                return JobConverter.Convert(job);
+            }
         }
 
         public void RemoveJobFromQueue(long jobId)
