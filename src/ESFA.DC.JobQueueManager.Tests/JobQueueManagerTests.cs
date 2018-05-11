@@ -237,6 +237,36 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.Status.Should().Be(JobStatus.Completed);
         }
 
+        [Fact]
+        public void UpdateJobStatus_Fail_ZeroId()
+        {
+            var manager = new JobQueueManager(GetContextOptions());
+            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(0, JobStatus.Completed));
+        }
+
+        [Fact]
+        public void UpdateJobStatus_Fail_InvalidJobId()
+        {
+            var manager = new JobQueueManager(GetContextOptions());
+            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(110, JobStatus.Completed));
+        }
+
+        [Fact]
+        public void UpdateJobStatus_Success()
+        {
+            var manager = new JobQueueManager(GetContextOptions());
+            manager.AddJob(new Job
+            {
+                JobType = JobType.IlrSubmission,
+                Status = JobStatus.Ready,
+            });
+            var job = manager.GetJobById(1);
+            manager.UpdateJobStatus(1, JobStatus.Completed);
+
+            var updatedJob = manager.GetJobById(1);
+            updatedJob.Status.Should().Be(JobStatus.Completed);
+        }
+
         private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
