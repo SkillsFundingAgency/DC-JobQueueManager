@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>DC.JobQueueManager</AssemblyName>
-    <RootNamespace>DC.JobQueueManager</RootNamespace>
+    <AssemblyName>ESFA.DC.JobQueueManager</AssemblyName>
+    <RootNamespace>ESFA.DC.JobQueueManager</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -19,8 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DC.JobQueueManager.Data\DC.JobQueueManager.Data.csproj" />
-    <ProjectReference Include="..\DC.JobQueueManager.Interfaces\DC.JobQueueManager.Interfaces.csproj" />
+    <ProjectReference Include="..\DC.JobQueueManager.Data\ESFA.DC.JobQueueManager.Data.csproj" />
+    <ProjectReference Include="..\DC.JobQueueManager.Interfaces\ESFA.DC.JobQueueManager.Interfaces.csproj" />
+    <ProjectReference Include="..\DC.JobQueueManager.Models\ESFA.DC.JobQueueManager.Models.csproj" />
   </ItemGroup>
 
 </Project>

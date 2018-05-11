@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DC.JobQueueManager", "DC.JobQueueManager\DC.JobQueueManager.csproj", "{6A7406D8-20DD-40AB-AA6B-F80938D56181}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager", "DC.JobQueueManager\ESFA.DC.JobQueueManager.csproj", "{6A7406D8-20DD-40AB-AA6B-F80938D56181}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DC.JobQueueManager.Data", "DC.JobQueueManager.Data\DC.JobQueueManager.Data.csproj", "{C6C1B4FA-EDA5-4819-A10A-04EE4167D180}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager.Data", "DC.JobQueueManager.Data\ESFA.DC.JobQueueManager.Data.csproj", "{C6C1B4FA-EDA5-4819-A10A-04EE4167D180}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DC.JobQueueManager.Database", "DC.JobQueueManager.Database\DC.JobQueueManager.Database.sqlproj", "{F47D5346-F204-445A-A624-4E9934457C77}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ESFA.DC.JobQueueManager.Database", "DC.JobQueueManager.Database\ESFA.DC.JobQueueManager.Database.sqlproj", "{F47D5346-F204-445A-A624-4E9934457C77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DC.JobQueueManager.Interfaces", "DC.JobQueueManager.Interfaces\DC.JobQueueManager.Interfaces.csproj", "{6EC8DCAF-ACBF-4614-BE58-0DAC224A4154}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager.Interfaces", "DC.JobQueueManager.Interfaces\ESFA.DC.JobQueueManager.Interfaces.csproj", "{6EC8DCAF-ACBF-4614-BE58-0DAC224A4154}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DC.JobQueueManager.Models", "DC.JobQueueManager.Models\DC.JobQueueManager.Models.csproj", "{494596B4-093B-4839-AF3A-E2C511E2CC2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager.Models", "DC.JobQueueManager.Models\ESFA.DC.JobQueueManager.Models.csproj", "{494596B4-093B-4839-AF3A-E2C511E2CC2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

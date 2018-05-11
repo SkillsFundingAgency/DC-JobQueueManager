@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using DC.JobQueueManager.Data.Entities;
-using DC.JobQueueManager.Models;
-using DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Models;
+using ESFA.DC.JobQueueManager.Models.Enums;
 
-namespace DC.JobQueueManager
+namespace ESFA.DC.JobQueueManager
 {
     public static class JobConverter
     {
         public static JobEntity Convert(Job source)
         {
+            if (source == null)
+            {
+                return null;
+            }
+
             var entity = new JobEntity();
             Convert(source, entity);
             return entity;
@@ -19,6 +21,11 @@ namespace DC.JobQueueManager
 
         public static Job Convert(JobEntity source)
         {
+            if (source == null)
+            {
+                return null;
+            }
+
             var entity = new Job();
             Convert(source, entity);
             return entity;
@@ -35,7 +42,7 @@ namespace DC.JobQueueManager
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
-            destination.RowVersion = source.RowVersion;
+            destination.RowVersion = source.JobId > 0 ? System.Convert.FromBase64String(source.RowVersion) : null;
         }
 
         public static void Convert(JobEntity source, Job destination)
@@ -49,7 +56,7 @@ namespace DC.JobQueueManager
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
-            destination.RowVersion = source.RowVersion;
+            destination.RowVersion = System.Convert.ToBase64String(source.RowVersion);
         }
     }
 }

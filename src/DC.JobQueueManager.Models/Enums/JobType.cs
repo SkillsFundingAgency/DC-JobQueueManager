@@ -1,4 +1,4 @@
-﻿namespace DC.JobQueueManager.Models.Enums
+﻿namespace ESFA.DC.JobQueueManager.Models.Enums
 {
     public enum JobType
     {
