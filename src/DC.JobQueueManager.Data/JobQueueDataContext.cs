@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager.Data
 {
@@ -10,9 +11,9 @@ namespace ESFA.DC.JobQueueManager.Data
     {
         private readonly string _connectionString;
 
-        public JobQueueDataContext(string connectionString)
+        public JobQueueDataContext(DbContextOptions options)
+            : base(options)
         {
-            _connectionString = connectionString;
         }
 
         public DbSet<JobEntity> Jobs { get; set; }

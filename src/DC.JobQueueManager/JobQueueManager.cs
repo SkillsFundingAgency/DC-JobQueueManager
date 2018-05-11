@@ -7,16 +7,17 @@ using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager
 {
     public sealed class JobQueueManager : IJobQueueManager
     {
-        private readonly IJobQueueManagerSettings _jobQueueManagerSettings;
+        private readonly DbContextOptions _contextOptions;
 
-        public JobQueueManager(IJobQueueManagerSettings jobQueueManagerSettings)
+        public JobQueueManager(DbContextOptions contextOptions)
         {
-            _jobQueueManagerSettings = jobQueueManagerSettings;
+            _contextOptions = contextOptions;
         }
 
         public long AddJob(Job job)
@@ -26,7 +27,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentNullException();
             }
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = new JobEntity
                 {
@@ -47,7 +48,7 @@ namespace ESFA.DC.JobQueueManager
        public IEnumerable<Job> GetAllJobs()
         {
             var jobs = new List<Job>();
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntities = context.Jobs.ToList();
                 jobEntities.ForEach(x =>
@@ -64,7 +65,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
@@ -80,7 +81,7 @@ namespace ESFA.DC.JobQueueManager
 
         public Job GetJobByPriority()
         {
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var job = context.Jobs.FromSql("sp_GetJobByPriority").FirstOrDefault();
                 return JobConverter.Convert(job);
@@ -94,7 +95,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
@@ -121,7 +122,7 @@ namespace ESFA.DC.JobQueueManager
 
             var saved = false;
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == job.JobId);
                 if (entity == null)
@@ -144,7 +145,7 @@ namespace ESFA.DC.JobQueueManager
             }
 
             var saved = false;
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
