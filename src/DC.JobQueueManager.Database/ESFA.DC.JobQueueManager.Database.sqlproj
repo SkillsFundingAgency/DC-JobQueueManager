@@ -57,6 +57,7 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="zzDeploymentProfiles" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Job.sql" />
@@ -64,5 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ESFA.DC.JobQueueManager.Database.publish.xml" />
+    <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
+    <None Include="zzDeploymentProfiles\Release.publish.xml" />
   </ItemGroup>
 </Project>
