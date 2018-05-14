@@ -131,7 +131,7 @@ namespace ESFA.DC.JobQueueManager
 
                 JobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = DateTime.UtcNow;
-                // context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
+                context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
 
                 try

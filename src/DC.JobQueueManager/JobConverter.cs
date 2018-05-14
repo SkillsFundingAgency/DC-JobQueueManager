@@ -42,7 +42,6 @@ namespace ESFA.DC.JobQueueManager
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
-            destination.RowVersion = source.RowVersion == null ? null : System.Convert.FromBase64String(source.RowVersion);
         }
 
         public static void Convert(JobEntity source, Job destination)
