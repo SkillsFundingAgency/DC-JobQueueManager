@@ -2,9 +2,9 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
-    <TargetDatabaseName>__Target_Database__</TargetDatabaseName>
-    <DeployScriptFileName>ESFA.DC.JobQueueManager.Database.sql</DeployScriptFileName>
-    <TargetConnectionString>Data Source=__SQL_SERVER__;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
+    <TargetDatabaseName>__DatabaseName__</TargetDatabaseName>
+    <DeployScriptFileName>__DatabaseProjectName__.sql</DeployScriptFileName>
+    <TargetConnectionString>Data Source=__SqlServer__;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
     <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
     <DropObjectsNotInSource>True</DropObjectsNotInSource>
     <DoNotDropDatabaseRoles>True</DoNotDropDatabaseRoles>
