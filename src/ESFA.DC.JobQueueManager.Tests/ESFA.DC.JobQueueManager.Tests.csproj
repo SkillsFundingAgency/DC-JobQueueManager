@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DC.JobQueueManager.Data\ESFA.DC.JobQueueManager.Data.csproj" />
     <ProjectReference Include="..\DC.JobQueueManager.Interfaces\ESFA.DC.JobQueueManager.Interfaces.csproj" />
     <ProjectReference Include="..\DC.JobQueueManager\ESFA.DC.JobQueueManager.csproj" />
   </ItemGroup>
