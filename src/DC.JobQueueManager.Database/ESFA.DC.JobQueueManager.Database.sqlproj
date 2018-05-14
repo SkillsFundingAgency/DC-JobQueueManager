@@ -64,7 +64,6 @@
     <Build Include="sp_GetJobByPriority.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ESFA.DC.JobQueueManager.Database.publish.xml" />
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
     <None Include="zzDeploymentProfiles\Release.publish.xml" />
   </ItemGroup>
