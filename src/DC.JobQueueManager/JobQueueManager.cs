@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager
 {
     public sealed class JobQueueManager : IJobQueueManager
     {
-        private readonly IJobQueueManagerSettings _jobQueueManagerSettings;
+        private readonly DbContextOptions _contextOptions;
 
-        public JobQueueManager(IJobQueueManagerSettings jobQueueManagerSettings)
+        public JobQueueManager(DbContextOptions contextOptions)
         {
-            _jobQueueManagerSettings = jobQueueManagerSettings;
+            _contextOptions = contextOptions;
         }
 
         public long AddJob(Job job)
@@ -26,7 +28,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentNullException();
             }
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = new JobEntity
                 {
@@ -40,14 +42,14 @@ namespace ESFA.DC.JobQueueManager
                 };
                 context.Jobs.Add(entity);
                 context.SaveChanges();
-                return job.JobId;
+                return entity.JobId;
             }
         }
 
        public IEnumerable<Job> GetAllJobs()
         {
             var jobs = new List<Job>();
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntities = context.Jobs.ToList();
                 jobEntities.ForEach(x =>
@@ -64,7 +66,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
@@ -80,7 +82,7 @@ namespace ESFA.DC.JobQueueManager
 
         public Job GetJobByPriority()
         {
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var job = context.Jobs.FromSql("sp_GetJobByPriority").FirstOrDefault();
                 return JobConverter.Convert(job);
@@ -94,7 +96,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
@@ -104,7 +106,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (entity.Status != 1) // if already moved, then dont delete
                 {
-                    throw new Exception($"Job is already moved from ready status, unable to delete");
+                    throw new ArgumentOutOfRangeException($"Job is already moved from ready status, unable to delete");
                 }
 
                 context.Jobs.Remove(entity);
@@ -119,9 +121,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentNullException();
             }
 
-            var saved = false;
-
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == job.JobId);
                 if (entity == null)
@@ -130,10 +130,20 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 JobConverter.Convert(job, entity);
-                saved = SaveChanges(entity, context);
-            }
+                entity.DateTimeUpdatedUtc = DateTime.UtcNow;
+                // context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
+                context.Entry(entity).State = EntityState.Modified;
 
-            return saved;
+                try
+                {
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException exception)
+                {
+                    throw new Exception("Save failed. Job details have been changed. Reload the job object and try save again");
+                }
+            }
         }
 
         public bool UpdateJobStatus(long jobId, JobStatus status)
@@ -143,8 +153,7 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            var saved = false;
-            using (var context = new JobQueueDataContext(_jobQueueManagerSettings.ConnectionString))
+            using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
@@ -153,35 +162,13 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 entity.Status = (short)status;
-                saved = SaveChanges(entity, context);
+
+                entity.DateTimeUpdatedUtc = DateTime.UtcNow;
+                context.Entry(entity).State = EntityState.Modified;
+
+                context.SaveChanges();
+                return true;
             }
-
-            return saved;
-        }
-
-        public bool SaveChanges(JobEntity jobEntity, JobQueueDataContext dataContext)
-        {
-            var saved = false;
-
-            dataContext.Entry(jobEntity).State = EntityState.Modified;
-            jobEntity.DateTimeUpdatedUtc = DateTime.UtcNow;
-
-            try
-            {
-                dataContext.SaveChanges();
-                saved = true;
-            }
-            catch (DbUpdateConcurrencyException exception)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // log ??
-                saved = false;
-            }
-
-            return saved;
         }
     }
 }
