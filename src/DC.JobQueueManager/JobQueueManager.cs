@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
@@ -120,8 +121,6 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentNullException();
             }
 
-            var saved = false;
-
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == job.JobId);
@@ -131,10 +130,20 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 JobConverter.Convert(job, entity);
-                saved = SaveChanges(entity, context);
-            }
+                entity.DateTimeUpdatedUtc = DateTime.UtcNow;
+                // context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
+                context.Entry(entity).State = EntityState.Modified;
 
-            return saved;
+                try
+                {
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException exception)
+                {
+                    throw new Exception("Save failed. Job details have been changed. Reload the job object and try save again");
+                }
+            }
         }
 
         public bool UpdateJobStatus(long jobId, JobStatus status)
@@ -144,7 +153,6 @@ namespace ESFA.DC.JobQueueManager
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            var saved = false;
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
@@ -154,35 +162,13 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 entity.Status = (short)status;
-                saved = SaveChanges(entity, context);
+
+                entity.DateTimeUpdatedUtc = DateTime.UtcNow;
+                context.Entry(entity).State = EntityState.Modified;
+
+                context.SaveChanges();
+                return true;
             }
-
-            return saved;
-        }
-
-        public bool SaveChanges(JobEntity jobEntity, JobQueueDataContext dataContext)
-        {
-            var saved = false;
-
-            dataContext.Entry(jobEntity).State = EntityState.Modified;
-            jobEntity.DateTimeUpdatedUtc = DateTime.UtcNow;
-
-            try
-            {
-                dataContext.SaveChanges();
-                saved = true;
-            }
-            catch (DbUpdateConcurrencyException exception)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // log ??
-                saved = false;
-            }
-
-            return saved;
         }
     }
 }

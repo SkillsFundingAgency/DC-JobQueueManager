@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
@@ -265,6 +267,64 @@ namespace ESFA.DC.JobQueueManager.Tests
 
             var updatedJob = manager.GetJobById(1);
             updatedJob.Status.Should().Be(JobStatus.Completed);
+        }
+
+        //[Fact]
+        //public void SaveChanges_Success()
+        //{
+        //    var contextOptions = GetContextOptions();
+        //    var manager = new JobQueueManager(contextOptions);
+
+        //    manager.AddJob(new Job
+        //    {
+        //        JobType = JobType.IlrSubmission,
+        //        Status = JobStatus.Ready,
+        //        FileName = "test1.xml",
+        //    });
+
+        //    using (var context = new JobQueueDataContext(contextOptions))
+        //    {
+        //        //reload the entity
+        //        var job = context.Jobs.First();
+        //        job.FileName = "test2.xml";
+
+        //        manager.SaveChanges(job, context);
+        //    }
+
+        //    var updatedJob = manager.GetJobById(1);
+        //    updatedJob.FileName.Should().Be("test2.xml");
+        //}
+
+        [Fact]
+        public void UpdateJob_Fail_Concurrency()
+        {
+            var contextOptions = GetContextOptions();
+            var manager = new JobQueueManager(contextOptions);
+
+            manager.AddJob(new Job
+            {
+                JobType = JobType.IlrSubmission,
+                Status = JobStatus.Ready,
+                FileName = "test1.xml",
+            });
+
+            //var job = manager.GetJobById(1);
+            //job.FileName = "test2.xml";
+            //job.RowVersion = "test";
+            //manager.UpdateJob(job);
+
+            var job = manager.GetJobById(1);
+
+            var context = new JobQueueDataContext(contextOptions);
+            var j = context.Jobs.First();
+            j.RowVersion = Convert.FromBase64String("testZXXX");
+            context.Entry(j).State = EntityState.Modified;
+            context.SaveChanges();
+
+            //Row version is updated now, so lets try to save with old row version
+            job.FileName = "test3.xml";
+            job.RowVersion = "TESTABCD";
+            Assert.Throws<DbUpdateConcurrencyException>(() => manager.UpdateJob(job));
         }
 
         private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
