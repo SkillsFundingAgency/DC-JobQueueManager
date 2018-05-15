@@ -106,7 +106,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (entity.Status != 1) // if already moved, then dont delete
                 {
-                    throw new ArgumentOutOfRangeException($"Job is already moved from ready status, unable to delete");
+                    throw new ArgumentOutOfRangeException("Job is already moved from ready status, unable to delete");
                 }
 
                 context.Jobs.Remove(entity);
