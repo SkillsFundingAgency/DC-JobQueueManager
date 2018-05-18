@@ -65,12 +65,18 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Job.sql" />
-    <Build Include="dbo\Stored Procedures\sp_GetJobByPriority.sql" />
+    <Build Include="dbo\Stored Procedures\GetJobByPriority.sql" />
     <Build Include="Security\JobQueueManagerApiUser.sql" />
     <Build Include="Security\RoleMemberships.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
     <None Include="zzDeploymentProfiles\Release.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
+      <DefaultValue>xxxxxx</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
-    <TargetDatabaseName>JobQueueManager</TargetDatabaseName>
+    <TargetDatabaseName>JobQueue</TargetDatabaseName>
     <DeployScriptFileName>ESFA.DC.JobQueueManager.Database.sql</DeployScriptFileName>
     <TargetConnectionString>Data Source=(local);Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
     <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
@@ -19,4 +19,10 @@
     <DoNotDropServerRoleMembership>True</DoNotDropServerRoleMembership>
     <ProfileVersionNumber>1</ProfileVersionNumber>
   </PropertyGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
+      <Value>
+      </Value>
+    </SqlCmdVariable>
+  </ItemGroup>
 </Project>
