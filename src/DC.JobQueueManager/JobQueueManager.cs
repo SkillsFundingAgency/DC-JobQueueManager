@@ -84,7 +84,7 @@ namespace ESFA.DC.JobQueueManager
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var job = context.Jobs.FromSql("sp_GetJobByPriority").FirstOrDefault();
+                var job = context.Jobs.FromSql("GetJobByPriority").FirstOrDefault();
                 return JobConverter.Convert(job);
             }
         }
