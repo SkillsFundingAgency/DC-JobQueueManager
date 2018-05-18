@@ -84,7 +84,7 @@ namespace ESFA.DC.JobQueueManager
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var job = context.Jobs.FromSql("sp_GetJobByPriority").FirstOrDefault();
+                var job = context.Jobs.FromSql("GetJobByPriority").FirstOrDefault();
                 return JobConverter.Convert(job);
             }
         }
@@ -106,7 +106,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (entity.Status != 1) // if already moved, then dont delete
                 {
-                    throw new ArgumentOutOfRangeException($"Job is already moved from ready status, unable to delete");
+                    throw new ArgumentOutOfRangeException("Job is already moved from ready status, unable to delete");
                 }
 
                 context.Jobs.Remove(entity);
@@ -131,7 +131,7 @@ namespace ESFA.DC.JobQueueManager
 
                 JobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = DateTime.UtcNow;
-                // context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
+                context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
 
                 try

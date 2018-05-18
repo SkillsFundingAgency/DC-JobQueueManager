@@ -4,7 +4,7 @@
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseName>__DatabaseName__</TargetDatabaseName>
     <DeployScriptFileName>__DatabaseProjectName__.sql</DeployScriptFileName>
-    <TargetConnectionString>Data Source=__SqlServer__;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
+    <TargetConnectionString>Data Source=__SqlServer__;Persist Security Info=True;User ID=__SqlServerAdminUsername__;Password=__SqlServerAdminPassword__;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
     <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
     <DropObjectsNotInSource>True</DropObjectsNotInSource>
     <DoNotDropDatabaseRoles>True</DoNotDropDatabaseRoles>

@@ -33,7 +33,7 @@ namespace ESFA.DC.JobQueueManager
 
         public static void Convert(Job source, JobEntity destination)
         {
-            destination.DateTimeSubmittedUtc = DateTime.UtcNow;
+            destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.FileName = source.FileName;
             destination.JobType = (short)source.JobType;
             destination.Priority = source.Priority;
@@ -42,12 +42,11 @@ namespace ESFA.DC.JobQueueManager
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
-            destination.RowVersion = source.RowVersion == null ? null : System.Convert.FromBase64String(source.RowVersion);
         }
 
         public static void Convert(JobEntity source, Job destination)
         {
-            destination.DateTimeSubmittedUtc = DateTime.UtcNow;
+            destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.FileName = source.FileName;
             destination.JobType = (JobType)source.JobType;
             destination.Priority = source.Priority;

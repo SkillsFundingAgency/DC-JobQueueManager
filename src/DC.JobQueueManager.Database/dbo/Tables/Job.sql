@@ -9,7 +9,7 @@ CREATE TABLE [dbo].[Job](
 	[Ukprn] [bigint] NULL,
 	[StorageReference] [varchar](50) NULL,
 	[Status] [smallint] NOT NULL,
-	[Rowversion] [timestamp] NOT NULL,
+	[Rowversion] [rowversion] NOT NULL,
  CONSTRAINT [PK_Job_memoryoptimizedtable] PRIMARY KEY CLUSTERED 
 (
 	[JobId] ASC
