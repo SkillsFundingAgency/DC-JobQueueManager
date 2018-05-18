@@ -19,4 +19,9 @@
     <DoNotDropServerRoleMembership>True</DoNotDropServerRoleMembership>
     <ProfileVersionNumber>1</ProfileVersionNumber>
   </PropertyGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
+      <Value>__JobQueueManagerApiUserPwd__</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
 </Project>
