@@ -59,6 +59,24 @@ namespace ESFA.DC.JobQueueManager
             return jobs;
         }
 
+        public IEnumerable<Job> GetJobsByUkprn(long ukprn)
+        {
+            if (ukprn == 0)
+            {
+                throw new ArgumentException("ukprn can not be 0");
+            }
+
+            var jobs = new List<Job>();
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var jobEntities = context.Jobs.Where(x => x.Ukprn == ukprn).ToList();
+                jobEntities.ForEach(x =>
+                    jobs.Add(JobConverter.Convert(x)));
+            }
+
+            return jobs;
+        }
+
         public Job GetJobById(long jobId)
         {
             if (jobId == 0)
