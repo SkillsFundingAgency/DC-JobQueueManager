@@ -96,6 +96,35 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
+        public void GetJobsByUkprn_Success()
+        {
+            var manager = new JobQueueManager(GetContextOptions());
+            var jobId = manager.AddJob(new Job() { Ukprn = 1 });
+            var result = manager.GetJobsByUkprn(1);
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(1);
+        }
+
+        [Fact]
+        public void GetJobsByUkprn_Fail_zeroId()
+        {
+            var manager = new JobQueueManager(GetContextOptions());
+            Assert.Throws<ArgumentException>(() => manager.GetJobsByUkprn(0));
+        }
+
+        [Fact]
+        public void GetJobsByUkprn_Success_UkprnNotFound()
+        {
+            var manager = new JobQueueManager(GetContextOptions());
+            var jobId = manager.AddJob(new Job() { Ukprn = 1 });
+            var result = manager.GetJobsByUkprn(999);
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(0);
+        }
+
+        [Fact]
         public void GetAllJobs_Success()
         {
             var manager = new JobQueueManager(GetContextOptions());
