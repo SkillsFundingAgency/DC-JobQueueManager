@@ -30,7 +30,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobToJobEntity_Test()
         {
-            var currentTime = DateTime.UtcNow;
+            var currentTime = System.DateTime.UtcNow;
             var job = new Job()
             {
                 DateTimeSubmittedUtc = currentTime,
@@ -61,7 +61,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobEntityToJob_Test()
         {
-            var currentTime = DateTime.UtcNow;
+            var currentTime = System.DateTime.UtcNow;
             var job = new JobEntity()
             {
                 DateTimeSubmittedUtc = currentTime,
