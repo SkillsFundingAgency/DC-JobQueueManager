@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ESFA.DC.DateTime.Provider.Interface;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
@@ -15,10 +16,12 @@ namespace ESFA.DC.JobQueueManager
     public sealed class JobQueueManager : IJobQueueManager
     {
         private readonly DbContextOptions _contextOptions;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public JobQueueManager(DbContextOptions contextOptions)
+        public JobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
         {
             _contextOptions = contextOptions;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public long AddJob(Job job)
@@ -32,7 +35,7 @@ namespace ESFA.DC.JobQueueManager
             {
                 var entity = new JobEntity
                 {
-                    DateTimeSubmittedUtc = DateTime.UtcNow,
+                    DateTimeSubmittedUtc = _dateTimeProvider.GetNowUtc(),
                     FileName = job.FileName,
                     JobType = (short)job.JobType,
                     Priority = job.Priority,
@@ -148,7 +151,7 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 JobConverter.Convert(job, entity);
-                entity.DateTimeUpdatedUtc = DateTime.UtcNow;
+                entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
 
@@ -181,7 +184,7 @@ namespace ESFA.DC.JobQueueManager
 
                 entity.Status = (short)status;
 
-                entity.DateTimeUpdatedUtc = DateTime.UtcNow;
+                entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
 
                 context.SaveChanges();
