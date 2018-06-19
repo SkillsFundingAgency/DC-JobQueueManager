@@ -4,6 +4,7 @@ using System.Text;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Xunit;
 
@@ -40,7 +41,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 JobType = JobType.IlrSubmission,
                 Priority = 1,
                 RowVersion = null,
-                Status = JobStatus.Ready,
+                Status = JobStatusType.Ready,
                 StorageReference = "test-ref",
                 Ukprn = 1000,
             };
