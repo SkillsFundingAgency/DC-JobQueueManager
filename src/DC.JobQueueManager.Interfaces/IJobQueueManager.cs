@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
@@ -10,7 +11,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 
         void RemoveJobFromQueue(long jobId);
 
-        bool UpdateJobStatus(long jobId, JobStatus status);
+        bool UpdateJobStatus(long jobId, JobStatusType status);
 
         Job GetJobById(long jobId);
 

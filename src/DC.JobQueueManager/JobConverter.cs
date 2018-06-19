@@ -2,6 +2,7 @@
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager
 {
@@ -50,7 +51,7 @@ namespace ESFA.DC.JobQueueManager
             destination.FileName = source.FileName;
             destination.JobType = (JobType)source.JobType;
             destination.Priority = source.Priority;
-            destination.Status = (JobStatus)source.Status;
+            destination.Status = (JobStatusType)source.Status;
             destination.StorageReference = source.StorageReference;
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;

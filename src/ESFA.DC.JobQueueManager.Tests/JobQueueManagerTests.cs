@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using ESFA.DC.DateTime.Provider.Interface;
 using ESFA.DC.JobQueueManager.Data;
-using ESFA.DC.JobQueueManager.Data.Entities;
-using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
-using Xunit.Sdk;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
@@ -47,7 +44,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 JobType = JobType.IlrSubmission,
                 Priority = 1,
                 RowVersion = null,
-                Status = JobStatus.Ready,
+                Status = JobStatusType.Ready,
                 StorageReference = "test-ref",
                 Ukprn = 1000,
             };
@@ -67,7 +64,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.JobType.Should().Be(JobType.IlrSubmission);
             savedJob.Priority.Should().Be(1);
             savedJob.StorageReference.Should().Be("test-ref");
-            savedJob.Status.Should().Be(JobStatus.Ready);
+            savedJob.Status.Should().Be(JobStatusType.Ready);
             savedJob.Ukprn.Should().Be(1000);
         }
 
@@ -157,7 +154,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 {
                     JobType = JobType.IlrSubmission,
                     Priority = 1,
-                    Status = JobStatus.Ready,
+                    Status = JobStatusType.Ready,
                     FileName = "file1",
                     Ukprn = 1000,
                 });
@@ -165,7 +162,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 {
                     JobType = JobType.IlrSubmission,
                     Priority = 2,
-                    Status = JobStatus.Ready,
+                    Status = JobStatusType.Ready,
                     FileName = "file2",
                     Ukprn = 1002,
                 });
@@ -191,13 +188,13 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Theory]
-        [InlineData(JobStatus.MovedForProcessing)]
-        [InlineData(JobStatus.Processing)]
-        [InlineData(JobStatus.Completed)]
-        [InlineData(JobStatus.Failed)]
-        [InlineData(JobStatus.FailedRetry)]
-        [InlineData(JobStatus.Paused)]
-        public void RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatus status)
+        [InlineData(JobStatusType.MovedForProcessing)]
+        [InlineData(JobStatusType.Processing)]
+        [InlineData(JobStatusType.Completed)]
+        [InlineData(JobStatusType.Failed)]
+        [InlineData(JobStatusType.FailedRetry)]
+        [InlineData(JobStatusType.Paused)]
+        public void RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatusType status)
         {
             var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             manager.AddJob(new Job
@@ -215,7 +212,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             manager.AddJob(new Job
             {
                 JobType = JobType.IlrSubmission,
-                Status = JobStatus.Ready,
+                Status = JobStatusType.Ready,
             });
             var jobs = manager.GetAllJobs();
             jobs.Count().Should().Be(1);
@@ -248,11 +245,11 @@ namespace ESFA.DC.JobQueueManager.Tests
             manager.AddJob(new Job
             {
                 JobType = JobType.IlrSubmission,
-                Status = JobStatus.Ready,
+                Status = JobStatusType.Ready,
             });
             var job = manager.GetJobById(1);
             job.FileName = "test";
-            job.Status = JobStatus.Completed;
+            job.Status = JobStatusType.Completed;
             job.Priority = 2;
             job.StorageReference = "st-ref";
             job.Ukprn = 100;
@@ -267,21 +264,21 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.FileName.Should().Be("test");
             updatedJob.StorageReference.Should().Be("st-ref");
             updatedJob.Priority.Should().Be(2);
-            updatedJob.Status.Should().Be(JobStatus.Completed);
+            updatedJob.Status.Should().Be(JobStatusType.Completed);
         }
 
         [Fact]
         public void UpdateJobStatus_Fail_ZeroId()
         {
             var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(0, JobStatus.Completed));
+            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(0, JobStatusType.Completed));
         }
 
         [Fact]
         public void UpdateJobStatus_Fail_InvalidJobId()
         {
             var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(110, JobStatus.Completed));
+            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(110, JobStatusType.Completed));
         }
 
         [Fact]
@@ -291,13 +288,13 @@ namespace ESFA.DC.JobQueueManager.Tests
             manager.AddJob(new Job
             {
                 JobType = JobType.IlrSubmission,
-                Status = JobStatus.Ready,
+                Status = JobStatusType.Ready,
             });
             var job = manager.GetJobById(1);
-            manager.UpdateJobStatus(1, JobStatus.Completed);
+            manager.UpdateJobStatus(1, JobStatusType.Completed);
 
             var updatedJob = manager.GetJobById(1);
-            updatedJob.Status.Should().Be(JobStatus.Completed);
+            updatedJob.Status.Should().Be(JobStatusType.Completed);
         }
 
         private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")

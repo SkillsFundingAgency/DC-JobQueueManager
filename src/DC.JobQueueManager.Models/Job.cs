@@ -1,5 +1,6 @@
 ﻿using System;
 using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager.Models
 {
@@ -21,7 +22,7 @@ namespace ESFA.DC.JobQueueManager.Models
 
         public string StorageReference { get; set; }
 
-        public JobStatus Status { get; set; }
+        public JobStatusType Status { get; set; }
 
         public string RowVersion { get; set; }
     }

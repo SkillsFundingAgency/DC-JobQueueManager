@@ -8,6 +8,7 @@ using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.JobQueueManager.Models;
 using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -167,7 +168,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool UpdateJobStatus(long jobId, JobStatus status)
+        public bool UpdateJobStatus(long jobId, JobStatusType status)
         {
             if (jobId == 0)
             {
