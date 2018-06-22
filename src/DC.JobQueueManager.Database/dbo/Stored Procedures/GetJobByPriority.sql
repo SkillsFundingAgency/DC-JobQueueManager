@@ -14,14 +14,13 @@ BEGIN
 	SELECT TOP 1 
 		   [JobId]
 		  ,[JobType]
-		  ,[FileName]
 		  ,[Priority]
 		  ,[DateTimeSubmittedUTC]
 		  ,[DateTimeUpdatedUTC]
 		  ,[Ukprn]
-		  ,[StorageReference]
 		  ,[Status]
 		  ,[Rowversion]
+		  ,[SubmittedBy]
 	FROM [dbo].[job] j WITH (nolock) 
 	WHERE [Status] = 1
 	AND NOT EXISTS (SELECT 1 FROM [dbo].[job] (nolock) 

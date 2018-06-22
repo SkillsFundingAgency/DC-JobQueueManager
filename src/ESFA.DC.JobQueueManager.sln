@@ -11,9 +11,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ESFA.DC.JobQueueManager.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager.Interfaces", "DC.JobQueueManager.Interfaces\ESFA.DC.JobQueueManager.Interfaces.csproj", "{6EC8DCAF-ACBF-4614-BE58-0DAC224A4154}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager.Models", "DC.JobQueueManager.Models\ESFA.DC.JobQueueManager.Models.csproj", "{494596B4-093B-4839-AF3A-E2C511E2CC2C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESFA.DC.JobQueueManager.Tests", "ESFA.DC.JobQueueManager.Tests\ESFA.DC.JobQueueManager.Tests.csproj", "{3ECD70C9-3C71-466B-9F0D-F4A1F460A009}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobQueueManager.Tests", "ESFA.DC.JobQueueManager.Tests\ESFA.DC.JobQueueManager.Tests.csproj", "{3ECD70C9-3C71-466B-9F0D-F4A1F460A009}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{944325EF-7167-4841-B148-A1381F26205A}"
 EndProject
@@ -41,10 +39,6 @@ Global
 		{6EC8DCAF-ACBF-4614-BE58-0DAC224A4154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EC8DCAF-ACBF-4614-BE58-0DAC224A4154}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EC8DCAF-ACBF-4614-BE58-0DAC224A4154}.Release|Any CPU.Build.0 = Release|Any CPU
-		{494596B4-093B-4839-AF3A-E2C511E2CC2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{494596B4-093B-4839-AF3A-E2C511E2CC2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{494596B4-093B-4839-AF3A-E2C511E2CC2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{494596B4-093B-4839-AF3A-E2C511E2CC2C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3ECD70C9-3C71-466B-9F0D-F4A1F460A009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3ECD70C9-3C71-466B-9F0D-F4A1F460A009}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ECD70C9-3C71-466B-9F0D-F4A1F460A009}.Release|Any CPU.ActiveCfg = Release|Any CPU

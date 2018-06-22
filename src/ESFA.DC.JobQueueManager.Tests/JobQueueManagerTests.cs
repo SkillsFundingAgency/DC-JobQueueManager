@@ -3,8 +3,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using ESFA.DC.DateTime.Provider.Interface;
 using ESFA.DC.JobQueueManager.Data;
-using ESFA.DC.JobQueueManager.Models;
-using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
@@ -39,14 +39,20 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 DateTimeSubmittedUtc = System.DateTime.UtcNow,
                 DateTimeUpdatedUtc = System.DateTime.UtcNow,
-                FileName = "test.xml",
                 JobId = 0,
                 JobType = JobType.IlrSubmission,
                 Priority = 1,
                 RowVersion = null,
                 Status = JobStatusType.Ready,
-                StorageReference = "test-ref",
                 Ukprn = 1000,
+                SubmittedBy = "test user",
+                JobMetaData = new IlrJobMetaData()
+                {
+                    FileName = "test.xml",
+                    StorageReference = "test-ref",
+                    FileSize = 10.5m,
+                    IsFirstStage = true,
+                },
             };
 
             var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
@@ -60,12 +66,18 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.JobId.Should().Be(1);
             savedJob.DateTimeSubmittedUtc.Should().BeOnOrBefore(System.DateTime.UtcNow);
             savedJob.DateTimeUpdatedUtc.Should().BeNull();
-            savedJob.FileName.Should().Be("test.xml");
             savedJob.JobType.Should().Be(JobType.IlrSubmission);
             savedJob.Priority.Should().Be(1);
-            savedJob.StorageReference.Should().Be("test-ref");
+            savedJob.SubmittedBy.Should().Be("test user");
             savedJob.Status.Should().Be(JobStatusType.Ready);
             savedJob.Ukprn.Should().Be(1000);
+
+            var metaData = (IlrJobMetaData)savedJob.JobMetaData;
+            metaData.FileName.Should().Be("test.xml");
+            metaData.FileSize.Should().Be(10.5m);
+            metaData.StorageReference.Should().Be("test-ref");
+            metaData.IsFirstStage.Should().Be(true);
+            metaData.TotalLearners.Should().Be(0);
         }
 
         [Fact]
@@ -155,7 +167,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     JobType = JobType.IlrSubmission,
                     Priority = 1,
                     Status = JobStatusType.Ready,
-                    FileName = "file1",
+                    //FileName = "file1",
                     Ukprn = 1000,
                 });
                 manager.AddJob(new Job()
@@ -163,12 +175,12 @@ namespace ESFA.DC.JobQueueManager.Tests
                     JobType = JobType.IlrSubmission,
                     Priority = 2,
                     Status = JobStatusType.Ready,
-                    FileName = "file2",
+                    //FileName = "file2",
                     Ukprn = 1002,
                 });
                 var result = manager.GetJobByPriority();
                 result.JobId.Should().Be(2);
-                result.FileName.Should().Be("file2");
+                //result.FileName.Should().Be("file2");
                 result.Ukprn.Should().Be(1002);
             }
         }
@@ -201,6 +213,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 JobType = JobType.IlrSubmission,
                 Status = status,
+                JobMetaData = new IlrJobMetaData(),
             });
             Assert.Throws<ArgumentOutOfRangeException>(() => manager.RemoveJobFromQueue(1));
         }
@@ -213,6 +226,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 JobType = JobType.IlrSubmission,
                 Status = JobStatusType.Ready,
+                JobMetaData = new IlrJobMetaData(),
             });
             var jobs = manager.GetAllJobs();
             jobs.Count().Should().Be(1);
@@ -246,12 +260,11 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 JobType = JobType.IlrSubmission,
                 Status = JobStatusType.Ready,
+                JobMetaData = new IlrJobMetaData(),
             });
             var job = manager.GetJobById(1);
-            job.FileName = "test";
             job.Status = JobStatusType.Completed;
             job.Priority = 2;
-            job.StorageReference = "st-ref";
             job.Ukprn = 100;
             job.RowVersion = "AAAAAAAAGJw=";
 
@@ -261,8 +274,8 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.JobType.Should().Be(JobType.IlrSubmission);
             updatedJob.DateTimeUpdatedUtc.Should().BeOnOrBefore(System.DateTime.UtcNow);
             updatedJob.Ukprn.Should().Be(100);
-            updatedJob.FileName.Should().Be("test");
-            updatedJob.StorageReference.Should().Be("st-ref");
+           // updatedJob.FileName.Should().Be("test");
+           // updatedJob.StorageReference.Should().Be("st-ref");
             updatedJob.Priority.Should().Be(2);
             updatedJob.Status.Should().Be(JobStatusType.Completed);
         }
@@ -289,6 +302,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 JobType = JobType.IlrSubmission,
                 Status = JobStatusType.Ready,
+                JobMetaData = new IlrJobMetaData(),
             });
             var job = manager.GetJobById(1);
             manager.UpdateJobStatus(1, JobStatusType.Completed);
