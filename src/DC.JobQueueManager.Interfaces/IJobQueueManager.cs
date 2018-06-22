@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using ESFA.DC.JobQueueManager.Models;
-using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.Jobs.Model;
 using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
@@ -22,5 +21,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         IEnumerable<Job> GetAllJobs();
 
         IEnumerable<Job> GetJobsByUkprn(long ukrpn);
+
+        bool UpdateJobMetaData(IlrJobMetaData jobMetaData);
     }
 }

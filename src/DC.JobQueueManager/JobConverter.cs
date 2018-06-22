@@ -1,7 +1,7 @@
 ﻿using System;
 using ESFA.DC.JobQueueManager.Data.Entities;
-using ESFA.DC.JobQueueManager.Models;
-using ESFA.DC.JobQueueManager.Models.Enums;
+using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager
@@ -35,28 +35,66 @@ namespace ESFA.DC.JobQueueManager
         public static void Convert(Job source, JobEntity destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
-            destination.FileName = source.FileName;
             destination.JobType = (short)source.JobType;
             destination.Priority = source.Priority;
             destination.Status = (short)source.Status;
-            destination.StorageReference = source.StorageReference;
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
+            destination.SubmittedBy = source.SubmittedBy;
         }
 
         public static void Convert(JobEntity source, Job destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
-            destination.FileName = source.FileName;
             destination.JobType = (JobType)source.JobType;
             destination.Priority = source.Priority;
             destination.Status = (JobStatusType)source.Status;
-            destination.StorageReference = source.StorageReference;
             destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
+            destination.SubmittedBy = source.SubmittedBy;
+        }
+
+        public static void Convert(IlrJobMetaDataEntity source, IlrJobMetaData destination)
+        {
+            if (source == null)
+            {
+                return;
+            }
+
+            if (destination == null)
+            {
+                destination = new IlrJobMetaData();
+            }
+
+            destination.FileName = source.FileName;
+            destination.FileSize = source.FileSize;
+            destination.StorageReference = source.StorageReference;
+            destination.JobId = source.JobId;
+            destination.TotalLearners = source.TotalLearners;
+            destination.IsFirstStage = source.IsFirstStage;
+        }
+
+        public static void Convert(IlrJobMetaData source, IlrJobMetaDataEntity destination)
+        {
+            if (source == null)
+            {
+                return;
+            }
+
+            if (destination == null)
+            {
+                destination = new IlrJobMetaDataEntity();
+            }
+
+            destination.FileName = source.FileName;
+            destination.FileSize = source.FileSize;
+            destination.StorageReference = source.StorageReference;
+            destination.JobId = source.JobId;
+            destination.TotalLearners = source.TotalLearners;
+            destination.IsFirstStage = source.IsFirstStage;
         }
     }
 }

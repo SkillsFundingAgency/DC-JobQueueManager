@@ -16,9 +16,12 @@ namespace ESFA.DC.JobQueueManager.Data
 
         public DbSet<JobEntity> Jobs { get; set; }
 
+        public DbSet<IlrJobMetaDataEntity> IlrJobMetaDataEntities { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<JobEntity>().ToTable("Job");
+            modelBuilder.Entity<IlrJobMetaDataEntity>().ToTable("IlrJobMetaData");
         }
     }
 }
