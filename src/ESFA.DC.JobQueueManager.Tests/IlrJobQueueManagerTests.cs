@@ -15,47 +15,43 @@ using Xunit;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
-    public class JobQueueManagerTests
+    public class IlrJobQueueManagerTests
     {
         [Fact]
         public void AddJob_Null()
         {
-            var manager = new JobQueueManager(It.IsAny<DbContextOptions>(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(It.IsAny<DbContextOptions>(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentNullException>(() => manager.AddJob(null));
         }
 
         [Fact]
         public void AddJob_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            var result = manager.AddJob(new Job());
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var result = manager.AddJob(new IlrJob());
             result.Should().Be(1);
         }
 
         [Fact]
         public void AddJob_Success_Values()
         {
-            var job = new Job()
+            var job = new IlrJob()
             {
                 DateTimeSubmittedUtc = System.DateTime.UtcNow,
                 DateTimeUpdatedUtc = System.DateTime.UtcNow,
                 JobId = 0,
-                JobType = JobType.IlrSubmission,
                 Priority = 1,
                 RowVersion = null,
                 Status = JobStatusType.Ready,
                 Ukprn = 1000,
                 SubmittedBy = "test user",
-                JobMetaData = new IlrJobMetaData()
-                {
-                    FileName = "test.xml",
-                    StorageReference = "test-ref",
-                    FileSize = 10.5m,
-                    IsFirstStage = true,
-                },
+                FileName = "test.xml",
+                StorageReference = "test-ref",
+                FileSize = 10.5m,
+                IsFirstStage = true,
             };
 
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             manager.AddJob(job);
 
             var result = manager.GetAllJobs();
@@ -71,20 +67,18 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.SubmittedBy.Should().Be("test user");
             savedJob.Status.Should().Be(JobStatusType.Ready);
             savedJob.Ukprn.Should().Be(1000);
-
-            var metaData = (IlrJobMetaData)savedJob.JobMetaData;
-            metaData.FileName.Should().Be("test.xml");
-            metaData.FileSize.Should().Be(10.5m);
-            metaData.StorageReference.Should().Be("test-ref");
-            metaData.IsFirstStage.Should().Be(true);
-            metaData.TotalLearners.Should().Be(0);
+            savedJob.FileName.Should().Be("test.xml");
+            savedJob.FileSize.Should().Be(10.5m);
+            savedJob.StorageReference.Should().Be("test-ref");
+            savedJob.IsFirstStage.Should().Be(true);
+            savedJob.TotalLearners.Should().Be(0);
         }
 
         [Fact]
         public void GetJobById_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            var jobId = manager.AddJob(new Job());
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var jobId = manager.AddJob(new IlrJob());
             var result = manager.GetJobById(1);
 
             result.Should().NotBeNull();
@@ -94,22 +88,22 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void GetJobById_Fail_zeroId()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.GetJobById(0));
         }
 
         [Fact]
         public void GetJobById_Fail_IdNotFound()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.GetJobById(100));
         }
 
         [Fact]
         public void GetJobsByUkprn_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            var jobId = manager.AddJob(new Job() { Ukprn = 1 });
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var jobId = manager.AddJob(new IlrJob() { Ukprn = 1 });
             var result = manager.GetJobsByUkprn(1);
 
             result.Should().NotBeNull();
@@ -119,15 +113,15 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void GetJobsByUkprn_Fail_zeroId()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.GetJobsByUkprn(0));
         }
 
         [Fact]
         public void GetJobsByUkprn_Success_UkprnNotFound()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            var jobId = manager.AddJob(new Job() { Ukprn = 1 });
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var jobId = manager.AddJob(new IlrJob() { Ukprn = 1 });
             var result = manager.GetJobsByUkprn(999);
 
             result.Should().NotBeNull();
@@ -137,10 +131,10 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void GetAllJobs_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            manager.AddJob(new Job());
-            manager.AddJob(new Job());
-            manager.AddJob(new Job());
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            manager.AddJob(new IlrJob());
+            manager.AddJob(new IlrJob());
+            manager.AddJob(new IlrJob());
 
             var result = manager.GetAllJobs();
             result.Count().Should().Be(3);
@@ -161,41 +155,40 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobQueueManager(options, new Mock<IDateTimeProvider>().Object);
-                manager.AddJob(new Job()
+                var manager = new JobQueueManager.IlrJobQueueManager(options, new Mock<IDateTimeProvider>().Object);
+                manager.AddJob(new IlrJob()
                 {
-                    JobType = JobType.IlrSubmission,
                     Priority = 1,
                     Status = JobStatusType.Ready,
-                    //FileName = "file1",
+                    FileName = "file1",
                     Ukprn = 1000,
                 });
-                manager.AddJob(new Job()
+                manager.AddJob(new IlrJob()
                 {
-                    JobType = JobType.IlrSubmission,
                     Priority = 2,
                     Status = JobStatusType.Ready,
-                    //FileName = "file2",
+                    FileName = "file2",
                     Ukprn = 1002,
                 });
                 var result = manager.GetJobByPriority();
                 result.JobId.Should().Be(2);
-                //result.FileName.Should().Be("file2");
+                result.FileName.Should().Be("file2");
                 result.Ukprn.Should().Be(1002);
+                result.JobType.Should().Be(JobType.IlrSubmission);
             }
         }
 
         [Fact]
         public void RemoveJobFromQueue_Fail_ZeroId()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.RemoveJobFromQueue(0));
         }
 
         [Fact]
         public void RemoveJobFromQueue_Fail_IdDontExist()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.RemoveJobFromQueue(200));
         }
 
@@ -208,12 +201,10 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(JobStatusType.Paused)]
         public void RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatusType status)
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            manager.AddJob(new Job
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            manager.AddJob(new IlrJob
             {
-                JobType = JobType.IlrSubmission,
                 Status = status,
-                JobMetaData = new IlrJobMetaData(),
             });
             Assert.Throws<ArgumentOutOfRangeException>(() => manager.RemoveJobFromQueue(1));
         }
@@ -221,12 +212,10 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void RemoveJobFromQueue_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            manager.AddJob(new Job
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            manager.AddJob(new IlrJob
             {
-                JobType = JobType.IlrSubmission,
                 Status = JobStatusType.Ready,
-                JobMetaData = new IlrJobMetaData(),
             });
             var jobs = manager.GetAllJobs();
             jobs.Count().Should().Be(1);
@@ -240,27 +229,27 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void UpdateJob_Fail_Null()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentNullException>(() => manager.UpdateJob(null));
         }
 
         [Fact]
         public void UpdateJob_Fail_InvalidJobId()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.UpdateJob(
-                new Job() { JobId = 1000 }));
+                new IlrJob() { JobId = 1000 }));
         }
 
         [Fact]
         public void UpdateJob_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            manager.AddJob(new Job
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            manager.AddJob(new IlrJob
             {
-                JobType = JobType.IlrSubmission,
                 Status = JobStatusType.Ready,
-                JobMetaData = new IlrJobMetaData(),
+                FileName = "test",
+                StorageReference = "st-ref"
             });
             var job = manager.GetJobById(1);
             job.Status = JobStatusType.Completed;
@@ -274,8 +263,8 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.JobType.Should().Be(JobType.IlrSubmission);
             updatedJob.DateTimeUpdatedUtc.Should().BeOnOrBefore(System.DateTime.UtcNow);
             updatedJob.Ukprn.Should().Be(100);
-           // updatedJob.FileName.Should().Be("test");
-           // updatedJob.StorageReference.Should().Be("st-ref");
+            updatedJob.FileName.Should().Be("test");
+            updatedJob.StorageReference.Should().Be("st-ref");
             updatedJob.Priority.Should().Be(2);
             updatedJob.Status.Should().Be(JobStatusType.Completed);
         }
@@ -283,26 +272,24 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void UpdateJobStatus_Fail_ZeroId()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(0, JobStatusType.Completed));
         }
 
         [Fact]
         public void UpdateJobStatus_Fail_InvalidJobId()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
             Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(110, JobStatusType.Completed));
         }
 
         [Fact]
         public void UpdateJobStatus_Success()
         {
-            var manager = new JobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
-            manager.AddJob(new Job
+            var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            manager.AddJob(new IlrJob
             {
-                JobType = JobType.IlrSubmission,
                 Status = JobStatusType.Ready,
-                JobMetaData = new IlrJobMetaData(),
             });
             var job = manager.GetJobById(1);
             manager.UpdateJobStatus(1, JobStatusType.Completed);

@@ -15,8 +15,8 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobToJobEntity_Test_Null()
         {
-            Job job = null;
-            var convertedJob = JobConverter.Convert(job);
+            IlrJob job = null;
+            var convertedJob = IlrJobConverter.Convert(job);
             convertedJob.Should().BeNull();
         }
 
@@ -24,7 +24,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void JobEntityToJob_Test_Null()
         {
             JobEntity job = null;
-            var convertedJob = JobConverter.Convert(job);
+            var convertedJob = IlrJobConverter.Convert(job);
             convertedJob.Should().BeNull();
         }
 
@@ -32,21 +32,20 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void JobToJobEntity_Test()
         {
             var currentTime = System.DateTime.UtcNow;
-            var job = new Job()
+            var job = new IlrJob()
             {
                 DateTimeSubmittedUtc = currentTime,
                 DateTimeUpdatedUtc = currentTime,
-                //FileName = "test.xml",
+                FileName = "test.xml",
                 JobId = 1,
-                JobType = JobType.IlrSubmission,
                 Priority = 1,
                 RowVersion = null,
                 Status = JobStatusType.Ready,
-                //StorageReference = "test-ref",
+                StorageReference = "test-ref",
                 Ukprn = 1000,
             };
 
-            var convertedJob = JobConverter.Convert(job);
+            var convertedJob = IlrJobConverter.Convert(job);
 
             convertedJob.JobId.Should().Be(1);
             convertedJob.DateTimeSubmittedUtc.Should().Be(currentTime);
@@ -67,7 +66,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 DateTimeSubmittedUtc = currentTime,
                 DateTimeUpdatedUtc = currentTime,
-                //FileName = "test.xml",
+                //FileName "test.xml",
                 JobId = 1,
                 JobType = 1,
                 Priority = 1,
@@ -77,7 +76,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Ukprn = 1000,
             };
 
-            var convertedJob = JobConverter.Convert(job);
+            var convertedJob = IlrJobConverter.Convert(job);
 
             convertedJob.JobId.Should().Be(1);
             convertedJob.DateTimeSubmittedUtc.Should().Be(currentTime);

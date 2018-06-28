@@ -7,6 +7,7 @@ using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Base;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +15,18 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public sealed class JobQueueManager : IJobQueueManager
+    public sealed class IlrJobQueueManager : IIlrJobQueueManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public JobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
+        public IlrJobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public long AddJob(Job job)
+        public long AddJob(IlrJob job)
         {
             if (job == null)
             {
@@ -43,19 +44,15 @@ namespace ESFA.DC.JobQueueManager
                     Ukprn = job.Ukprn,
                     SubmittedBy = job.SubmittedBy
                 };
-                //TODO: May be review and re-arrange this area when more job types become relevant
-                if (job.JobType == JobType.IlrSubmission)
+                var metaEntity = new IlrJobMetaDataEntity()
                 {
-                    var metaEntity = new IlrJobMetaDataEntity()
-                    {
-                        FileName = ((IlrJobMetaData)job.JobMetaData).FileName,
-                        FileSize = ((IlrJobMetaData)job.JobMetaData).FileSize,
-                        IsFirstStage = true,
-                        StorageReference = ((IlrJobMetaData)job.JobMetaData).StorageReference,
-                        Job = entity
-                    };
-                    context.IlrJobMetaDataEntities.Add(metaEntity);
-                }
+                    FileName = job.FileName,
+                    FileSize = job.FileSize,
+                    IsFirstStage = true,
+                    StorageReference = job.StorageReference,
+                    Job = entity
+                };
+                context.IlrJobMetaDataEntities.Add(metaEntity);
 
                 context.Jobs.Add(entity);
                 context.SaveChanges();
@@ -63,40 +60,40 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-       public IEnumerable<Job> GetAllJobs()
+       public IEnumerable<IlrJob> GetAllJobs()
         {
-            var jobs = new List<Job>();
+            var jobs = new List<IlrJob>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntities = context.Jobs.ToList();
                 jobEntities.ForEach(x =>
-                    jobs.Add(JobConverter.Convert(x)));
+                    jobs.Add(IlrJobConverter.Convert(x)));
                 LoadIlrJobMetaData(jobs, context);
             }
 
             return jobs;
         }
 
-        public IEnumerable<Job> GetJobsByUkprn(long ukprn)
+        public IEnumerable<IlrJob> GetJobsByUkprn(long ukprn)
         {
             if (ukprn == 0)
             {
                 throw new ArgumentException("ukprn can not be 0");
             }
 
-            var jobs = new List<Job>();
+            var jobs = new List<IlrJob>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntities = context.Jobs.Where(x => x.Ukprn == ukprn).ToList();
                 jobEntities.ForEach(x =>
-                    jobs.Add(JobConverter.Convert(x)));
+                    jobs.Add(IlrJobConverter.Convert(x)));
                 LoadIlrJobMetaData(jobs, context);
             }
 
             return jobs;
         }
 
-        public Job GetJobById(long jobId)
+        public IlrJob GetJobById(long jobId)
         {
             if (jobId == 0)
             {
@@ -111,19 +108,19 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var job = new Job();
-                JobConverter.Convert(entity, job);
+                var job = new IlrJob();
+                IlrJobConverter.Convert(entity, job);
                 LoadIlrJobMetaData(job, context.IlrJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId));
                 return job;
             }
         }
 
-        public Job GetJobByPriority()
+        public IlrJob GetJobByPriority()
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntity = context.Jobs.FromSql("GetJobByPriority").FirstOrDefault();
-                var job = JobConverter.Convert(jobEntity);
+                var job = IlrJobConverter.Convert(jobEntity);
                 LoadIlrJobMetaData(job, context.IlrJobMetaDataEntities.SingleOrDefault(x => x.JobId == job.JobId));
                 return job;
             }
@@ -160,7 +157,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool UpdateJob(Job job)
+        public bool UpdateJob(IlrJob job)
         {
             if (job == null)
             {
@@ -175,7 +172,7 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {job.JobId} does not exist");
                 }
 
-                JobConverter.Convert(job, entity);
+                IlrJobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
@@ -183,6 +180,7 @@ namespace ESFA.DC.JobQueueManager
                 try
                 {
                     context.SaveChanges();
+                    UpdateJobMetaData(job);
                     return true;
                 }
                 catch (DbUpdateConcurrencyException exception)
@@ -192,7 +190,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool UpdateJobMetaData(IlrJobMetaData jobMetaData)
+        public bool UpdateJobMetaData(IlrJob jobMetaData)
         {
             if (jobMetaData == null)
             {
@@ -207,7 +205,7 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobMetaData.JobId} does not exist");
                 }
 
-                JobConverter.Convert(jobMetaData, entity);
+                IlrJobConverter.Convert(jobMetaData, entity);
                 context.Entry(entity).State = EntityState.Modified;
 
                 try
@@ -247,7 +245,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public void LoadIlrJobMetaData(IEnumerable<Job> jobs, JobQueueDataContext context)
+        public void LoadIlrJobMetaData(IEnumerable<IlrJob> jobs, JobQueueDataContext context)
         {
             foreach (var job in jobs.Where(x => x.JobType == JobType.IlrSubmission))
             {
@@ -255,11 +253,9 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public void LoadIlrJobMetaData(Job job, IlrJobMetaDataEntity metaDataEntity)
+        public void LoadIlrJobMetaData(IlrJob job, IlrJobMetaDataEntity metaDataEntity)
         {
-            var metaData = new IlrJobMetaData();
-            JobConverter.Convert(metaDataEntity, metaData);
-            job.JobMetaData = metaData;
+            IlrJobConverter.Convert(metaDataEntity, job);
         }
     }
 }
