@@ -6,9 +6,9 @@ using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public static class JobConverter
+    public static class IlrJobConverter
     {
-        public static JobEntity Convert(Job source)
+        public static JobEntity Convert(IlrJob source)
         {
             if (source == null)
             {
@@ -20,19 +20,19 @@ namespace ESFA.DC.JobQueueManager
             return entity;
         }
 
-        public static Job Convert(JobEntity source)
+        public static IlrJob Convert(JobEntity source)
         {
             if (source == null)
             {
                 return null;
             }
 
-            var entity = new Job();
+            var entity = new IlrJob();
             Convert(source, entity);
             return entity;
         }
 
-        public static void Convert(Job source, JobEntity destination)
+        public static void Convert(IlrJob source, JobEntity destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.JobType = (short)source.JobType;
@@ -44,10 +44,9 @@ namespace ESFA.DC.JobQueueManager
             destination.SubmittedBy = source.SubmittedBy;
         }
 
-        public static void Convert(JobEntity source, Job destination)
+        public static void Convert(JobEntity source, IlrJob destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
-            destination.JobType = (JobType)source.JobType;
             destination.Priority = source.Priority;
             destination.Status = (JobStatusType)source.Status;
             destination.Ukprn = source.Ukprn;
@@ -57,7 +56,7 @@ namespace ESFA.DC.JobQueueManager
             destination.SubmittedBy = source.SubmittedBy;
         }
 
-        public static void Convert(IlrJobMetaDataEntity source, IlrJobMetaData destination)
+        public static void Convert(IlrJobMetaDataEntity source, IlrJob destination)
         {
             if (source == null)
             {
@@ -66,7 +65,7 @@ namespace ESFA.DC.JobQueueManager
 
             if (destination == null)
             {
-                destination = new IlrJobMetaData();
+                destination = new IlrJob();
             }
 
             destination.FileName = source.FileName;
@@ -77,7 +76,7 @@ namespace ESFA.DC.JobQueueManager
             destination.IsFirstStage = source.IsFirstStage;
         }
 
-        public static void Convert(IlrJobMetaData source, IlrJobMetaDataEntity destination)
+        public static void Convert(IlrJob source, IlrJobMetaDataEntity destination)
         {
             if (source == null)
             {
