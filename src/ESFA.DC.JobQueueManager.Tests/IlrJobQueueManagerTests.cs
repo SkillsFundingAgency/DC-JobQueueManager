@@ -140,6 +140,27 @@ namespace ESFA.DC.JobQueueManager.Tests
             result.Count().Should().Be(3);
         }
 
+        public void GetJobByPriority_Ilr_NoJobs()
+        {
+            using (var connection = new SqliteConnection("DataSource=:memory:"))
+            {
+                connection.Open();
+                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
+                    .UseSqlite(connection)
+                    .Options;
+
+                // Create the schema in the database
+                using (var context = new JobQueueDataContext(options))
+                {
+                    context.Database.EnsureCreated();
+                }
+
+                var manager = new IlrJobQueueManager(options, new Mock<IDateTimeProvider>().Object);
+                var result = manager.GetJobByPriority();
+                result.Should().BeNull();
+            }
+        }
+
         public void GetJobByPriority_Ilr_submission()
         {
             using (var connection = new SqliteConnection("DataSource=:memory:"))
