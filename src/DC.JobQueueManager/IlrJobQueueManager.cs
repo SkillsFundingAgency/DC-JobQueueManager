@@ -120,6 +120,11 @@ namespace ESFA.DC.JobQueueManager
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntity = context.Jobs.FromSql("GetJobByPriority").FirstOrDefault();
+                if (jobEntity == null)
+                {
+                    return null;
+                }
+
                 var job = IlrJobConverter.Convert(jobEntity);
                 LoadIlrJobMetaData(job, context.IlrJobMetaDataEntities.SingleOrDefault(x => x.JobId == job.JobId));
                 return job;
@@ -247,6 +252,11 @@ namespace ESFA.DC.JobQueueManager
 
         public void LoadIlrJobMetaData(IEnumerable<IlrJob> jobs, JobQueueDataContext context)
         {
+            if (!jobs.Any())
+            {
+                return;
+            }
+
             foreach (var job in jobs.Where(x => x.JobType == JobType.IlrSubmission))
             {
                 LoadIlrJobMetaData(job, context.IlrJobMetaDataEntities.SingleOrDefault(x => x.JobId == job.JobId));
@@ -255,6 +265,11 @@ namespace ESFA.DC.JobQueueManager
 
         public void LoadIlrJobMetaData(IlrJob job, IlrJobMetaDataEntity metaDataEntity)
         {
+            if (job == null)
+            {
+                return;
+            }
+
             IlrJobConverter.Convert(metaDataEntity, job);
         }
     }
