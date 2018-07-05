@@ -35,11 +35,27 @@ IF NOT EXISTS (SELECT name, value FROM fn_listextendedproperty('DeploymentDateti
 	EXEC sp_addextendedproperty @name = N'DeploymentDatetime', @value = @DeploymentTime;  
 ELSE
 	EXEC sp_updateextendedproperty @name = N'DeploymentDatetime', @value = @DeploymentTime;  
+GO
 
-Go
+IF EXISTS (SELECT * FROM [sys].[objects] WHERE [type] = 'V' AND Name = 'DisplayDeploymentProperties_VW')
+BEGIN 
+	DROP VIEW [dbo].[DisplayDeploymentProperties_VW];
+END
+
+GO
+EXEC ('CREATE VIEW [dbo].[DisplayDeploymentProperties_VW]
+AS
+	SELECT name, value 
+	FROM fn_listextendedproperty(default, default, default, default, default, default, default);  
+	');
+
+GO
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO
 ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobQueueManagerApiUserPwd)';
 
+GO
+GO
+RAISERROR('Completed',10,1) WITH NOWAIT;
 GO
