@@ -7,6 +7,8 @@ CREATE TABLE [dbo].[IlrJobMetaData](
 	[StorageReference] [varchar](100) NULL,
 	[IsFirstStage] [bit] NOT NULL,
  [TotalLearners] INT NULL, 
+    [CollectionName] NVARCHAR(50) NOT NULL, 
+    [PeriodNumber] INT NOT NULL, 
     CONSTRAINT [PK_Job_ilrJobmetadatatable] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
