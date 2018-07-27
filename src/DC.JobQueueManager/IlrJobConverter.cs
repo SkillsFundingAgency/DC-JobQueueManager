@@ -74,6 +74,8 @@ namespace ESFA.DC.JobQueueManager
             destination.JobId = source.JobId;
             destination.TotalLearners = source.TotalLearners;
             destination.IsFirstStage = source.IsFirstStage;
+            destination.CollectionName = source.CollectionName;
+            destination.PeriodNumber = source.PeriodNumber;
         }
 
         public static void Convert(IlrJob source, IlrJobMetaDataEntity destination)
@@ -94,6 +96,8 @@ namespace ESFA.DC.JobQueueManager
             destination.JobId = source.JobId;
             destination.TotalLearners = source.TotalLearners;
             destination.IsFirstStage = source.IsFirstStage;
+            destination.CollectionName = source.CollectionName;
+            destination.PeriodNumber = source.PeriodNumber;
         }
     }
 }
