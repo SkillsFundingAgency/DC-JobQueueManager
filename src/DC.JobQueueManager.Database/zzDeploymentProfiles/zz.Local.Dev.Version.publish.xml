@@ -15,5 +15,8 @@
     <SqlCmdVariable Include="BUILD_BRANCHNAME">
       <Value>Local Machine</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="RELEASE_RELEASENAME">
+      <Value>Local Machine</Value>
+    </SqlCmdVariable>
   </ItemGroup>
 </Project>

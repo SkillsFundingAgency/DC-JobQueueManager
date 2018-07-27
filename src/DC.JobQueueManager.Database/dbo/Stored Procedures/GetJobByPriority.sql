@@ -19,11 +19,11 @@ BEGIN
 		  ,[DateTimeUpdatedUTC]
 		  ,[Ukprn]
 		  ,[Status]
-		  ,[Rowversion]
+		  ,[RowVersion]
 		  ,[SubmittedBy]
-	FROM [dbo].[job] j WITH (nolock) 
+	FROM [dbo].[Job] j WITH (nolock) 
 	WHERE [Status] = 1
-	AND NOT EXISTS (SELECT 1 FROM [dbo].[job] (nolock) 
+	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] (nolock) 
 					WHERE [Status] IN (5,7) 
 					  And ( [JobType] = 2  Or ([JobType] =1 And [Ukprn] = j.[Ukprn]) )
 					)
@@ -34,7 +34,7 @@ END
 GO
 
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetJobByPriority] TO [JobQueueManagerApiUser]
+    ON OBJECT::[dbo].[GetJobByPriority] TO [JobQueueManagerSchedulerUser]
     AS [dbo];
 
 GO

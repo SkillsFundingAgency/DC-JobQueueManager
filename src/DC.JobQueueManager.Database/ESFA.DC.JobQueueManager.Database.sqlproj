@@ -70,24 +70,27 @@
     <Build Include="Security\JobQueueManagerApiUser.sql" />
     <Build Include="Security\RoleMemberships.sql" />
     <Build Include="dbo\Tables\IlrJobMetaData.sql" />
+    <Build Include="Security\JobQueueManagerSchedulerUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="BUILD_BRANCHNAME">
-      <DefaultValue>
-      </DefaultValue>
+      <DefaultValue>xxx.xxx.xxx</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="BUILD_BUILDNUMBER">
-      <DefaultValue>
-      </DefaultValue>
+      <DefaultValue>yyy.yyy.yyy</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
-      <DefaultValue>xxxxxx</DefaultValue>
+      <DefaultValue>NotUsedlocally</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="RELEASE_RELEASENAME">
+      <DefaultValue>LocalRelease</DefaultValue>
+      <Value>$(SqlCmdVar__4)</Value>
     </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
