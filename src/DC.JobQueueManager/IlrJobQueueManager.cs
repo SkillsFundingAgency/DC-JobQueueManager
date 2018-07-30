@@ -50,7 +50,9 @@ namespace ESFA.DC.JobQueueManager
                     FileSize = job.FileSize,
                     IsFirstStage = true,
                     StorageReference = job.StorageReference,
-                    Job = entity
+                    Job = entity,
+                    CollectionName = job.CollectionName,
+                    PeriodNumber = job.PeriodNumber
                 };
                 context.IlrJobMetaDataEntities.Add(metaEntity);
 

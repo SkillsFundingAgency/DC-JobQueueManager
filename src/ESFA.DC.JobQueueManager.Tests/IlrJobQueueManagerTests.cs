@@ -49,6 +49,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 StorageReference = "test-ref",
                 FileSize = 10.5m,
                 IsFirstStage = true,
+                CollectionName = "ILR1718",
+                PeriodNumber = 10,
             };
 
             var manager = new JobQueueManager.IlrJobQueueManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
@@ -72,6 +74,8 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.StorageReference.Should().Be("test-ref");
             savedJob.IsFirstStage.Should().Be(true);
             savedJob.TotalLearners.Should().Be(0);
+            savedJob.CollectionName.Should().Be("ILR1718");
+            savedJob.PeriodNumber.Should().Be(10);
         }
 
         [Fact]
