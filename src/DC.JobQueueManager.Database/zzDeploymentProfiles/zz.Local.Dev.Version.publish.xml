@@ -9,6 +9,9 @@
     <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
       <Value>NotUsedLocally!</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="JobQueueManagerSchedulerUserPwd">
+      <Value>NotUsedLocally!</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="BUILD_BUILDNUMBER">
       <Value>X.Y.Z-LocalDev</Value>
     </SqlCmdVariable>

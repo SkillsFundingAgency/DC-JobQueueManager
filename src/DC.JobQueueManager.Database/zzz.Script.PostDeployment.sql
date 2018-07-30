@@ -58,6 +58,12 @@ AS
 	');
 
 GO
+GO
+
+
+RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
+	:r .\ReferenceData\JobStatusType.sql
+
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO
