@@ -24,7 +24,7 @@ BEGIN
 	FROM [dbo].[job] j WITH (nolock) 
 	WHERE [Status] = 1
 	AND NOT EXISTS (SELECT 1 FROM [dbo].[job] (nolock) 
-					WHERE [Status] IN (5,7) 
+					WHERE [Status] IN (2,3,8) 
 					  And ( [JobType] = 2  Or ([JobType] =1 And [Ukprn] = j.[Ukprn]) )
 					)
 	ORDER BY [Priority] DESC, [JobId]
