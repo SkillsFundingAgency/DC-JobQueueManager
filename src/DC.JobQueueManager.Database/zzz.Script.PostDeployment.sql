@@ -37,6 +37,14 @@ ELSE
 	EXEC sp_updateextendedproperty @name = N'DeploymentDatetime', @value = @DeploymentTime;  
 GO
 
+RAISERROR('		         %s - %s',10,1,'ReleaseName','$(RELEASE_RELEASENAME)') WITH NOWAIT;
+IF NOT EXISTS (SELECT name, value FROM fn_listextendedproperty('ReleaseName', default, default, default, default, default, default))
+	EXEC sp_addextendedproperty @name = N'ReleaseName', @value = '$(RELEASE_RELEASENAME)';  
+ELSE
+	EXEC sp_updateextendedproperty @name = N'ReleaseName', @value = '$(RELEASE_RELEASENAME)';  
+GO
+
+
 IF EXISTS (SELECT * FROM [sys].[objects] WHERE [type] = 'V' AND Name = 'DisplayDeploymentProperties_VW')
 BEGIN 
 	DROP VIEW [dbo].[DisplayDeploymentProperties_VW];
@@ -50,12 +58,21 @@ AS
 	');
 
 GO
+GO
+
+
+RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
+	:r .\ReferenceData\JobStatusType.sql
+
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO
 ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobQueueManagerApiUserPwd)';
-
 GO
+
+ALTER USER [JobQueueManagerSchedulerUser] WITH PASSWORD = N'$(JobQueueManagerSchedulerUserPwd)';
+GO
+
 GO
 RAISERROR('Completed',10,1) WITH NOWAIT;
 GO
