@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using ESFA.DC.DateTime.Provider.Interface;
+using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;

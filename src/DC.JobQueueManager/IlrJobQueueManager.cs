@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ESFA.DC.DateTime.Provider.Interface;
+using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
