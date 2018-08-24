@@ -23,5 +23,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         [Timestamp] public byte[] RowVersion { get; set; }
 
         public string SubmittedBy { get; set; }
+
+        public string NotifyEmail { get; set; }
    }
 }

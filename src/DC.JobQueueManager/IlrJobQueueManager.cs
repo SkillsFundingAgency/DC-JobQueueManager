@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ESFA.DC.DateTimeProvider.Interface;
+using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
@@ -19,11 +20,13 @@ namespace ESFA.DC.JobQueueManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IEmailNotifier _emailNotifier;
 
-        public IlrJobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
+        public IlrJobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider, IEmailNotifier emailNotifier )
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
+            _emailNotifier = emailNotifier;
         }
 
         public long AddJob(IlrJob job)
@@ -273,6 +276,14 @@ namespace ESFA.DC.JobQueueManager
             }
 
             IlrJobConverter.Convert(metaDataEntity, job);
+        }
+
+        public void SendEmailNotification(IlrJob job)
+        {
+            if (job.Status == JobStatusType.Completed)
+            {
+                _emailNotifier.SendEmail(job.NotifyEmail, "", "")
+            }
         }
     }
 }

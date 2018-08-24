@@ -281,6 +281,9 @@ namespace ESFA.DC.JobQueueManager.Tests
             job.Priority = 2;
             job.Ukprn = 100;
             job.RowVersion = "AAAAAAAAGJw=";
+            job.NotifyEmail = "test@test.com";
+            job.CollectionName = "ILR1819";
+            job.PeriodNumber = 10;
 
             manager.UpdateJob(job);
 
@@ -292,6 +295,9 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.StorageReference.Should().Be("st-ref");
             updatedJob.Priority.Should().Be(2);
             updatedJob.Status.Should().Be(JobStatusType.Completed);
+            updatedJob.CollectionName.Should().Be("ILR1819");
+            updatedJob.NotifyEmail.Should().Be("test@test.com");
+            updatedJob.PeriodNumber.Should().Be(10);
         }
 
         [Fact]

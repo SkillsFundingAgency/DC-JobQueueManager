@@ -9,7 +9,8 @@ CREATE TABLE [dbo].[Job](
 	[Ukprn] [bigint] NULL,
 	[Status] [smallint] NOT NULL,
 	[RowVersion] [timestamp] NOT NULL,
- CONSTRAINT [PK_Job_memoryoptimizedtable] PRIMARY KEY CLUSTERED 
+ [NotifyEmail] NVARCHAR(500) NULL, 
+    CONSTRAINT [PK_Job_memoryoptimizedtable] PRIMARY KEY CLUSTERED 
 (
 	[JobId] ASC
 )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
