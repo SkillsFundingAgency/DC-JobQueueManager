@@ -21,6 +21,7 @@ BEGIN
 		  ,[Status]
 		  ,[RowVersion]
 		  ,[SubmittedBy]
+		  ,[NotifyEmail]
 	FROM [dbo].[Job] j WITH (nolock) 
 	WHERE [Status] = 1
 	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] (nolock) 
