@@ -73,6 +73,7 @@
     <Build Include="dbo\Tables\IlrJobMetaData.sql" />
     <Build Include="Security\JobQueueManagerSchedulerUser.sql" />
     <Build Include="dbo\Tables\JobStatusType.sql" />
+    <Build Include="dbo\Tables\JobEmailTemplate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />

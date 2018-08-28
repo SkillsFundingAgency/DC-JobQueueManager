@@ -31,7 +31,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobToJobEntity_Test()
         {
-            var currentTime = System.DateTime.UtcNow;
+            var currentTime = DateTime.UtcNow;
             var job = new IlrJob()
             {
                 DateTimeSubmittedUtc = currentTime,
@@ -39,10 +39,14 @@ namespace ESFA.DC.JobQueueManager.Tests
                 FileName = "test.xml",
                 JobId = 1,
                 Priority = 1,
-                RowVersion = null,
+                RowVersion = "test",
                 Status = JobStatusType.Ready,
                 StorageReference = "test-ref",
                 Ukprn = 1000,
+                SubmittedBy = "test",
+                CollectionName = "ILR1819",
+                NotifyEmail = "test@test.com",
+                PeriodNumber = 10,
             };
 
             var convertedJob = IlrJobConverter.Convert(job);
@@ -56,6 +60,8 @@ namespace ESFA.DC.JobQueueManager.Tests
             //convertedJob.StorageReference.Should().Be("test-ref");
             convertedJob.Status.Should().Be(1);
             convertedJob.Ukprn.Should().Be(1000);
+            convertedJob.NotifyEmail.Should().Be("test@test.com");
+            convertedJob.SubmittedBy.Should().Be("test");
         }
 
         [Fact]
@@ -74,6 +80,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Status = 1,
                 //StorageReference = "test-ref",
                 Ukprn = 1000,
+                NotifyEmail = "email@email.com",
+                SubmittedBy = "test"
             };
 
             var convertedJob = IlrJobConverter.Convert(job);
@@ -87,6 +95,8 @@ namespace ESFA.DC.JobQueueManager.Tests
             //convertedJob.StorageReference.Should().Be("test-ref");
             convertedJob.Status.Should().Be(1);
             convertedJob.Ukprn.Should().Be(1000);
+            convertedJob.NotifyEmail.Should().Be("email@email.com");
+            convertedJob.SubmittedBy.Should().Be("test");
         }
     }
 }

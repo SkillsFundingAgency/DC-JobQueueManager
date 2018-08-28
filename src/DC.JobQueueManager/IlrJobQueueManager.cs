@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ESFA.DC.DateTimeProvider.Interface;
+using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
@@ -19,11 +20,13 @@ namespace ESFA.DC.JobQueueManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IEmailNotifier _emailNotifier;
 
-        public IlrJobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
+        public IlrJobQueueManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider, IEmailNotifier emailNotifier)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
+            _emailNotifier = emailNotifier;
         }
 
         public long AddJob(IlrJob job)
@@ -179,6 +182,8 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {job.JobId} does not exist");
                 }
 
+                var statusChanged = entity.Status != (short)job.Status;
+
                 IlrJobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).Property("RowVersion").OriginalValue = Convert.FromBase64String(job.RowVersion);
@@ -188,6 +193,12 @@ namespace ESFA.DC.JobQueueManager
                 {
                     context.SaveChanges();
                     UpdateJobMetaData(job);
+
+                    if (statusChanged)
+                    {
+                        SendEmailNotification(job);
+                    }
+
                     return true;
                 }
                 catch (DbUpdateConcurrencyException exception)
@@ -242,12 +253,21 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
+                var statusChanged = entity.Status != (short)status;
                 entity.Status = (short)status;
-
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
 
                 context.SaveChanges();
+
+                if (statusChanged)
+                {
+                    var job = new IlrJob();
+                    IlrJobConverter.Convert(job, entity);
+                    job.Status = status;
+                    SendEmailNotification(job);
+                }
+
                 return true;
             }
         }
@@ -273,6 +293,28 @@ namespace ESFA.DC.JobQueueManager
             }
 
             IlrJobConverter.Convert(metaDataEntity, job);
+        }
+
+        public void SendEmailNotification(IlrJob job)
+        {
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var emailTemplate =
+                    context.JobEmailTemplates.SingleOrDefault(
+                        x => x.JobStatus == (short)job.Status && x.Active);
+
+                if (!string.IsNullOrEmpty(emailTemplate?.TemplateId))
+                {
+                    var personalisation = new Dictionary<string, dynamic>
+                    {
+                        { "JobId", job.JobId },
+                        { "FileName", job.FileName },
+                        { "CollectionName", job.CollectionName },
+                        { "Name", job.SubmittedBy }
+                    };
+                    _emailNotifier.SendEmail(job.NotifyEmail, emailTemplate?.TemplateId, personalisation);
+                }
+            }
         }
     }
 }
