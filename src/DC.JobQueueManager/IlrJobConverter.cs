@@ -43,7 +43,7 @@ namespace ESFA.DC.JobQueueManager
             destination.JobId = source.JobId;
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
-            destination.RowVersion = System.Text.Encoding.UTF8.GetBytes(source.RowVersion);
+            destination.RowVersion = source.RowVersion == null ? null : System.Text.Encoding.UTF8.GetBytes(source.RowVersion);
         }
 
         public static void Convert(JobEntity source, IlrJob destination)
@@ -75,7 +75,6 @@ namespace ESFA.DC.JobQueueManager
             destination.FileSize = source.FileSize;
             destination.StorageReference = source.StorageReference;
             destination.JobId = source.JobId;
-            destination.TotalLearners = source.TotalLearners;
             destination.IsFirstStage = source.IsFirstStage;
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
@@ -97,7 +96,6 @@ namespace ESFA.DC.JobQueueManager
             destination.FileSize = source.FileSize;
             destination.StorageReference = source.StorageReference;
             destination.JobId = source.JobId;
-            destination.TotalLearners = source.TotalLearners;
             destination.IsFirstStage = source.IsFirstStage;
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
