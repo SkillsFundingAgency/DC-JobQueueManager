@@ -43,9 +43,9 @@
     <ProjectReference Include="..\DC.JobQueueManager.Interfaces\ESFA.DC.JobQueueManager.Interfaces.csproj">
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="..\ESFA.DC.JobNotifications\ESFA.DC.JobNotifications.csproj" >    
-       <PrivateAssets>all</PrivateAssets>
-    </ProjectReference>
+    <ProjectReference Include="..\ESFA.DC.JobNotifications\ESFA.DC.JobNotifications.csproj" />    
+       
+    
   </ItemGroup>
 
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
