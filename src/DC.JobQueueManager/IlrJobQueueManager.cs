@@ -196,7 +196,7 @@ namespace ESFA.DC.JobQueueManager
 
                     if (statusChanged)
                     {
-                        SendEmailNotification(job);
+                        SendEmailNotification(job.JobId, job.Status);
                     }
 
                     return true;
@@ -262,10 +262,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (statusChanged)
                 {
-                    var job = new IlrJob();
-                    IlrJobConverter.Convert(job, entity);
-                    job.Status = status;
-                    SendEmailNotification(job);
+                    SendEmailNotification(jobId, status);
                 }
 
                 return true;
@@ -295,21 +292,23 @@ namespace ESFA.DC.JobQueueManager
             IlrJobConverter.Convert(metaDataEntity, job);
         }
 
-        public void SendEmailNotification(IlrJob job)
+        public void SendEmailNotification(long jobId, JobStatusType status)
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var emailTemplate =
                     context.JobEmailTemplates.SingleOrDefault(
-                        x => x.JobStatus == (short)job.Status && x.Active);
+                        x => x.JobStatus == (short)status && x.Active);
 
                 if (!string.IsNullOrEmpty(emailTemplate?.TemplateId))
                 {
+                    var job = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
+                    var jobMetaData = context.IlrJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId);
                     var personalisation = new Dictionary<string, dynamic>
                     {
                         { "JobId", job.JobId },
-                        { "FileName", job.FileName },
-                        { "CollectionName", job.CollectionName },
+                        { "FileName", jobMetaData.FileName },
+                        { "CollectionName", jobMetaData.CollectionName },
                         { "Name", job.SubmittedBy }
                     };
                     _emailNotifier.SendEmail(job.NotifyEmail, emailTemplate?.TemplateId, personalisation);

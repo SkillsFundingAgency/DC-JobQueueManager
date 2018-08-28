@@ -22,7 +22,7 @@ namespace ESFA.DC.JobNotifications
             }
 
             var client = new NotificationClient(_config.ApiKey);
-            var response = client.SendEmail(toEmail, templateId, parameters, emailReplyToId: _config.ReplyToEmailAddress);
+            var response = client.SendEmail(toEmail, templateId, parameters);
 
             return response.reference;
         }
