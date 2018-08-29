@@ -45,7 +45,8 @@ namespace ESFA.DC.JobQueueManager
                     Priority = job.Priority,
                     Status = (short)job.Status,
                     Ukprn = job.Ukprn,
-                    SubmittedBy = job.SubmittedBy
+                    SubmittedBy = job.SubmittedBy,
+                    NotifyEmail = job.NotifyEmail
                 };
                 var metaEntity = new IlrJobMetaDataEntity()
                 {

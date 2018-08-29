@@ -54,6 +54,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 IsFirstStage = true,
                 CollectionName = "ILR1718",
                 PeriodNumber = 10,
+                NotifyEmail = "test@email.com"
             };
 
             var manager = GetJobQueueManager();
@@ -78,6 +79,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.IsFirstStage.Should().Be(true);
             savedJob.CollectionName.Should().Be("ILR1718");
             savedJob.PeriodNumber.Should().Be(10);
+            savedJob.NotifyEmail.Should().Be("test@email.com");
         }
 
         [Fact]
