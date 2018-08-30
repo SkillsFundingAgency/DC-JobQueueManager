@@ -1,38 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using DC.JobQueueManager.Data.Entities;
-using DC.JobQueueManager.Interfaces;
-using DC.JobQueueManager.Models;
+using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace DC.JobQueueManager.Data
+namespace ESFA.DC.JobQueueManager.Data
 {
     public sealed class JobQueueDataContext : DbContext
     {
-        private readonly string _connectionstring;
-
-        public JobQueueDataContext(string connectionstring)
+        public JobQueueDataContext(DbContextOptions options)
+            : base(options)
         {
-            _connectionstring = connectionstring;
         }
 
         public DbSet<JobEntity> Jobs { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(
-                    _connectionstring,
-                    options => options.EnableRetryOnFailure(3, TimeSpan.FromSeconds(3), new List<int>()));
-            }
+        public DbSet<IlrJobMetaDataEntity> IlrJobMetaDataEntities { get; set; }
 
-            base.OnConfiguring(optionsBuilder);
-        }
+        public DbSet<JobEmailTemplate> JobEmailTemplates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<JobEntity>().ToTable("Job");
+            modelBuilder.Entity<IlrJobMetaDataEntity>().ToTable("IlrJobMetaData");
+            modelBuilder.Entity<JobEmailTemplate>().ToTable("JobEmailTemplate")
+                .HasKey(x => new { x.TemplateId, x.JobStatus });
         }
     }
 }
