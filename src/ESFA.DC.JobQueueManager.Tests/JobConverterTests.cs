@@ -15,8 +15,8 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobToJobEntity_Test_Null()
         {
-            IlrJob job = null;
-            var convertedJob = IlrJobConverter.Convert(job);
+            FileUploadJob job = null;
+            var convertedJob = JobConverter.Convert(job);
             convertedJob.Should().BeNull();
         }
 
@@ -24,7 +24,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void JobEntityToJob_Test_Null()
         {
             JobEntity job = null;
-            var convertedJob = IlrJobConverter.Convert(job);
+            var convertedJob = JobConverter.Convert(job);
             convertedJob.Should().BeNull();
         }
 
@@ -32,7 +32,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void JobToJobEntity_Test()
         {
             var currentTime = DateTime.UtcNow;
-            var job = new IlrJob()
+            var job = new FileUploadJob()
             {
                 DateTimeSubmittedUtc = currentTime,
                 DateTimeUpdatedUtc = currentTime,
@@ -47,9 +47,10 @@ namespace ESFA.DC.JobQueueManager.Tests
                 CollectionName = "ILR1819",
                 NotifyEmail = "test@test.com",
                 PeriodNumber = 10,
+                JobType = JobType.IlrSubmission
             };
 
-            var convertedJob = IlrJobConverter.Convert(job);
+            var convertedJob = JobConverter.Convert(job);
 
             convertedJob.JobId.Should().Be(1);
             convertedJob.DateTimeSubmittedUtc.Should().Be(currentTime);
@@ -84,7 +85,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 SubmittedBy = "test"
             };
 
-            var convertedJob = IlrJobConverter.Convert(job);
+            var convertedJob = JobConverter.Convert(job);
 
             convertedJob.JobId.Should().Be(1);
             convertedJob.DateTimeSubmittedUtc.Should().Be(currentTime);

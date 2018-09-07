@@ -70,7 +70,7 @@
     <Build Include="dbo\Stored Procedures\GetJobByPriority.sql" />
     <Build Include="Security\JobQueueManagerApiUser.sql" />
     <Build Include="Security\RoleMemberships.sql" />
-    <Build Include="dbo\Tables\IlrJobMetaData.sql" />
+    <Build Include="dbo\Tables\FileUploadJobMetaData.sql" />
     <Build Include="Security\JobQueueManagerSchedulerUser.sql" />
     <Build Include="dbo\Tables\JobStatusType.sql" />
     <Build Include="dbo\Tables\JobEmailTemplate.sql" />

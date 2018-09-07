@@ -31,14 +31,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void AddJob_Success()
         {
             var manager = GetJobQueueManager();
-            var result = manager.AddJob(new IlrJob());
+            var result = manager.AddJob(new FileUploadJob());
             result.Should().Be(1);
         }
 
         [Fact]
         public void AddJob_Success_Values()
         {
-            var job = new IlrJob()
+            var job = new FileUploadJob()
             {
                 DateTimeSubmittedUtc = System.DateTime.UtcNow,
                 DateTimeUpdatedUtc = System.DateTime.UtcNow,
@@ -54,7 +54,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 IsFirstStage = true,
                 CollectionName = "ILR1718",
                 PeriodNumber = 10,
-                NotifyEmail = "test@email.com"
+                NotifyEmail = "test@email.com",
+                JobType = JobType.IlrSubmission
             };
 
             var manager = GetJobQueueManager();
@@ -86,7 +87,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobById_Success()
         {
             var manager = GetJobQueueManager();
-            var jobId = manager.AddJob(new IlrJob());
+            var jobId = manager.AddJob(new FileUploadJob());
             var result = manager.GetJobById(1);
 
             result.Should().NotBeNull();
@@ -111,7 +112,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobsByUkprn_Success()
         {
             var manager = GetJobQueueManager();
-            var jobId = manager.AddJob(new IlrJob() { Ukprn = 1 });
+            var jobId = manager.AddJob(new FileUploadJob() { Ukprn = 1 });
             var result = manager.GetJobsByUkprn(1);
 
             result.Should().NotBeNull();
@@ -129,7 +130,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobsByUkprn_Success_UkprnNotFound()
         {
             var manager = GetJobQueueManager();
-            var jobId = manager.AddJob(new IlrJob() { Ukprn = 1 });
+            var jobId = manager.AddJob(new FileUploadJob() { Ukprn = 1 });
             var result = manager.GetJobsByUkprn(999);
 
             result.Should().NotBeNull();
@@ -140,9 +141,9 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetAllJobs_Success()
         {
             var manager = GetJobQueueManager();
-            manager.AddJob(new IlrJob());
-            manager.AddJob(new IlrJob());
-            manager.AddJob(new IlrJob());
+            manager.AddJob(new FileUploadJob());
+            manager.AddJob(new FileUploadJob());
+            manager.AddJob(new FileUploadJob());
 
             var result = manager.GetAllJobs();
             result.Count().Should().Be(3);
@@ -163,7 +164,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new IlrJobQueueManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
                 var result = manager.GetJobByPriority();
                 result.Should().BeNull();
             }
@@ -184,15 +185,15 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new IlrJobQueueManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
-                manager.AddJob(new IlrJob()
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
+                manager.AddJob(new FileUploadJob()
                 {
                     Priority = 1,
                     Status = JobStatusType.Ready,
                     FileName = "file1",
                     Ukprn = 1000,
                 });
-                manager.AddJob(new IlrJob()
+                manager.AddJob(new FileUploadJob()
                 {
                     Priority = 2,
                     Status = JobStatusType.Ready,
@@ -231,7 +232,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatusType status)
         {
             var manager = GetJobQueueManager();
-            manager.AddJob(new IlrJob
+            manager.AddJob(new FileUploadJob
             {
                 Status = status,
             });
@@ -242,7 +243,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void RemoveJobFromQueue_Success()
         {
             var manager = GetJobQueueManager();
-            manager.AddJob(new IlrJob
+            manager.AddJob(new FileUploadJob
             {
                 Status = JobStatusType.Ready,
             });
@@ -267,18 +268,19 @@ namespace ESFA.DC.JobQueueManager.Tests
         {
             var manager = GetJobQueueManager();
             Assert.Throws<ArgumentException>(() => manager.UpdateJob(
-                new IlrJob() { JobId = 1000 }));
+                new FileUploadJob() { JobId = 1000 }));
         }
 
         [Fact]
         public void UpdateJob_Success()
         {
             var manager = GetJobQueueManager();
-            manager.AddJob(new IlrJob
+            manager.AddJob(new FileUploadJob
             {
                 Status = JobStatusType.Ready,
                 FileName = "test",
-                StorageReference = "st-ref"
+                StorageReference = "st-ref",
+                JobType = JobType.IlrSubmission
             });
             var job = manager.GetJobById(1);
             job.Status = JobStatusType.Completed;
@@ -322,7 +324,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void UpdateJobStatus_Success()
         {
             var manager = GetJobQueueManager();
-            manager.AddJob(new IlrJob
+            manager.AddJob(new FileUploadJob
             {
                 Status = JobStatusType.Ready,
             });
@@ -358,8 +360,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.SaveChanges();
                 }
 
-                var manager = new IlrJobQueueManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object);
-                manager.AddJob(new IlrJob
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object);
+                manager.AddJob(new FileUploadJob
                 {
                     Status = JobStatusType.Ready,
                     FileName = "test.xml",
@@ -386,9 +388,9 @@ namespace ESFA.DC.JobQueueManager.Tests
             return options;
         }
 
-        private IlrJobQueueManager GetJobQueueManager(IDateTimeProvider dateTimeProvider = null, IEmailNotifier emailNotifier = null)
+        private JobManager GetJobQueueManager(IDateTimeProvider dateTimeProvider = null, IEmailNotifier emailNotifier = null)
         {
-            return new IlrJobQueueManager(
+            return new JobManager(
                 GetContextOptions(),
                 dateTimeProvider ?? new Mock<IDateTimeProvider>().Object,
                 emailNotifier ?? new Mock<IEmailNotifier>().Object);

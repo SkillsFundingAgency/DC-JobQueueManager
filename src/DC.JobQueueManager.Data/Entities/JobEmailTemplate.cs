@@ -12,5 +12,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public short JobStatus { get; set; }
 
         public bool Active { get; set; }
+
+        public short JobType { get; set; }
     }
 }

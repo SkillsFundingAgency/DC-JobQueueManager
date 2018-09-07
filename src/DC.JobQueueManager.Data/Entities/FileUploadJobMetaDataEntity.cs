@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ESFA.DC.JobQueueManager.Data.Entities
 {
-    public class IlrJobMetaDataEntity
+    public class FileUploadJobMetaDataEntity
     {
         [Key]
         public long Id { get; set; }
