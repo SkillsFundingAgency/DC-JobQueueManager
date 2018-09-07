@@ -2,25 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ESFA.DC.JobQueueManager.Interfaces</AssemblyName>
-    <RootNamespace>ESFA.DC.JobQueueManager.Interfaces</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet>DC.JobQueueManager.Interfaces.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>ESFA.DC.Job.Models.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>DC.JobQueueManager.Interfaces.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>ESFA.DC.Job.Models.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ESFA.DC.JobStatus.Interface" Version="0.1.12-beta0001" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ESFA.DC.Job.Models\ESFA.DC.Job.Models.csproj" />
   </ItemGroup>
 
 </Project>

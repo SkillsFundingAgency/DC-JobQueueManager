@@ -8,6 +8,7 @@ CREATE TABLE [dbo].[FileUploadJobMetaData](
 	[IsFirstStage] [bit] NOT NULL,
     [CollectionName] NVARCHAR(50) NOT NULL DEFAULT 'ILR1819', 
     [PeriodNumber] INT NOT NULL DEFAULT 1, 
+    [Ukprn] BIGINT NOT NULL, 
     CONSTRAINT [PK_Job_FileUploadJobMetaData] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

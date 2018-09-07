@@ -12,7 +12,7 @@ BEGIN
     SET NOCOUNT ON
 
 	SELECT TOP 1 
-		   [JobId]
+		   j.JobId
 		  ,[JobType]
 		  ,[Priority]
 		  ,[DateTimeSubmittedUTC]
@@ -23,12 +23,14 @@ BEGIN
 		  ,[SubmittedBy]
 		  ,[NotifyEmail]
 	FROM [dbo].[Job] j WITH (nolock) 
+	LEFT JOIN dbo.FileUploadJobMetaData meta WITH (NOLOCK)
+		ON j.JobId = meta.JobId
 	WHERE [Status] = 1
 	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] (nolock) 
 					WHERE [Status] IN (2,3) 
-					  And ( [JobType] = 2  Or ([JobType] =1 And [Ukprn] = j.[Ukprn]) )
+					  And ( [JobType] = 2  Or ([JobType] In (1,3,4) And [Ukprn] = meta.[Ukprn]) )
 					)
-	ORDER BY [Priority] DESC, [JobId]
+	ORDER BY [Priority] DESC, j.JobId
 
 END
 

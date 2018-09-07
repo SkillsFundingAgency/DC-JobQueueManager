@@ -1,26 +1,13 @@
-﻿using System.Collections.Generic;
-using ESFA.DC.Jobs.Model;
-using ESFA.DC.Jobs.Model.Base;
-using ESFA.DC.JobStatus.Interface;
+﻿using ESFA.DC.Job.Models;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IFileUploadMetaDataManager
     {
-        FileUploadJob GetJobByPriority();
+        FileUploadJobMetaData GetJobMetaData(long jobId);
 
-        void RemoveJobFromQueue(long jobId);
+        long AddJobMetData(FileUploadJobMetaData job);
 
-        bool UpdateJobStatus(long jobId, JobStatusType status);
-
-        FileUploadJob GetJobById(long jobId);
-
-        long AddJob(FileUploadJob job);
-
-        bool UpdateJob(FileUploadJob job);
-
-        IEnumerable<FileUploadJob> GetAllJobs();
-
-        IEnumerable<FileUploadJob> GetJobsByUkprn(long ukrpn);
+        bool UpdateJobStage(long jobId, bool isFirstStage);
     }
 }
