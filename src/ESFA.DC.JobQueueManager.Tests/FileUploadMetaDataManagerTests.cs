@@ -7,6 +7,7 @@ using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.Jobs.Model;
 using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
@@ -23,14 +24,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void AddJob_Null()
         {
             var manager = GetJobManager();
-            Assert.Throws<ArgumentNullException>(() => manager.AddJobMetData(null));
+            Assert.Throws<ArgumentNullException>(() => manager.AddJob(null));
         }
 
         [Fact]
         public void AddJob_Success()
         {
             var manager = GetJobManager();
-            var result = manager.AddJobMetData(new Job.Models.FileUploadJobMetaData()
+            var result = manager.AddJob(new FileUploadJobDto()
             {
                 JobId = 1,
             });
@@ -40,7 +41,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void AddJobMetaData_Success_Values()
         {
-            var job = new Job.Models.FileUploadJobMetaData()
+            var job = new FileUploadJobDto()
             {
                 JobId = 1,
                 Ukprn = 1000,
@@ -53,9 +54,9 @@ namespace ESFA.DC.JobQueueManager.Tests
             };
 
             var manager = GetJobManager();
-            manager.AddJobMetData(job);
+            manager.AddJob(job);
 
-            var savedJob = manager.GetJobMetaData(1);
+            var savedJob = manager.GetJob(1);
 
             savedJob.Should().NotBeNull();
             savedJob.JobId.Should().Be(1);
@@ -72,11 +73,11 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobMetaDataById_Success()
         {
             var manager = GetJobManager();
-            var jobId = manager.AddJobMetData(new Job.Models.FileUploadJobMetaData()
+            var jobId = manager.AddJob(new FileUploadJobDto()
             {
                 JobId = 1,
             });
-            var result = manager.GetJobMetaData(1);
+            var result = manager.GetJob(1);
 
             result.Should().NotBeNull();
             result.JobId.Should().Be(1);
@@ -86,14 +87,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobMetDataById_Fail_zeroId()
         {
             var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.GetJobMetaData(0));
+            Assert.Throws<ArgumentException>(() => manager.GetJob(0));
         }
 
         [Fact]
         public void GetJobById_Fail_IdNotFound()
         {
             var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.GetJobMetaData(100));
+            Assert.Throws<ArgumentException>(() => manager.GetJob(100));
         }
 
         [Fact]
@@ -123,9 +124,9 @@ namespace ESFA.DC.JobQueueManager.Tests
             return options;
         }
 
-        private FileUploadMetaDataManager GetJobManager()
+        private FileUploadJobManager GetJobManager()
         {
-            return new FileUploadMetaDataManager(GetContextOptions());
+            return new FileUploadJobManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
         }
     }
 }

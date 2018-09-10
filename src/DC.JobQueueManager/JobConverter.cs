@@ -2,6 +2,7 @@
 using ESFA.DC.Job.Models;
 using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.Jobs.Model;
 using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager
@@ -58,7 +59,20 @@ namespace ESFA.DC.JobQueueManager
             destination.JobType = (JobType)source.JobType;
         }
 
-        public static void Convert(FileUploadJobMetaDataEntity source, FileUploadJobMetaData destination)
+        public static void Convert(JobEntity source, FileUploadJobDto destination)
+        {
+            destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
+            destination.Priority = source.Priority;
+            destination.Status = source.Status;
+            destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
+            destination.JobId = source.JobId;
+            destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
+            destination.SubmittedBy = source.SubmittedBy;
+            destination.NotifyEmail = source.NotifyEmail;
+            destination.JobType = source.JobType;
+        }
+
+        public static void Convert(FileUploadJobMetaDataEntity source, FileUploadJobDto destination)
         {
             if (source == null)
             {
@@ -67,7 +81,7 @@ namespace ESFA.DC.JobQueueManager
 
             if (destination == null)
             {
-                destination = new FileUploadJobMetaData();
+                destination = new FileUploadJobDto();
             }
 
             destination.FileName = source.FileName;
@@ -78,6 +92,7 @@ namespace ESFA.DC.JobQueueManager
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
             destination.Ukprn = source.Ukprn;
+            Convert(source.Job, destination);
         }
 
         public static void Convert(FileUploadJobMetaData source, FileUploadJobMetaDataEntity destination)

@@ -19,7 +19,5 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         bool UpdateJob(Job.Models.Job job);
 
         IEnumerable<Job.Models.Job> GetAllJobs();
-
-        IEnumerable<Job.Models.Job> GetJobsByUkprn(long ukrpn);
     }
 }

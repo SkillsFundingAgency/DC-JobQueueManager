@@ -231,10 +231,5 @@ namespace ESFA.DC.JobQueueManager
             //    }
             //}
         }
-
-        public IEnumerable<Job.Models.Job> GetJobsByUkprn(long ukrpn)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

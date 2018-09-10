@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
+using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.Job.Models;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
+using ESFA.DC.Jobs.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public sealed class FileUploadMetaDataManager : IFileUploadMetaDataManager
+    public sealed class FileUploadJobManager : IFileUploadJobManager
     {
         private readonly DbContextOptions _contextOptions;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public FileUploadMetaDataManager(DbContextOptions contextOptions)
+        public FileUploadJobManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
         {
             _contextOptions = contextOptions;
+            _dateTimeProvider = dateTimeProvider;
         }
 
-        public FileUploadJobMetaData GetJobMetaData(long jobId)
+        public FileUploadJobDto GetJob(long jobId)
         {
             if (jobId == 0)
             {
@@ -26,19 +32,19 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.FileUploadJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId);
+                var entity = context.FileUploadJobMetaDataEntities.Include(x => x.Job).SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var meta = new FileUploadJobMetaData();
-                JobConverter.Convert(entity, meta);
-                return meta;
+                var job = new FileUploadJobDto();
+                JobConverter.Convert(entity, job);
+                return job;
             }
         }
 
-        public long AddJobMetData(FileUploadJobMetaData job)
+        public long AddJob(FileUploadJobDto job)
         {
             if (job == null || job.JobId == 0)
             {
@@ -47,17 +53,28 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
+                var entity = new JobEntity
+                {
+                    DateTimeSubmittedUtc = _dateTimeProvider.GetNowUtc(),
+                    JobType = (short)job.JobType,
+                    Priority = job.Priority,
+                    Status = (short)job.Status,
+                    SubmittedBy = job.SubmittedBy,
+                    NotifyEmail = job.NotifyEmail
+                };
+
                 var metaEntity = new FileUploadJobMetaDataEntity()
                 {
                     FileName = job.FileName,
                     FileSize = job.FileSize,
                     IsFirstStage = true,
                     StorageReference = job.StorageReference,
-                    JobId = job.JobId,
+                    Job = entity,
                     CollectionName = job.CollectionName,
                     PeriodNumber = job.PeriodNumber,
                     Ukprn = job.Ukprn
                 };
+                context.Jobs.Add(entity);
                 context.FileUploadJobMetaDataEntities.Add(metaEntity);
                 context.SaveChanges();
                 return job.JobId;
@@ -86,6 +103,23 @@ namespace ESFA.DC.JobQueueManager
                 {
                     throw new Exception("Save failed. Job details have been changed. Reload the job object and try save again");
                 }
+            }
+        }
+
+        public IEnumerable<FileUploadJobDto> GetJobsByUkprn(long ukprn)
+        {
+            var items = new List<FileUploadJobDto>();
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entities = context.FileUploadJobMetaDataEntities.Include(x => x.Job).Where(x => x.Ukprn == ukprn)
+                    .ToList();
+                foreach (var entity in entities)
+                {
+                    var model = new FileUploadJobDto();
+                    JobConverter.Convert(entity, model);
+                }
+
+                return items;
             }
         }
     }

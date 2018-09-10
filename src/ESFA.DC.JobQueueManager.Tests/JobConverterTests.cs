@@ -4,6 +4,7 @@ using System.Text;
 using ESFA.DC.Job.Models;
 using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.Jobs.Model;
 using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Xunit;
@@ -123,10 +124,11 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Ukprn = 1000,
                 CollectionName = "ILR1819",
                 PeriodNumber = 10,
-                FileSize = 1000
+                FileSize = 1000,
+                Job = new JobEntity() { JobId = 1 }
             };
 
-            var job = new FileUploadJobMetaData();
+            var job = new FileUploadJobDto();
             JobConverter.Convert(entity, job);
 
             job.JobId.Should().Be(1);
