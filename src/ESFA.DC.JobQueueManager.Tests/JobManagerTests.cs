@@ -37,7 +37,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Theory]
         [InlineData(JobType.IlrSubmission)]
         [InlineData(JobType.EsfSubmission)]
-        [InlineData(JobType.EsfSubmission)]
+        [InlineData(JobType.EasSubmission)]
         [InlineData(JobType.ReferenceData)]
         public void AddJob_Success_Values(JobType jobType)
         {

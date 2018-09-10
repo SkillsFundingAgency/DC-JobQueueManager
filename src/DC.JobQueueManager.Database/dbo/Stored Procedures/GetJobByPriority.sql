@@ -24,13 +24,14 @@ BEGIN
 		  ,[NotifyEmail]
 	FROM [dbo].[Job] j WITH (nolock) 
 	LEFT JOIN dbo.FileUploadJobMetaData meta WITH (NOLOCK)
-		ON j.JobId = meta.JobId
-	WHERE [Status] = 1
-	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] (nolock) 
+		ON j.JobId = meta.JobId 
+	WHERE [Status] = 1 
+		AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] (nolock) 
 					WHERE [Status] IN (2,3) 
-					  And ( [JobType] = 2  Or ([JobType] In (1,3,4) And [Ukprn] = meta.[Ukprn]) )
+					  And ( [JobType] = 4  Or ([JobType] In (1,2,3) And meta.Ukprn is not null and [Ukprn] = meta.[Ukprn]) )
 					)
 	ORDER BY [Priority] DESC, j.JobId
+
 
 END
 
