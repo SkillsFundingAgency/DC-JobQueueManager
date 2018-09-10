@@ -1,5 +1,5 @@
 ﻿
-CREATE TABLE [dbo].[IlrJobMetaData](
+CREATE TABLE [dbo].[FileUploadJobMetaData](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[JobId] [bigint] NOT NULL,
 	[FileName] [varchar](50) NULL,
@@ -8,12 +8,13 @@ CREATE TABLE [dbo].[IlrJobMetaData](
 	[IsFirstStage] [bit] NOT NULL,
     [CollectionName] NVARCHAR(50) NOT NULL DEFAULT 'ILR1819', 
     [PeriodNumber] INT NOT NULL DEFAULT 1, 
-    CONSTRAINT [PK_Job_ilrJobmetadatatable] PRIMARY KEY CLUSTERED 
+    [Ukprn] BIGINT NOT NULL, 
+    CONSTRAINT [PK_Job_FileUploadJobMetaData] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY], 
-    CONSTRAINT [FK_IlrJobMetaData_ToJob] FOREIGN KEY (JobId) REFERENCES [Job](JobId) 
+    CONSTRAINT [FK_FileUploadJobMetaData_ToJob] FOREIGN KEY (JobId) REFERENCES [Job](JobId) 
 ) ON [PRIMARY]
 GO
 
-CREATE INDEX [IX_IlrMetaData_Column] ON [dbo].[IlrJobMetaData] (JobId)
+CREATE INDEX [IX_FileUploadJobMetaData_Column] ON [dbo].[FileUploadJobMetaData] (JobId)
