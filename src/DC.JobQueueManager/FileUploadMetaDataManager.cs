@@ -40,7 +40,7 @@ namespace ESFA.DC.JobQueueManager
 
         public long AddJobMetData(FileUploadJobMetaData job)
         {
-            if (job == null)
+            if (job == null || job.JobId == 0)
             {
                 throw new ArgumentNullException();
             }
@@ -55,7 +55,8 @@ namespace ESFA.DC.JobQueueManager
                     StorageReference = job.StorageReference,
                     JobId = job.JobId,
                     CollectionName = job.CollectionName,
-                    PeriodNumber = job.PeriodNumber
+                    PeriodNumber = job.PeriodNumber,
+                    Ukprn = job.Ukprn
                 };
                 context.FileUploadJobMetaDataEntities.Add(metaEntity);
                 context.SaveChanges();

@@ -216,28 +216,20 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
+        //TODO: when we get the proper template this needs revisting
         public void SendEmailNotification(long jobId, JobStatusType status, JobType jobType)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
-            {
-                var emailTemplate =
-                    context.JobEmailTemplates.SingleOrDefault(
-                        x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active);
+            //using (var context = new JobQueueDataContext(_contextOptions))
+            //{
+            //    var emailTemplate =
+            //        context.JobEmailTemplates.SingleOrDefault(
+            //            x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active);
 
-                if (!string.IsNullOrEmpty(emailTemplate?.TemplateId))
-                {
-                    //var job = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
-                    //var jobMetaData = context.IlrJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId);
-                    //var personalisation = new Dictionary<string, dynamic>
-                    //{
-                    //    { "JobId", job.JobId },
-                    //    { "FileName", jobMetaData.FileName },
-                    //    { "CollectionName", jobMetaData.CollectionName },
-                    //    { "Name", job.SubmittedBy }
-                    //};
-                    //_emailNotifier.SendEmail(job.NotifyEmail, emailTemplate?.TemplateId, personalisation);
-                }
-            }
+            //    if (!string.IsNullOrEmpty(emailTemplate?.TemplateId))
+            //    {
+            //       _emailNotifier.SendEmail()
+            //    }
+            //}
         }
 
         public IEnumerable<Job.Models.Job> GetJobsByUkprn(long ukrpn)

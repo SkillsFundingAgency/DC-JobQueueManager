@@ -38,7 +38,6 @@ namespace ESFA.DC.JobQueueManager
             destination.JobType = (short)source.JobType;
             destination.Priority = source.Priority;
             destination.Status = (short)source.Status;
-            //destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.SubmittedBy = source.SubmittedBy;
@@ -51,7 +50,6 @@ namespace ESFA.DC.JobQueueManager
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.Priority = source.Priority;
             destination.Status = (JobStatusType)source.Status;
-           // destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
@@ -79,6 +77,7 @@ namespace ESFA.DC.JobQueueManager
             destination.IsFirstStage = source.IsFirstStage;
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
+            destination.Ukprn = source.Ukprn;
         }
 
         public static void Convert(FileUploadJobMetaData source, FileUploadJobMetaDataEntity destination)
@@ -100,6 +99,7 @@ namespace ESFA.DC.JobQueueManager
             destination.IsFirstStage = source.IsFirstStage;
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
+            destination.Ukprn = source.Ukprn;
         }
     }
 }
