@@ -110,6 +110,56 @@ namespace ESFA.DC.JobQueueManager.Tests
             Assert.Throws<ArgumentException>(() => manager.UpdateJobStage(100, false));
         }
 
+        [Fact]
+        public void GetJobsByUkprn_Success()
+        {
+            var manager = GetJobManager();
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                Ukprn = 100,
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 100,
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 999900,
+            });
+            var result = manager.GetJobsByUkprn(100).ToList();
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(2);
+        }
+
+        [Fact]
+        public void GetAllJobs_Success()
+        {
+            var manager = GetJobManager();
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                Ukprn = 100,
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 100,
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 999900,
+            });
+            var result = manager.GetAllJobs().ToList();
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(3);
+        }
+
         private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
