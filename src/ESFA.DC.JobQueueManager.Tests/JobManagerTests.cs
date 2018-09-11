@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
@@ -30,7 +31,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void AddJob_Success()
         {
             var manager = GetJobManager();
-            var result = manager.AddJob(new Job.Models.Job());
+            var result = manager.AddJob(new Job());
             result.Should().Be(1);
         }
 
@@ -41,7 +42,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(JobType.ReferenceData)]
         public void AddJob_Success_Values(JobType jobType)
         {
-            var job = new Job.Models.Job
+            var job = new Job
             {
                 DateTimeSubmittedUtc = System.DateTime.UtcNow,
                 DateTimeUpdatedUtc = System.DateTime.UtcNow,
@@ -76,7 +77,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobById_Success()
         {
             var manager = GetJobManager();
-            var jobId = manager.AddJob(new Job.Models.Job());
+            var jobId = manager.AddJob(new Job());
             var result = manager.GetJobById(1);
 
             result.Should().NotBeNull();
@@ -101,9 +102,9 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetAllJobs_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job.Models.Job());
-            manager.AddJob(new Job.Models.Job());
-            manager.AddJob(new Job.Models.Job());
+            manager.AddJob(new Job());
+            manager.AddJob(new Job());
+            manager.AddJob(new Job());
 
             var result = manager.GetAllJobs();
             result.Count().Should().Be(3);
@@ -146,12 +147,12 @@ namespace ESFA.DC.JobQueueManager.Tests
                 }
 
                 var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
-                manager.AddJob(new Job.Models.Job()
+                manager.AddJob(new Job()
                 {
                     Priority = 1,
                     Status = JobStatusType.Ready,
                 });
-                manager.AddJob(new Job.Models.Job()
+                manager.AddJob(new Job()
                 {
                     Priority = 2,
                     Status = JobStatusType.Ready,
@@ -186,7 +187,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatusType status)
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job.Models.Job
+            manager.AddJob(new Job
             {
                 Status = status,
             });
@@ -197,7 +198,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void RemoveJobFromQueue_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job.Models.Job()
+            manager.AddJob(new Job()
             {
                 Status = JobStatusType.Ready,
             });
@@ -222,14 +223,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         {
             var manager = GetJobManager();
             Assert.Throws<ArgumentException>(() => manager.UpdateJob(
-                new Job.Models.Job() { JobId = 1000 }));
+                new Job() { JobId = 1000 }));
         }
 
         [Fact]
         public void UpdateJob_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job.Models.Job()
+            manager.AddJob(new Job()
             {
                 Status = JobStatusType.Ready,
                 JobType = JobType.IlrSubmission
@@ -270,7 +271,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void UpdateJobStatus_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job.Models.Job()
+            manager.AddJob(new Job()
             {
                 Status = JobStatusType.Ready,
             });
@@ -307,7 +308,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 }
 
                 var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object);
-                manager.AddJob(new Job.Models.Job()
+                manager.AddJob(new Job()
                 {
                     Status = JobStatusType.Ready,
                 });

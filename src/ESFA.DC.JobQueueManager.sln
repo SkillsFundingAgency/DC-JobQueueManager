@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{944325EF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobNotifications", "ESFA.DC.JobNotifications\ESFA.DC.JobNotifications.csproj", "{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESFA.DC.Job.Models", "ESFA.DC.Job.Models\ESFA.DC.Job.Models.csproj", "{DAB8C34D-C751-429C-B642-A72DD1BCD798}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,10 +49,6 @@ Global
 		{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAB8C34D-C751-429C-B642-A72DD1BCD798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAB8C34D-C751-429C-B642-A72DD1BCD798}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAB8C34D-C751-429C-B642-A72DD1BCD798}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAB8C34D-C751-429C-B642-A72DD1BCD798}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

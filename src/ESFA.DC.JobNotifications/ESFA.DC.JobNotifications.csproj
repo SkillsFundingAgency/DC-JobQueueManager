@@ -17,8 +17,4 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ESFA.DC.Job.Models\ESFA.DC.Job.Models.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ESFA.DC.Job.Models;
 using ESFA.DC.JobNotifications.Interfaces;
 using Notify.Client;
 
@@ -28,16 +27,16 @@ namespace ESFA.DC.JobNotifications
             return response.reference;
         }
 
-        public string SendEmail(string templateId, Job.Models.Job job, FileUploadJobMetaData metaData)
-        {
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { "JobId", job.JobId },
-                { "FileName", metaData.FileName },
-                { "CollectionName", metaData.CollectionName },
-                { "Name", job.SubmittedBy }
-            };
-            return SendEmail(job.NotifyEmail, templateId, personalisation);
-        }
+        //public string SendEmail(string templateId, Job job, FileUploadJobMetaData metaData)
+        //{
+        //    var personalisation = new Dictionary<string, dynamic>
+        //    {
+        //        { "JobId", job.JobId },
+        //        { "FileName", metaData.FileName },
+        //        { "CollectionName", metaData.CollectionName },
+        //        { "Name", job.SubmittedBy }
+        //    };
+        //    return SendEmail(job.NotifyEmail, templateId, personalisation);
+        //}
     }
 }
