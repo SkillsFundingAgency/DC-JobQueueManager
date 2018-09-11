@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
-using ESFA.DC.Job.Models;
 using ESFA.DC.Jobs.Model;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IFileUploadJobManager
     {
-        FileUploadJobDto GetJob(long jobId);
+        FileUploadJob GetJob(long jobId);
 
-        long AddJob(FileUploadJobDto job);
+        long AddJob(FileUploadJob job);
 
         bool UpdateJobStage(long jobId, bool isFirstStage);
 
-        IEnumerable<FileUploadJobDto> GetJobsByUkprn(long ukprn);
+        IEnumerable<FileUploadJob> GetJobsByUkprn(long ukprn);
+
+        IEnumerable<FileUploadJob> GetAllJobs();
     }
 }

@@ -15,13 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ESFA.DC.Job.Dtos" Version="0.1.14-beta0001" />
+    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.15-beta0001" />
     <PackageReference Include="ESFA.DC.JobStatus.Interface" Version="0.1.12-beta0001" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ESFA.DC.Job.Models\ESFA.DC.Job.Models.csproj" />
   </ItemGroup>
 
 </Project>

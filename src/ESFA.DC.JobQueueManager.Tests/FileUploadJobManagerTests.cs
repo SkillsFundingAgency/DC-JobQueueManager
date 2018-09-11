@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
@@ -18,7 +17,7 @@ using Xunit;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
-    public class FileUploadMetaDataManagerTests
+    public class FileUploadJobManagerTests
     {
         [Fact]
         public void AddJob_Null()
@@ -31,7 +30,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void AddJob_Success()
         {
             var manager = GetJobManager();
-            var result = manager.AddJob(new FileUploadJobDto()
+            var result = manager.AddJob(new FileUploadJob()
             {
                 JobId = 1,
             });
@@ -41,7 +40,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void AddJobMetaData_Success_Values()
         {
-            var job = new FileUploadJobDto()
+            var job = new FileUploadJob()
             {
                 JobId = 1,
                 Ukprn = 1000,
@@ -73,7 +72,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobMetaDataById_Success()
         {
             var manager = GetJobManager();
-            var jobId = manager.AddJob(new FileUploadJobDto()
+            var jobId = manager.AddJob(new FileUploadJob()
             {
                 JobId = 1,
             });

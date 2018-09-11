@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.Job.Models;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
@@ -23,7 +22,7 @@ namespace ESFA.DC.JobQueueManager
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public FileUploadJobDto GetJob(long jobId)
+        public FileUploadJob GetJob(long jobId)
         {
             if (jobId == 0)
             {
@@ -38,13 +37,13 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var job = new FileUploadJobDto();
+                var job = new FileUploadJob();
                 JobConverter.Convert(entity, job);
                 return job;
             }
         }
 
-        public long AddJob(FileUploadJobDto job)
+        public long AddJob(FileUploadJob job)
         {
             if (job == null || job.JobId == 0)
             {
@@ -106,16 +105,32 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public IEnumerable<FileUploadJobDto> GetJobsByUkprn(long ukprn)
+        public IEnumerable<FileUploadJob> GetJobsByUkprn(long ukprn)
         {
-            var items = new List<FileUploadJobDto>();
+            var items = new List<FileUploadJob>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entities = context.FileUploadJobMetaDataEntities.Include(x => x.Job).Where(x => x.Ukprn == ukprn)
                     .ToList();
                 foreach (var entity in entities)
                 {
-                    var model = new FileUploadJobDto();
+                    var model = new FileUploadJob();
+                    JobConverter.Convert(entity, model);
+                }
+
+                return items;
+            }
+        }
+
+        public IEnumerable<FileUploadJob> GetAllJobs()
+        {
+            var items = new List<FileUploadJob>();
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entities = context.FileUploadJobMetaDataEntities.Include(x => x.Job).ToList();
+                foreach (var entity in entities)
+                {
+                    var model = new FileUploadJob();
                     JobConverter.Convert(entity, model);
                 }
 

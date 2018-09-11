@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ESFA.DC.Job.Models;
-using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
 using Xunit;
@@ -16,7 +15,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobToJobEntity_Test_Null()
         {
-            Job.Models.Job job = null;
+           Job job = null;
             var convertedJob = JobConverter.Convert(job);
             convertedJob.Should().BeNull();
         }
@@ -33,7 +32,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void JobToJobEntity_Test()
         {
             var currentTime = DateTime.UtcNow;
-            var job = new Job.Models.Job()
+            var job = new Job()
             {
                 DateTimeSubmittedUtc = currentTime,
                 DateTimeUpdatedUtc = currentTime,
@@ -90,7 +89,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void JobMetaDataToEntity_Test()
         {
-            var job = new FileUploadJobMetaData
+            var job = new FileUploadJob
             {
                 FileName = "test.xml",
                 JobId = 1,
@@ -128,7 +127,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Job = new JobEntity() { JobId = 1 }
             };
 
-            var job = new FileUploadJobDto();
+            var job = new FileUploadJob();
             JobConverter.Convert(entity, job);
 
             job.JobId.Should().Be(1);

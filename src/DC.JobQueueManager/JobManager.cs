@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.Job.Models;
-using ESFA.DC.Job.Models.Enums;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
+using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -28,7 +28,7 @@ namespace ESFA.DC.JobQueueManager
             _emailNotifier = emailNotifier;
         }
 
-        public long AddJob(Job.Models.Job job)
+        public long AddJob(Job job)
         {
             if (job == null)
             {
@@ -52,9 +52,9 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-       public IEnumerable<Job.Models.Job> GetAllJobs()
+       public IEnumerable<Job> GetAllJobs()
         {
-            var jobs = new List<Job.Models.Job>();
+            var jobs = new List<Job>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var jobEntities = context.Jobs.ToList();
@@ -65,7 +65,7 @@ namespace ESFA.DC.JobQueueManager
             return jobs;
         }
 
-        //public IEnumerable<Job.Models.Job> GetJobsByUkprn(long ukprn)
+        //public IEnumerable<Job> GetJobsByUkprn(long ukprn)
         //{
         //    if (ukprn == 0)
         //    {
@@ -84,7 +84,7 @@ namespace ESFA.DC.JobQueueManager
         //    return jobs;
         //}
 
-        public Job.Models.Job GetJobById(long jobId)
+        public Job GetJobById(long jobId)
         {
             if (jobId == 0)
             {
@@ -99,13 +99,13 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var job = new Job.Models.Job();
+                var job = new Job();
                 JobConverter.Convert(entity, job);
                 return job;
             }
         }
 
-        public Job.Models.Job GetJobByPriority()
+        public Job GetJobByPriority()
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
@@ -145,7 +145,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool UpdateJob(Job.Models.Job job)
+        public bool UpdateJob(Job job)
         {
             if (job == null)
             {
