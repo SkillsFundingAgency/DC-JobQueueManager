@@ -55,7 +55,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             var manager = GetJobManager();
             manager.AddJob(job);
 
-            var savedJob = manager.GetJob(1);
+            var savedJob = manager.GetJobById(1);
 
             savedJob.Should().NotBeNull();
             savedJob.JobId.Should().Be(1);
@@ -76,7 +76,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             {
                 JobId = 1,
             });
-            var result = manager.GetJob(1);
+            var result = manager.GetJobById(1);
 
             result.Should().NotBeNull();
             result.JobId.Should().Be(1);
@@ -86,14 +86,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void GetJobMetDataById_Fail_zeroId()
         {
             var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.GetJob(0));
+            Assert.Throws<ArgumentException>(() => manager.GetJobById(0));
         }
 
         [Fact]
         public void GetJobById_Fail_IdNotFound()
         {
             var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.GetJob(100));
+            Assert.Throws<ArgumentException>(() => manager.GetJobById(100));
         }
 
         [Fact]

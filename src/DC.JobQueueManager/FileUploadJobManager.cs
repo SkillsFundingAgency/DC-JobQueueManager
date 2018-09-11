@@ -22,7 +22,7 @@ namespace ESFA.DC.JobQueueManager
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public FileUploadJob GetJob(long jobId)
+        public FileUploadJob GetJobById(long jobId)
         {
             if (jobId == 0)
             {

@@ -4,7 +4,7 @@ using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
-    public interface IJobManager
+    public interface IJobManager : IBaseJobManager<Job>
     {
         Job GetJobByPriority();
 
@@ -12,12 +12,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 
         bool UpdateJobStatus(long jobId, JobStatusType status);
 
-       Job GetJobById(long jobId);
-
-        long AddJob(Job job);
-
         bool UpdateJob(Job job);
-
-        IEnumerable<Job> GetAllJobs();
     }
 }
