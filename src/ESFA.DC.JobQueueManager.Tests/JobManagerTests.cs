@@ -6,6 +6,7 @@ using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
@@ -125,7 +126,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object);
                 var result = manager.GetJobByPriority();
                 result.Should().BeNull();
             }
@@ -146,7 +147,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object);
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object);
                 manager.AddJob(new Job()
                 {
                     Priority = 1,
@@ -298,26 +299,25 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.JobEmailTemplates.Add(new JobEmailTemplate()
-                    {
-                        TemplateId = "test",
-                        JobStatus = (short)JobStatusType.Completed,
-                        Active = true
-                    });
-                    context.SaveChanges();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object);
+                var emailTemplateManager = new Mock<IEmailTemplateManager>();
+                emailTemplateManager
+                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>()))
+                    .Returns("template");
+
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object, new Mock<IFileUploadJobManager>().Object, emailTemplateManager.Object);
                 manager.AddJob(new Job()
                 {
                     Status = JobStatusType.Ready,
+                    JobType = JobType.IlrSubmission
                 });
 
                 manager.UpdateJobStatus(1, JobStatusType.Completed);
 
                 var updatedJob = manager.GetJobById(1);
                 updatedJob.Status.Should().Be(JobStatusType.Completed);
-//                emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()), () => Times.Once());
+                emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), () => Times.Once());
             }
         }
 
@@ -334,12 +334,14 @@ namespace ESFA.DC.JobQueueManager.Tests
             return options;
         }
 
-        private JobManager GetJobManager(IDateTimeProvider dateTimeProvider = null, IEmailNotifier emailNotifier = null)
+        private JobManager GetJobManager(IDateTimeProvider dateTimeProvider = null, IEmailNotifier emailNotifier = null, IEmailTemplateManager emailTemplateManager = null)
         {
             return new JobManager(
                 GetContextOptions(),
                 dateTimeProvider ?? new Mock<IDateTimeProvider>().Object,
-                emailNotifier ?? new Mock<IEmailNotifier>().Object);
+                emailNotifier ?? new Mock<IEmailNotifier>().Object,
+                new Mock<IFileUploadJobManager>().Object,
+                emailTemplateManager ?? new Mock<IEmailTemplateManager>().Object);
         }
     }
 }

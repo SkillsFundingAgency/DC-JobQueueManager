@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobQueueManager.Data;
@@ -137,6 +138,20 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 return items;
+            }
+        }
+
+        public void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation)
+        {
+            var job = GetJobById(jobId);
+            if (job != null)
+            {
+                personalisation.Add("FileName", job.FileName);
+                personalisation.Add("CollectionName", job.CollectionName);
+                personalisation.Add(
+                    "PeriodName",
+                    $"R{job.PeriodNumber.ToString("00", NumberFormatInfo.InvariantInfo)}");
+                personalisation.Add("Ukprn", job.Ukprn);
             }
         }
     }

@@ -11,5 +11,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         T GetJobById(long jobId);
 
         IEnumerable<T> GetAllJobs();
+
+        void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation);
     }
 }

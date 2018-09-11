@@ -20,12 +20,21 @@ namespace ESFA.DC.JobQueueManager
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IEmailNotifier _emailNotifier;
+        private readonly IFileUploadJobManager _fileUploadJobManager;
+        private readonly IEmailTemplateManager _emailTemplateManager;
 
-        public JobManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider, IEmailNotifier emailNotifier)
+        public JobManager(
+            DbContextOptions contextOptions,
+            IDateTimeProvider dateTimeProvider,
+            IEmailNotifier emailNotifier,
+            IFileUploadJobManager fileUploadJobManager,
+            IEmailTemplateManager emailTemplateManager)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
             _emailNotifier = emailNotifier;
+            _fileUploadJobManager = fileUploadJobManager;
+            _emailTemplateManager = emailTemplateManager;
         }
 
         public long AddJob(Job job)
@@ -197,20 +206,36 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        //TODO: when we get the proper template this needs revisting
         public void SendEmailNotification(long jobId, JobStatusType status, JobType jobType)
         {
-            //using (var context = new JobQueueDataContext(_contextOptions))
-            //{
-            //    var emailTemplate =
-            //        context.JobEmailTemplates.SingleOrDefault(
-            //            x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active);
+            var template = _emailTemplateManager.GetTemplate(jobId, status, jobType);
 
-            //    if (!string.IsNullOrEmpty(emailTemplate?.TemplateId))
-            //    {
-            //       _emailNotifier.SendEmail()
-            //    }
-            //}
+            if (!string.IsNullOrEmpty(template))
+            {
+                var personalisation = new Dictionary<string, dynamic>();
+                var job = GetJobById(jobId);
+
+                PopulatePersonalisation(jobId, personalisation);
+
+                if (jobType == JobType.IlrSubmission || jobType == JobType.EsfSubmission ||
+                    jobType == JobType.EasSubmission)
+                {
+                    _fileUploadJobManager.PopulatePersonalisation(jobId, personalisation);
+                }
+
+                _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
+            }
+        }
+
+        public void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation)
+        {
+            var job = GetJobById(jobId);
+            var submittedAt = _dateTimeProvider.ConvertUtcToUk(job.DateTimeSubmittedUtc);
+            personalisation.Add("JobId", job.JobId);
+            personalisation.Add("Name", job.SubmittedBy);
+            personalisation.Add(
+                "DateTimeSubmitted",
+                string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
         }
     }
 }
