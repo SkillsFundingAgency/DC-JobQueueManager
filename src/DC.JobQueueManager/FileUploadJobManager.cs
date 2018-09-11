@@ -45,7 +45,7 @@ namespace ESFA.DC.JobQueueManager
 
         public long AddJob(FileUploadJob job)
         {
-            if (job == null || job.JobId == 0)
+            if (job == null)
             {
                 throw new ArgumentNullException();
             }
@@ -76,7 +76,7 @@ namespace ESFA.DC.JobQueueManager
                 context.Jobs.Add(entity);
                 context.FileUploadJobMetaDataEntities.Add(metaEntity);
                 context.SaveChanges();
-                return job.JobId;
+                return entity.JobId;
             }
         }
 
@@ -116,6 +116,7 @@ namespace ESFA.DC.JobQueueManager
                 {
                     var model = new FileUploadJob();
                     JobConverter.Convert(entity, model);
+                    items.Add(model);
                 }
 
                 return items;
@@ -132,6 +133,7 @@ namespace ESFA.DC.JobQueueManager
                 {
                     var model = new FileUploadJob();
                     JobConverter.Convert(entity, model);
+                    items.Add(model);
                 }
 
                 return items;

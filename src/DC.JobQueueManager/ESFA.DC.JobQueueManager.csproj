@@ -6,7 +6,7 @@
     <RootNamespace>ESFA.DC.JobQueueManager</RootNamespace>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.33</Version>
+    <Version>0.1.36</Version>
     <Authors>DC</Authors>
     <Company>ESFA</Company>
     <Description>Implementation of Job Queue Manager</Description>
@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="ESFA.DC.DateTimeProvider.Interface" Version="0.1.5-beta0001" />
-    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.15-beta0001" />
+    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.17-beta0001" />
     <PackageReference Include="ESFA.DC.JobStatus.Interface" Version="0.1.12-beta0001" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />

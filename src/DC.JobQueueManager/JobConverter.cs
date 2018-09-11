@@ -62,13 +62,13 @@ namespace ESFA.DC.JobQueueManager
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.Priority = source.Priority;
-            destination.Status = source.Status;
+            destination.Status = (JobStatusType)source.Status;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
-            destination.JobType = source.JobType;
+            destination.JobType = (JobType)source.JobType;
         }
 
         public static void Convert(FileUploadJobMetaDataEntity source, FileUploadJob destination)
