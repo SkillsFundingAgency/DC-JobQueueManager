@@ -74,6 +74,9 @@
     <Build Include="Security\JobQueueManagerSchedulerUser.sql" />
     <Build Include="dbo\Tables\JobStatusType.sql" />
     <Build Include="dbo\Tables\JobEmailTemplate.sql" />
+    <None Include="ReferenceData\JobType.sql" />
+    <Build Include="dbo\Tables\JobType.sql" />
+    <None Include="ReferenceData\JobEmailTemplate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
