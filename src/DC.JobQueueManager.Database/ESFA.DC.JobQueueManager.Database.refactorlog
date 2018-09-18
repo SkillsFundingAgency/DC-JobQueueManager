@@ -14,4 +14,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="JobStatus" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3c04e071-db7b-4f83-8441-5190baa5692d" ChangeDateTime="09/18/2018 13:12:35">
+    <Property Name="ElementName" Value="[dbo].[JobStatusType].[StatusId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobStatusType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTypeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="500176e7-6c54-47d2-b7c3-83e4e70ab901" ChangeDateTime="09/18/2018 13:12:42">
+    <Property Name="ElementName" Value="[dbo].[JobStatusType].[StatusTitle]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobStatusType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Title" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5975b8ab-cdf2-4e65-96ec-d464b35fc53d" ChangeDateTime="09/18/2018 13:12:47">
+    <Property Name="ElementName" Value="[dbo].[JobStatusType].[StatusDescription]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobStatusType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Description" />
+  </Operation>
 </Operations>
