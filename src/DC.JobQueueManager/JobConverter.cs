@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
@@ -43,6 +44,7 @@ namespace ESFA.DC.JobQueueManager
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
             destination.RowVersion = source.RowVersion == null ? null : System.Text.Encoding.UTF8.GetBytes(source.RowVersion);
+            destination.IsCrossLoaded = source.IsCrossLoaded;
         }
 
         public static void Convert(JobEntity source, Job destination)
@@ -56,6 +58,7 @@ namespace ESFA.DC.JobQueueManager
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
             destination.JobType = (JobType)source.JobType;
+            destination.IsCrossLoaded = source.IsCrossLoaded;
         }
 
         public static void Convert(JobEntity source, FileUploadJob destination)
@@ -69,6 +72,7 @@ namespace ESFA.DC.JobQueueManager
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
             destination.JobType = (JobType)source.JobType;
+            destination.IsCrossLoaded = source.IsCrossLoaded;
         }
 
         public static void Convert(FileUploadJobMetaDataEntity source, FileUploadJob destination)

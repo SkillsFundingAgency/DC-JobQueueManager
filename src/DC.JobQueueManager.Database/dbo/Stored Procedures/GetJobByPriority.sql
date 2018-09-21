@@ -22,6 +22,7 @@ BEGIN
 		  ,[RowVersion]
 		  ,[SubmittedBy]
 		  ,[NotifyEmail]
+		  ,[IsCorssLoaded]
 	FROM [dbo].[Job] j WITH (nolock) 
 	LEFT JOIN dbo.FileUploadJobMetaData meta WITH (NOLOCK)
 		ON j.JobId = meta.JobId
