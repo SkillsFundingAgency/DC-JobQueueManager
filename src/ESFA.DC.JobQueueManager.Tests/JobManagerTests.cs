@@ -53,7 +53,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Status = JobStatusType.Ready,
                 SubmittedBy = "test user",
                 JobType = jobType,
-                NotifyEmail = "test@email.com"
+                NotifyEmail = "test@email.com",
+                IsCrossLoaded = true
             };
 
             var manager = GetJobManager();
@@ -72,6 +73,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.SubmittedBy.Should().Be("test user");
             savedJob.Status.Should().Be(JobStatusType.Ready);
             savedJob.NotifyEmail.Should().Be("test@email.com");
+            savedJob.IsCrossLoaded.Should().Be(true);
         }
 
         [Fact]
@@ -242,6 +244,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             job.RowVersion = "AAAAAAAAGJw=";
             job.NotifyEmail = "test@test.com";
             job.SubmittedBy = "test";
+            job.IsCrossLoaded = true;
 
             manager.UpdateJob(job);
 
@@ -252,6 +255,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.Status.Should().Be(JobStatusType.Completed);
             updatedJob.SubmittedBy.Should().Be("test");
             updatedJob.NotifyEmail.Should().Be("test@test.com");
+            updatedJob.IsCrossLoaded.Should().Be(true);
         }
 
         [Fact]

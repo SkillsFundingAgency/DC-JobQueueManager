@@ -42,7 +42,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Status = JobStatusType.Ready,
                 SubmittedBy = "test",
                 NotifyEmail = "test@test.com",
-                JobType = JobType.IlrSubmission
+                JobType = JobType.IlrSubmission,
+                IsCrossLoaded = true
             };
 
             var convertedJob = JobConverter.Convert(job);
@@ -55,6 +56,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             convertedJob.Status.Should().Be(1);
             convertedJob.NotifyEmail.Should().Be("test@test.com");
             convertedJob.SubmittedBy.Should().Be("test");
+            convertedJob.IsCrossLoaded.Should().Be(true);
         }
 
         [Fact]
@@ -71,7 +73,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 RowVersion = null,
                 Status = 1,
                 NotifyEmail = "email@email.com",
-                SubmittedBy = "test"
+                SubmittedBy = "test",
+                IsCrossLoaded = true
             };
 
             var convertedJob = JobConverter.Convert(job);
@@ -84,6 +87,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             convertedJob.Status.Should().Be(1);
             convertedJob.NotifyEmail.Should().Be("email@email.com");
             convertedJob.SubmittedBy.Should().Be("test");
+            convertedJob.IsCrossLoaded.Should().Be(true);
         }
 
         [Fact]

@@ -17,5 +17,6 @@
         public string CollectionName { get; set; }
 
         public long Ukprn { get; set; }
+        public bool IsCrossLoaded { get; set; }
     }
 }

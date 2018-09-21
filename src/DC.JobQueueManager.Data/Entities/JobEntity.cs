@@ -23,5 +23,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public string SubmittedBy { get; set; }
 
         public string NotifyEmail { get; set; }
+
+        public bool IsCrossLoaded { get; set; }
    }
 }
