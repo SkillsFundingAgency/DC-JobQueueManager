@@ -325,6 +325,39 @@ namespace ESFA.DC.JobQueueManager.Tests
             }
         }
 
+        [Fact]
+        public void IsCrossLoadingEnabled_Success()
+        {
+            using (var connection = new SqliteConnection("DataSource=:memory:"))
+            {
+                connection.Open();
+                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
+                    .UseSqlite(connection)
+                    .Options;
+
+                // Create the schema in the database
+                using (var context = new JobQueueDataContext(options))
+                {
+                    context.Database.EnsureCreated();
+                    context.JobTypes.Add(new JobTypeEntity()
+                    {
+                        IsCrossLoadingEnabled = true,
+                        JobTypeId = 1
+                    });
+                    context.SaveChanges();
+                }
+
+                var manager = new JobManager(
+                    options,
+                    new Mock<IDateTimeProvider>().Object,
+                    new Mock<IEmailNotifier>().Object,
+                    new Mock<IFileUploadJobManager>().Object,
+                    new Mock<IEmailTemplateManager>().Object);
+
+                manager.IsCrossLoadingEnabled(JobType.IlrSubmission).Should().BeTrue();
+            }
+        }
+
         private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
