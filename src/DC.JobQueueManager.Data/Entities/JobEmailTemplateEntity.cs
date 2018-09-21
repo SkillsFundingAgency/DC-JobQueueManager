@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ESFA.DC.JobQueueManager.Data.Entities
 {
-    public class JobEmailTemplate
+    public class JobEmailTemplateEntity
     {
         public string TemplateId { get; set; }
 

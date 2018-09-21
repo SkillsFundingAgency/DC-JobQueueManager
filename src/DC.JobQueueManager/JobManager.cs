@@ -62,7 +62,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-       public IEnumerable<Job> GetAllJobs()
+        public IEnumerable<Job> GetAllJobs()
         {
             var jobs = new List<Job>();
             using (var context = new JobQueueDataContext(_contextOptions))
@@ -171,7 +171,8 @@ namespace ESFA.DC.JobQueueManager
                 }
                 catch (DbUpdateConcurrencyException exception)
                 {
-                    throw new Exception("Save failed. Job details have been changed. Reload the job object and try save again");
+                    throw new Exception(
+                        "Save failed. Job details have been changed. Reload the job object and try save again");
                 }
             }
         }
@@ -237,6 +238,15 @@ namespace ESFA.DC.JobQueueManager
             personalisation.Add(
                 "DateTimeSubmitted",
                 string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
+        }
+
+        public bool IsCrossLoadingEnabled(JobType jobType)
+        {
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entity = context.JobTypes.SingleOrDefault(x => x.JobTypeId == (short)jobType);
+                return entity != null && entity.IsCrossLoadingEnabled;
+            }
         }
     }
 }
