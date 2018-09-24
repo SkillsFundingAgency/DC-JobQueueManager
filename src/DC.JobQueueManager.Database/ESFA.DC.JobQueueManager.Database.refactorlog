@@ -49,4 +49,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="IsCrossLoadingEnabled" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4b5ce0d7-3b26-4026-9f4d-dba7b36b86c5" ChangeDateTime="09/24/2018 14:35:54">
+    <Property Name="ElementName" Value="[dbo].[Job].[IsCorssLoaded]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Job]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsCrossLoaded" />
+  </Operation>
 </Operations>

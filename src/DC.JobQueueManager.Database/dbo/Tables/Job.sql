@@ -8,8 +8,8 @@ CREATE TABLE [dbo].[Job](
 	[SubmittedBy] [varchar](50) NULL,
 	[Status] [smallint] NOT NULL,
 	[RowVersion] [timestamp] NOT NULL,
- [NotifyEmail] NVARCHAR(500) NULL, 
-    [IsCorssLoaded] BIT NULL DEFAULT 0, 
+    [NotifyEmail] NVARCHAR(500) NULL, 
+    [IsCrossLoaded] BIT NULL DEFAULT 0, 
     CONSTRAINT [PK_Job_memoryoptimizedtable] PRIMARY KEY CLUSTERED 
 (
 	[JobId] ASC
