@@ -10,6 +10,7 @@ using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
+using ESFA.DC.Logging.Interfaces;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -128,7 +129,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object);
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>());
                 var result = manager.GetJobByPriority();
                 result.Should().BeNull();
             }
@@ -149,7 +150,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object);
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>());
                 manager.AddJob(new Job()
                 {
                     Priority = 1,
@@ -310,7 +311,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>()))
                     .Returns("template");
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object, new Mock<IFileUploadJobManager>().Object, emailTemplateManager.Object);
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object, new Mock<IFileUploadJobManager>().Object, emailTemplateManager.Object, It.IsAny<ILogger>());
                 manager.AddJob(new Job()
                 {
                     Status = JobStatusType.Ready,
@@ -352,7 +353,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                     new Mock<IDateTimeProvider>().Object,
                     new Mock<IEmailNotifier>().Object,
                     new Mock<IFileUploadJobManager>().Object,
-                    new Mock<IEmailTemplateManager>().Object);
+                    new Mock<IEmailTemplateManager>().Object,
+                    It.IsAny<ILogger>());
 
                 manager.IsCrossLoadingEnabled(JobType.IlrSubmission).Should().BeTrue();
             }
@@ -378,7 +380,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 dateTimeProvider ?? new Mock<IDateTimeProvider>().Object,
                 emailNotifier ?? new Mock<IEmailNotifier>().Object,
                 new Mock<IFileUploadJobManager>().Object,
-                emailTemplateManager ?? new Mock<IEmailTemplateManager>().Object);
+                emailTemplateManager ?? new Mock<IEmailTemplateManager>().Object,
+                It.IsAny<ILogger>());
         }
     }
 }
