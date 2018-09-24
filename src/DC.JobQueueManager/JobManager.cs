@@ -10,6 +10,7 @@ using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
+using ESFA.DC.Logging.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -22,19 +23,22 @@ namespace ESFA.DC.JobQueueManager
         private readonly IEmailNotifier _emailNotifier;
         private readonly IFileUploadJobManager _fileUploadJobManager;
         private readonly IEmailTemplateManager _emailTemplateManager;
+        private readonly ILogger _logger;
 
         public JobManager(
             DbContextOptions contextOptions,
             IDateTimeProvider dateTimeProvider,
             IEmailNotifier emailNotifier,
             IFileUploadJobManager fileUploadJobManager,
-            IEmailTemplateManager emailTemplateManager)
+            IEmailTemplateManager emailTemplateManager,
+            ILogger logger)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
             _emailNotifier = emailNotifier;
             _fileUploadJobManager = fileUploadJobManager;
             _emailTemplateManager = emailTemplateManager;
+            _logger = logger;
         }
 
         public long AddJob(Job job)
@@ -210,22 +214,29 @@ namespace ESFA.DC.JobQueueManager
 
         public void SendEmailNotification(long jobId, JobStatusType status, JobType jobType)
         {
-            var template = _emailTemplateManager.GetTemplate(jobId, status, jobType);
-
-            if (!string.IsNullOrEmpty(template))
+            try
             {
-                var personalisation = new Dictionary<string, dynamic>();
-                var job = GetJobById(jobId);
+                var template = _emailTemplateManager.GetTemplate(jobId, status, jobType);
 
-                PopulatePersonalisation(jobId, personalisation);
-
-                if (jobType == JobType.IlrSubmission || jobType == JobType.EsfSubmission ||
-                    jobType == JobType.EasSubmission)
+                if (!string.IsNullOrEmpty(template))
                 {
-                    _fileUploadJobManager.PopulatePersonalisation(jobId, personalisation);
-                }
+                    var personalisation = new Dictionary<string, dynamic>();
+                    var job = GetJobById(jobId);
 
-                _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
+                    PopulatePersonalisation(jobId, personalisation);
+
+                    if (jobType == JobType.IlrSubmission || jobType == JobType.EsfSubmission ||
+                        jobType == JobType.EasSubmission)
+                    {
+                        _fileUploadJobManager.PopulatePersonalisation(jobId, personalisation);
+                    }
+
+                    _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Sending email failed for job {jobId}", ex);
             }
         }
 
