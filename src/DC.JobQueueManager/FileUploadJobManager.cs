@@ -8,6 +8,7 @@ using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
+using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager
@@ -62,7 +63,7 @@ namespace ESFA.DC.JobQueueManager
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
                     NotifyEmail = job.NotifyEmail,
-                    IsCrossLoaded = IsCrossLoadingEnabled(job.JobType)
+                    CrossLoadingStatus = IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
                 };
 
                 var metaEntity = new FileUploadJobMetaDataEntity()
