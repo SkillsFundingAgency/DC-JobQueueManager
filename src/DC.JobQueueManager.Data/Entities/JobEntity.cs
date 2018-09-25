@@ -24,6 +24,6 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
 
         public string NotifyEmail { get; set; }
 
-        public bool IsCrossLoaded { get; set; }
+        public short? CrossLoadingStatus { get; set; }
    }
 }
