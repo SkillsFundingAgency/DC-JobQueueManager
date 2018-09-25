@@ -59,7 +59,7 @@ namespace ESFA.DC.JobQueueManager
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
                     NotifyEmail = job.NotifyEmail,
-                    IsCrossLoaded = job.IsCrossLoaded
+                    IsCrossLoaded = IsCrossLoadingEnabled(job.JobType)
                 };
                 context.Jobs.Add(entity);
                 context.SaveChanges();
