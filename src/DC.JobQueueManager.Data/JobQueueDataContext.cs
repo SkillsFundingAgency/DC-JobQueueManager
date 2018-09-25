@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ESFA.DC.JobQueueManager.Data.Entities;
-using ESFA.DC.JobQueueManager.Interfaces;
+﻿using ESFA.DC.JobQueueManager.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager.Data
 {
@@ -28,7 +24,7 @@ namespace ESFA.DC.JobQueueManager.Data
             modelBuilder.Entity<FileUploadJobMetaDataEntity>().ToTable("FileUploadJobMetaData");
             modelBuilder.Entity<JobEmailTemplateEntity>().ToTable("JobEmailTemplateEntity")
                 .HasKey(x => new { x.TemplateId, x.JobStatus });
-            modelBuilder.Entity<JobEmailTemplateEntity>().ToTable("JobType");
+            modelBuilder.Entity<JobTypeEntity>().ToTable("JobType");
         }
     }
 }
