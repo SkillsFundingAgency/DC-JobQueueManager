@@ -12,12 +12,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public sealed class FileUploadJobManager : IFileUploadJobManager
+    public sealed class FileUploadJobManager : AbstractJobManager, IFileUploadJobManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public FileUploadJobManager(DbContextOptions contextOptions, IDateTimeProvider dateTimeProvider)
+        : base(contextOptions)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
@@ -60,7 +61,8 @@ namespace ESFA.DC.JobQueueManager
                     Priority = job.Priority,
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
-                    NotifyEmail = job.NotifyEmail
+                    NotifyEmail = job.NotifyEmail,
+                    IsCrossLoaded = IsCrossLoadingEnabled(job.JobType)
                 };
 
                 var metaEntity = new FileUploadJobMetaDataEntity()
