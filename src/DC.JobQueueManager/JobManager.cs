@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public sealed class JobManager : IJobManager
+    public sealed class JobManager : AbstractJobManager, IJobManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -32,6 +32,7 @@ namespace ESFA.DC.JobQueueManager
             IFileUploadJobManager fileUploadJobManager,
             IEmailTemplateManager emailTemplateManager,
             ILogger logger)
+            : base(contextOptions)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
@@ -58,7 +59,7 @@ namespace ESFA.DC.JobQueueManager
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
                     NotifyEmail = job.NotifyEmail,
-                    IsCrossLoaded = job.IsCrossLoaded
+                    CrossLoadingStatus = IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
                 };
                 context.Jobs.Add(entity);
                 context.SaveChanges();
@@ -249,15 +250,6 @@ namespace ESFA.DC.JobQueueManager
             personalisation.Add(
                 "DateTimeSubmitted",
                 string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
-        }
-
-        public bool IsCrossLoadingEnabled(JobType jobType)
-        {
-            using (var context = new JobQueueDataContext(_contextOptions))
-            {
-                var entity = context.JobTypes.SingleOrDefault(x => x.JobTypeId == (short)jobType);
-                return entity != null && entity.IsCrossLoadingEnabled;
-            }
         }
     }
 }
