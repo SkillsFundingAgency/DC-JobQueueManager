@@ -22,7 +22,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
 
         public byte? DayOfTheWeek { get; set; }
 
-        [Required] public byte ExternalDataType { get; set; }
+        [Required] public string ExternalDataType { get; set; }
 
         [Required] public bool ExecuteOnceOnly { get; set; }
 

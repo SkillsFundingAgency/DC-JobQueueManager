@@ -7,7 +7,7 @@
 	[DayOfTheMonth] [tinyint] NULL,
 	[Month] [tinyint] NULL,
 	[DayOfTheWeek] [tinyint] NULL,
-	[ExternalDataType] [tinyint] NOT NULL,
+	[ExternalDataType] NVARCHAR(MAX) NOT NULL,
 	[ExecuteOnceOnly] [bit] NOT NULL,
 	[LastExecuteDateTime] [datetime] NULL,
  CONSTRAINT [PK_Schedule] PRIMARY KEY CLUSTERED 
