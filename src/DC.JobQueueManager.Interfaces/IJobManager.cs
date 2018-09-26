@@ -16,5 +16,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         bool UpdateJob(Job job);
 
         bool IsCrossLoadingEnabled(JobType jobType);
+
+        bool UpdateCrossLoadingStatus(long jobId, JobStatusType status);
     }
 }

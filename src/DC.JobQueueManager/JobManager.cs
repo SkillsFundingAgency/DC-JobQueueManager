@@ -156,7 +156,16 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {job.JobId} does not exist");
                 }
 
-                var statusChanged = entity.Status != (short)job.Status;
+                var statusChanged = false;
+
+                if (entity.CrossLoadingStatus.HasValue && entity.CrossLoadingStatus != (short?)job.CrossLoadingStatus)
+                {
+                    statusChanged = true;
+                }
+                else if (entity.Status != (short)job.Status)
+                {
+                    statusChanged = true;
+                }
 
                 JobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
@@ -169,7 +178,7 @@ namespace ESFA.DC.JobQueueManager
 
                     if (statusChanged)
                     {
-                        SendEmailNotification(job.JobId, job.Status, job.JobType);
+                        SendEmailNotification(job.JobId, job.CrossLoadingStatus ?? job.Status, job.JobType);
                     }
 
                     return true;
@@ -197,8 +206,41 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var statusChanged = entity.Status != (short)status;
+                var statusChanged = !entity.CrossLoadingStatus.HasValue && entity.Status != (short)status;
+
                 entity.Status = (short)status;
+                entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
+                context.Entry(entity).State = EntityState.Modified;
+
+                context.SaveChanges();
+
+                if (statusChanged)
+                {
+                    SendEmailNotification(jobId, status, (JobType)entity.JobType);
+                }
+
+                return true;
+            }
+        }
+
+        public bool UpdateCrossLoadingStatus(long jobId, JobStatusType status)
+        {
+            if (jobId == 0)
+            {
+                throw new ArgumentException("Job id can not be 0");
+            }
+
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
+                if (entity == null)
+                {
+                    throw new ArgumentException($"Job id {jobId} does not exist");
+                }
+
+                var statusChanged = entity.CrossLoadingStatus.HasValue && entity.CrossLoadingStatus != (short)status;
+
+                entity.CrossLoadingStatus = (short)status;
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
 

@@ -286,8 +286,10 @@ namespace ESFA.DC.JobQueueManager.Tests
             updatedJob.Status.Should().Be(JobStatusType.Completed);
         }
 
-        [Fact]
-        public void UpdateJobStatus_Success_EmailSent()
+        [Theory]
+        [InlineData(null)]
+        [InlineData(JobStatusType.MovedForProcessing)]
+        public void UpdateJobStatus_Success_EmailSent(JobStatusType? crossLoadingStatus)
         {
             var emailNotifier = new Mock<IEmailNotifier>();
             emailNotifier.Setup(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()));
@@ -303,6 +305,15 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
+                    if (crossLoadingStatus.HasValue)
+                    {
+                        context.JobTypes.Add(new JobTypeEntity()
+                        {
+                            IsCrossLoadingEnabled = true,
+                            JobTypeId = 1
+                        });
+                        context.SaveChanges();
+                    }
                 }
 
                 var emailTemplateManager = new Mock<IEmailTemplateManager>();
@@ -314,14 +325,64 @@ namespace ESFA.DC.JobQueueManager.Tests
                 manager.AddJob(new Job()
                 {
                     Status = JobStatusType.Ready,
-                    JobType = JobType.IlrSubmission
+                    JobType = JobType.IlrSubmission,
+                    CrossLoadingStatus = crossLoadingStatus
                 });
 
                 manager.UpdateJobStatus(1, JobStatusType.Completed);
 
                 var updatedJob = manager.GetJobById(1);
                 updatedJob.Status.Should().Be(JobStatusType.Completed);
-                emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), () => Times.Once());
+
+                emailNotifier.Verify(
+                    x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()),
+                    () => crossLoadingStatus == null ? Times.Once() : Times.Never());
+            }
+        }
+
+        [Fact]
+        public void UpdateCrossLoadingStatus_Success_EmailSent()
+        {
+            var emailNotifier = new Mock<IEmailNotifier>();
+            emailNotifier.Setup(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()));
+
+            using (var connection = new SqliteConnection("DataSource=:memory:"))
+            {
+                connection.Open();
+                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
+                    .UseSqlite(connection)
+                    .Options;
+
+                // Create the schema in the database
+                using (var context = new JobQueueDataContext(options))
+                {
+                    context.Database.EnsureCreated();
+                    context.JobTypes.Add(new JobTypeEntity()
+                    {
+                        IsCrossLoadingEnabled = true,
+                        JobTypeId = 1
+                    });
+                    context.SaveChanges();
+                }
+
+                var emailTemplateManager = new Mock<IEmailTemplateManager>();
+                emailTemplateManager
+                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>()))
+                    .Returns("template");
+
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object, new Mock<IFileUploadJobManager>().Object, emailTemplateManager.Object, It.IsAny<ILogger>());
+                manager.AddJob(new Job()
+                {
+                    Status = JobStatusType.Ready,
+                    JobType = JobType.IlrSubmission,
+                    CrossLoadingStatus = JobStatusType.MovedForProcessing
+                });
+
+                manager.UpdateCrossLoadingStatus(1, JobStatusType.Completed);
+
+                var updatedJob = manager.GetJobById(1);
+                updatedJob.CrossLoadingStatus.Should().Be(JobStatusType.Completed);
+                emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), Times.Once());
             }
         }
 
