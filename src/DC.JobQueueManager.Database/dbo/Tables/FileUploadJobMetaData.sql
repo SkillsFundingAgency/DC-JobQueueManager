@@ -2,7 +2,7 @@
 CREATE TABLE [dbo].[FileUploadJobMetaData](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[JobId] [bigint] NOT NULL,
-	[FileName] [varchar](50) NULL,
+	[FileName] [varchar](250) NULL,
 	[FileSize] [decimal](18, 2) NULL,
 	[StorageReference] [varchar](100) NULL,
 	[IsFirstStage] [bit] NOT NULL,
