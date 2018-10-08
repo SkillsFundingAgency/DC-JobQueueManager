@@ -3,7 +3,7 @@ DECLARE @SummaryOfChanges_JobEmailTemplate TABLE ([EventId] varchar(500), [Actio
 
 MERGE INTO [dbo].[JobEmailTemplate] AS Target
 USING (VALUES
-		('3cfbfb6b-0a8e-48f1-b716-268af491696b',1,1,1),
+		('3cfbfb6b-0a8e-48f1-b716-268af491696b',2,1,1),
 		('e2219426-4cd8-4bb6-9f96-f77ea040699a',4,1,1)
 	  )
 	AS Source([TemplateId], [JobStatus], [Active],[JobType])
