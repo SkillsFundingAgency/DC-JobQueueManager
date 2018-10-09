@@ -70,4 +70,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="ProcessingOverrideFlag" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f60c7600-090f-4d25-bfa8-bf7cf1c3ab4c" ChangeDateTime="10/09/2018 14:59:02">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[Column1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ReturnWindowOpen" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4dc05023-0535-4804-a6e9-002b48eb2358" ChangeDateTime="10/09/2018 15:02:49">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateIdOpenPeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6387d8b5-0d0f-438e-ac55-771b398227ae" ChangeDateTime="10/09/2018 15:02:59">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[ReturnWindowOpen]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateIdOpenPeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="44c4c91b-7d3f-4331-b000-a9aaddd2daa4" ChangeDateTime="10/09/2018 15:03:08">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateIdOpenPeriod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateIdClosePeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="50a394e1-dc00-470b-9f06-fe00780d0247" ChangeDateTime="10/09/2018 15:04:19">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateIdOpenPeriod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateOpenPeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6840c252-8e9a-4b83-bfbb-072f496c959e" ChangeDateTime="10/09/2018 15:04:23">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateIdClosePeriod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateClosePeriod" />
+  </Operation>
 </Operations>

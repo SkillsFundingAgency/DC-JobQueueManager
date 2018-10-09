@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -31,8 +32,9 @@ namespace ESFA.DC.JobQueueManager
             IEmailNotifier emailNotifier,
             IFileUploadJobManager fileUploadJobManager,
             IEmailTemplateManager emailTemplateManager,
-            ILogger logger)
-            : base(contextOptions)
+            ILogger logger,
+            IReturnCalendarService returnCalendarService)
+            : base(contextOptions, returnCalendarService, dateTimeProvider)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
@@ -248,18 +250,18 @@ namespace ESFA.DC.JobQueueManager
 
                 if (statusChanged)
                 {
-                    SendEmailNotification(jobId, status, (JobType)entity.JobType);
+                    SendEmailNotification(jobId, status, (JobType)entity.JobType, entity.DateTimeSubmittedUtc);
                 }
 
                 return true;
             }
         }
 
-        public void SendEmailNotification(long jobId, JobStatusType status, JobType jobType)
+        public void SendEmailNotification(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc)
         {
             try
             {
-                var template = _emailTemplateManager.GetTemplate(jobId, status, jobType);
+                var template = _emailTemplateManager.GetTemplate(jobId, status, jobType, dateTimeJobSubmittedUtc);
 
                 if (!string.IsNullOrEmpty(template))
                 {

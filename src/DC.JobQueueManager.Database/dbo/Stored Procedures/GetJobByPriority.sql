@@ -22,8 +22,7 @@ BEGIN
 		  ,[RowVersion]
 		  ,[SubmittedBy]
 		  ,[NotifyEmail]
-		  ,[CrossLoadingStatus],
-		  DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC)
+		  ,[CrossLoadingStatus]
 	FROM [dbo].[Job] j WITH (nolock) 
 	INNER JOIN [dbo].[JobType] jt WITH (nolock) 
 		on jt.JobTypeId = j.JobType
