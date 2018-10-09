@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -175,7 +176,7 @@ namespace ESFA.DC.JobQueueManager.Tests
 
         private FileUploadJobManager GetJobManager()
         {
-            return new FileUploadJobManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object);
+            return new FileUploadJobManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object, new Mock<IReturnCalendarService>().Object);
         }
     }
 }
