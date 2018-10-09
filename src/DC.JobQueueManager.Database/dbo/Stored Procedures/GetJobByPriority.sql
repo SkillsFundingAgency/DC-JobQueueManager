@@ -22,17 +22,35 @@ BEGIN
 		  ,[RowVersion]
 		  ,[SubmittedBy]
 		  ,[NotifyEmail]
-		  ,[CrossLoadingStatus]
+		  ,[CrossLoadingStatus],
+		  DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC)
 	FROM [dbo].[Job] j WITH (nolock) 
+	INNER JOIN [dbo].[JobType] jt WITH (nolock) 
+		on jt.JobTypeId = j.JobType
 	LEFT JOIN dbo.FileUploadJobMetaData meta WITH (NOLOCK)
 		ON j.JobId = meta.JobId
+	LEFT JOIN dbo.[Collection] c ON c.[Name] = meta.CollectionName
+
 	WHERE [Status] = 1
+	AND IsNull(c.IsOpen,1) = 1 
+	AND 
+	(
+		jt.ProcessingOverrideFlag = 1 
+		OR
+		(
+			jt.ProcessingOverrideFlag IS NULL 
+			AND	Exists (select 1 from ReturnPeriod rp Where CollectionId = c.CollectionId And
+				 DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC) >=rp.StartDateTimeUTC 
+				And rp.EndDateTimeUTC <= DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC))
+		)
+	)
+	
 	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] j1  (nolock) 
 					 LEFT JOIN dbo.FileUploadJobMetaData meta1 WITH (NOLOCK)
 						ON j1.JobId = meta1.JobId
 					WHERE [Status] IN (2,3) 
-					  And ( [JobType] = 4  Or ([JobType] In (1,2,3) And meta.[Ukprn] = meta1.[Ukprn]) )
-					)
+					  And ( [JobType] = 4  Or ([JobType] In (1,2,3) And meta.[Ukprn] = meta1.[Ukprn]) ))
+					
 	ORDER BY [Priority] DESC, j.JobId
 
 END

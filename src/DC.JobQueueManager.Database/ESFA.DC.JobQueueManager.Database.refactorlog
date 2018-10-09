@@ -63,4 +63,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="CrossLoadingStatus" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b7f62cac-6cef-4741-a044-9db098c7fc25" ChangeDateTime="10/09/2018 12:37:35">
+    <Property Name="ElementName" Value="[dbo].[JobType].[ProcessingOverride]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProcessingOverrideFlag" />
+  </Operation>
 </Operations>
