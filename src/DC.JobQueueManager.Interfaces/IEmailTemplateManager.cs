@@ -8,6 +8,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IEmailTemplateManager
     {
-        string GetTemplate(long jobId, JobStatusType status, JobType jobType);
+        string GetTemplate(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc);
     }
 }

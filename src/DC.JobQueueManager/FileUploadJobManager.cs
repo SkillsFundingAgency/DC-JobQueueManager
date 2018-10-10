@@ -18,17 +18,15 @@ namespace ESFA.DC.JobQueueManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IReturnCalendarService _returnCalendarService;
 
         public FileUploadJobManager(
             DbContextOptions contextOptions,
             IDateTimeProvider dateTimeProvider,
             IReturnCalendarService returnCalendarService)
-        : base(contextOptions)
+        : base(contextOptions, returnCalendarService)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
-            _returnCalendarService = returnCalendarService;
         }
 
         public FileUploadJob GetJobById(long jobId)
@@ -155,14 +153,17 @@ namespace ESFA.DC.JobQueueManager
             var job = GetJobById(jobId);
             if (job != null)
             {
-                var nextReturnPeriod = _returnCalendarService.GetNextPeriodAsync(job.CollectionName).Result;
+                var nextReturnPeriod = GetNextReturnPeriod(job.CollectionName);
                 personalisation.Add("FileName", job.FileName);
                 personalisation.Add("CollectionName", job.CollectionName);
                 personalisation.Add(
                     "PeriodName",
                     $"R{job.PeriodNumber.ToString("00", NumberFormatInfo.InvariantInfo)}");
                 personalisation.Add("Ukprn", job.Ukprn);
-                personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dddd dd MMMM"));
+                if (nextReturnPeriod != null)
+                {
+                    personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dddd dd MMMM"));
+                }
             }
         }
     }

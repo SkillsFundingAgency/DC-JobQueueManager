@@ -22,8 +22,7 @@ BEGIN
 		  ,[RowVersion]
 		  ,[SubmittedBy]
 		  ,[NotifyEmail]
-		  ,[CrossLoadingStatus],
-		  DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC)
+		  ,[CrossLoadingStatus]
 	FROM [dbo].[Job] j WITH (nolock) 
 	INNER JOIN [dbo].[JobType] jt WITH (nolock) 
 		on jt.JobTypeId = j.JobType
@@ -40,8 +39,7 @@ BEGIN
 		(
 			jt.ProcessingOverrideFlag IS NULL 
 			AND	Exists (select 1 from ReturnPeriod rp Where CollectionId = c.CollectionId And
-				 DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC) >=rp.StartDateTimeUTC 
-				And rp.EndDateTimeUTC <= DATEADD(MILLISECOND,DATEDIFF(MILLISECOND,getutcdate(),GETDATE()),j.DateTimeSubmittedUTC))
+				j.DateTimeSubmittedUTC between rp.StartDateTimeUTC AND rp.EndDateTimeUTC)
 		)
 	)
 	
