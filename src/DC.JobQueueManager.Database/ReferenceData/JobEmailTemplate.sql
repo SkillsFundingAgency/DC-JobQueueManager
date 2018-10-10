@@ -6,8 +6,8 @@ USING (VALUES
 		('3cfbfb6b-0a8e-48f1-b716-268af491696b',2,1,1),
 		('e2219426-4cd8-4bb6-9f96-f77ea040699a',4,1,1)
 	  )
-	AS Source([TemplateId], [JobStatus], [Active],[JobType])
-	ON Target.[TemplateId] = Source.[TemplateId]
+	AS Source([TemplateOpenPeriod], [JobStatus], [Active],[JobType])
+	ON Target.[TemplateOpenPeriod] = Source.[TemplateOpenPeriod]
 	WHEN MATCHED 
 			AND EXISTS 
 				(		SELECT Target.[JobStatus]
@@ -21,10 +21,10 @@ USING (VALUES
 		  THEN UPDATE SET Target.[JobStatus] = Source.[JobStatus],
 			              Target.[Active] = Source.[Active],
 						  Target.[JobType] = Source.[JobType]
-	WHEN NOT MATCHED BY TARGET THEN INSERT([TemplateId], [JobStatus], [Active],[JobType]) 
-								   VALUES ([TemplateId], [JobStatus], [Active],[JobType])
+	WHEN NOT MATCHED BY TARGET THEN INSERT([TemplateOpenPeriod], [JobStatus], [Active],[JobType]) 
+								   VALUES ([TemplateOpenPeriod], [JobStatus], [Active],[JobType])
 	WHEN NOT MATCHED BY SOURCE THEN DELETE
-	OUTPUT Inserted.[TemplateId],$action INTO @SummaryOfChanges_JobEmailTemplate([EventId],[Action])
+	OUTPUT Inserted.[TemplateOpenPeriod],$action INTO @SummaryOfChanges_JobEmailTemplate([EventId],[Action])
 ;
 
 	DECLARE @AddCount_JET INT, @UpdateCount_JET INT, @DeleteCount_JET INT
