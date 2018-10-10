@@ -242,7 +242,6 @@ namespace ESFA.DC.JobQueueManager.Tests
             var job = manager.GetJobById(1);
             job.Status = JobStatusType.Completed;
             job.Priority = 2;
-            job.RowVersion = "AAAAAAAAGJw=";
             job.NotifyEmail = "test@test.com";
             job.SubmittedBy = "test";
             job.CrossLoadingStatus = JobStatusType.MovedForProcessing;
@@ -343,8 +342,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 updatedJob.Status.Should().Be(JobStatusType.Completed);
 
                 emailNotifier.Verify(
-                    x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()),
-                    () => crossLoadingStatus == null ? Times.Once() : Times.Never());
+                    x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), Times.Once());
             }
         }
 
@@ -397,7 +395,7 @@ namespace ESFA.DC.JobQueueManager.Tests
 
                 var updatedJob = manager.GetJobById(1);
                 updatedJob.CrossLoadingStatus.Should().Be(JobStatusType.Completed);
-                emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), Times.Once());
+                emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), Times.Never);
             }
         }
 
