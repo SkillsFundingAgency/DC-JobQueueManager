@@ -1,6 +1,6 @@
 ﻿
 CREATE TABLE [dbo].[JobEmailTemplate](
-	[Id] [int] NOT NULL,
+	[Id] [int] NOT NULL IDENTITY,
 	[TemplateOpenPeriod] [varchar](500) NOT NULL,
 	 [TemplateClosePeriod] VARCHAR(500) NULL , 
 	[JobStatus] [smallint] NOT NULL,
