@@ -37,8 +37,12 @@ namespace ESFA.DC.JobQueueManager
             {
                 var job = context.FileUploadJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId);
 
-                //TODO:////
-                v1ar period = GetReturnPeriod(job.CollectionName, dateTimeJobSubmittedUtc);
+                ReturnPeriod period = null;
+                if (job != null)
+                {
+                    period = GetReturnPeriod(job.CollectionName, dateTimeJobSubmittedUtc);
+                }
+
                 var emailTemplate =
                     context.JobEmailTemplates.SingleOrDefault(
                         x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active);

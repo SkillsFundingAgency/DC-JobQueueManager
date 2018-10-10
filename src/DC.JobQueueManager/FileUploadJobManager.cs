@@ -23,7 +23,7 @@ namespace ESFA.DC.JobQueueManager
             DbContextOptions contextOptions,
             IDateTimeProvider dateTimeProvider,
             IReturnCalendarService returnCalendarService)
-        : base(contextOptions, returnCalendarService, dateTimeProvider)
+        : base(contextOptions, returnCalendarService)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
@@ -160,7 +160,10 @@ namespace ESFA.DC.JobQueueManager
                     "PeriodName",
                     $"R{job.PeriodNumber.ToString("00", NumberFormatInfo.InvariantInfo)}");
                 personalisation.Add("Ukprn", job.Ukprn);
-                personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dddd dd MMMM"));
+                if (nextReturnPeriod != null)
+                {
+                    personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dddd dd MMMM"));
+                }
             }
         }
     }

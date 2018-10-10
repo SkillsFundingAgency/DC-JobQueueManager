@@ -34,7 +34,7 @@ namespace ESFA.DC.JobQueueManager
             IEmailTemplateManager emailTemplateManager,
             ILogger logger,
             IReturnCalendarService returnCalendarService)
-            : base(contextOptions, returnCalendarService, dateTimeProvider)
+            : base(contextOptions, returnCalendarService)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
@@ -158,16 +158,7 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {job.JobId} does not exist");
                 }
 
-                var statusChanged = false;
-
-                if (entity.CrossLoadingStatus.HasValue && entity.CrossLoadingStatus != (short?)job.CrossLoadingStatus)
-                {
-                    statusChanged = true;
-                }
-                else if (entity.Status != (short)job.Status)
-                {
-                    statusChanged = true;
-                }
+                bool statusChanged = entity.Status != (short)job.Status;
 
                 JobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
@@ -180,7 +171,7 @@ namespace ESFA.DC.JobQueueManager
 
                     if (statusChanged)
                     {
-                        SendEmailNotification(job.JobId, job.CrossLoadingStatus ?? job.Status, job.JobType);
+                        SendEmailNotification(job.JobId, job.CrossLoadingStatus ?? job.Status, job.JobType, job.DateTimeSubmittedUtc);
                     }
 
                     return true;
@@ -208,7 +199,7 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var statusChanged = !entity.CrossLoadingStatus.HasValue && entity.Status != (short)status;
+                var statusChanged = entity.Status != (short)status;
 
                 entity.Status = (short)status;
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
@@ -218,7 +209,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (statusChanged)
                 {
-                    SendEmailNotification(jobId, status, (JobType)entity.JobType);
+                    SendEmailNotification(jobId, status, (JobType)entity.JobType, entity.DateTimeSubmittedUtc);
                 }
 
                 return true;
@@ -240,18 +231,11 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var statusChanged = entity.CrossLoadingStatus.HasValue && entity.CrossLoadingStatus != (short)status;
-
                 entity.CrossLoadingStatus = (short)status;
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
 
                 context.SaveChanges();
-
-                if (statusChanged)
-                {
-                    SendEmailNotification(jobId, status, (JobType)entity.JobType, entity.DateTimeSubmittedUtc);
-                }
 
                 return true;
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -128,7 +129,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>());
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
                 var result = manager.GetJobByPriority();
                 result.Should().BeNull();
             }
@@ -149,7 +150,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>());
+                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
                 manager.AddJob(new Job()
                 {
                     Priority = 1,
@@ -318,10 +319,17 @@ namespace ESFA.DC.JobQueueManager.Tests
 
                 var emailTemplateManager = new Mock<IEmailTemplateManager>();
                 emailTemplateManager
-                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>()))
+                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>()))
                     .Returns("template");
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object, new Mock<IFileUploadJobManager>().Object, emailTemplateManager.Object, It.IsAny<ILogger>());
+                var manager = new JobManager(
+                    options,
+                    new Mock<IDateTimeProvider>().Object,
+                    emailNotifier.Object,
+                    new Mock<IFileUploadJobManager>().Object,
+                    emailTemplateManager.Object,
+                    It.IsAny<ILogger>(),
+                    new Mock<IReturnCalendarService>().Object);
                 manager.AddJob(new Job()
                 {
                     Status = JobStatusType.Ready,
@@ -367,10 +375,17 @@ namespace ESFA.DC.JobQueueManager.Tests
 
                 var emailTemplateManager = new Mock<IEmailTemplateManager>();
                 emailTemplateManager
-                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>()))
+                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>()))
                     .Returns("template");
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, emailNotifier.Object, new Mock<IFileUploadJobManager>().Object, emailTemplateManager.Object, It.IsAny<ILogger>());
+                var manager = new JobManager(
+                    options,
+                    new Mock<IDateTimeProvider>().Object,
+                    emailNotifier.Object,
+                    new Mock<IFileUploadJobManager>().Object,
+                    emailTemplateManager.Object,
+                    It.IsAny<ILogger>(),
+                    new Mock<IReturnCalendarService>().Object);
                 manager.AddJob(new Job()
                 {
                     Status = JobStatusType.Ready,
@@ -414,7 +429,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                     new Mock<IEmailNotifier>().Object,
                     new Mock<IFileUploadJobManager>().Object,
                     new Mock<IEmailTemplateManager>().Object,
-                    It.IsAny<ILogger>());
+                    It.IsAny<ILogger>(),
+                    new Mock<IReturnCalendarService>().Object);
 
                 manager.IsCrossLoadingEnabled(JobType.IlrSubmission).Should().BeTrue();
             }
@@ -441,7 +457,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 emailNotifier ?? new Mock<IEmailNotifier>().Object,
                 new Mock<IFileUploadJobManager>().Object,
                 emailTemplateManager ?? new Mock<IEmailTemplateManager>().Object,
-                It.IsAny<ILogger>());
+                It.IsAny<ILogger>(),
+                new Mock<IReturnCalendarService>().Object);
         }
     }
 }

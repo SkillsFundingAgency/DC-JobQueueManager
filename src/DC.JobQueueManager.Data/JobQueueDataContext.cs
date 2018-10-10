@@ -24,8 +24,7 @@ namespace ESFA.DC.JobQueueManager.Data
         {
             modelBuilder.Entity<JobEntity>().ToTable("Job");
             modelBuilder.Entity<FileUploadJobMetaDataEntity>().ToTable("FileUploadJobMetaData");
-            modelBuilder.Entity<JobEmailTemplateEntity>().ToTable("JobEmailTemplate")
-                .HasKey(x => new { x.TemplateId, x.JobStatus });
+            modelBuilder.Entity<JobEmailTemplateEntity>().ToTable("JobEmailTemplate");
             modelBuilder.Entity<JobTypeEntity>().ToTable("JobType");
             modelBuilder.Entity<Schedule>().ToTable("Schedule");
         }
