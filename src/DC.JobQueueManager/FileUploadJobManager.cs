@@ -162,7 +162,7 @@ namespace ESFA.DC.JobQueueManager
                 personalisation.Add("Ukprn", job.Ukprn);
                 if (nextReturnPeriod != null)
                 {
-                    personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dddd dd MMMM"));
+                    personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dd MMMM yyyy"));
                 }
             }
         }

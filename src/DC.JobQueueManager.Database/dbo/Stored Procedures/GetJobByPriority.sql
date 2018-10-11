@@ -35,6 +35,7 @@ BEGIN
 	AND 
 	(
 		jt.ProcessingOverrideFlag = 1 
+		OR (j.JobType = 1 AND IsNull(meta.IsFirstStage,1) = 1)
 		OR
 		(
 			jt.ProcessingOverrideFlag IS NULL 
