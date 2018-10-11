@@ -64,6 +64,7 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="Security\" />
     <Folder Include="ReferenceData" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Job.sql" />
@@ -77,7 +78,19 @@
     <None Include="ReferenceData\JobType.sql" />
     <Build Include="dbo\Tables\JobType.sql" />
     <None Include="ReferenceData\JobEmailTemplate.sql" />
-    <Build Include="ReferenceData\Schedule.sql" />
+    <None Include="ReferenceData\Schedule.sql" />
+    <Build Include="dbo\Tables\Collection.sql" />
+    <Build Include="dbo\Tables\CollectionType.sql" />
+    <Build Include="dbo\Tables\Organisation.sql" />
+    <Build Include="dbo\Tables\OrganisationCollection.sql" />
+    <Build Include="dbo\Tables\ReturnPeriod.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Add_UKPRN_to_Collection.sql" />
+    <Build Include="dbo\Views\vw_CurrentCollectionReturnPeriods.sql" />
+    <None Include="ReferenceData\Collections.sql" />
+    <None Include="ReferenceData\CollectionType.sql" />
+    <None Include="ReferenceData\ReturnPeriod.sql" />
+    <Build Include="Security\JobManagementSchedulerUser.sql" />
+    <Build Include="Security\JobManagementApiUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
@@ -91,6 +104,15 @@
     <SqlCmdVariable Include="BUILD_BUILDNUMBER">
       <DefaultValue>yyy.yyy.yyy</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="JobManagementApiUserPwd">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__7)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="JobManagementSchedulerUserPwd">
+      <DefaultValue>NotUsedlocally</DefaultValue>
+      <Value>$(SqlCmdVar__6)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
       <DefaultValue>NotUsedlocally</DefaultValue>
