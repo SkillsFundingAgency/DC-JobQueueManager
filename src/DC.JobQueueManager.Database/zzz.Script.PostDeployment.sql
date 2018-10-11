@@ -58,8 +58,6 @@ AS
 	');
 
 GO
-GO
-
 
 RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 	:r .\ReferenceData\JobStatusType.sql
@@ -71,18 +69,22 @@ RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO
+RAISERROR('		         JobQueueManagerApiUser',10,1) WITH NOWAIT;
 ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobQueueManagerApiUserPwd)';
 GO
 
+RAISERROR('		         JobQueueManagerSchedulerUser',10,1) WITH NOWAIT;
 ALTER USER [JobQueueManagerSchedulerUser] WITH PASSWORD = N'$(JobQueueManagerSchedulerUserPwd)';
 GO
 
-ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobManagementSchedulerUserPwd)';
-GO
-
+RAISERROR('		         JobManagementApiUser',10,1) WITH NOWAIT;
 ALTER USER [JobManagementApiUser] WITH PASSWORD = N'$(JobManagementApiUserPwd)';
-GO
 
 GO
+
+RAISERROR('		         JobManagementSchedulerUser',10,1) WITH NOWAIT;
+ALTER USER [JobManagementSchedulerUser] WITH PASSWORD = N'$(JobManagementSchedulerUserPwd)';
+GO
+
 RAISERROR('Completed',10,1) WITH NOWAIT;
 GO
