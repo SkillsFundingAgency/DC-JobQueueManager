@@ -65,6 +65,9 @@ RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 	:r .\ReferenceData\JobStatusType.sql
 	:r .\ReferenceData\JobType.sql
 	:r .\ReferenceData\JobEmailTemplate.sql
+	:r .\ReferenceData\CollectionType.sql
+	:r .\ReferenceData\Collections.sql
+	:r .\ReferenceData\ReturnPeriod.sql
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO
@@ -72,6 +75,12 @@ ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobQueueManagerApiUserPw
 GO
 
 ALTER USER [JobQueueManagerSchedulerUser] WITH PASSWORD = N'$(JobQueueManagerSchedulerUserPwd)';
+GO
+
+ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobManagementSchedulerUserPwd)';
+GO
+
+ALTER USER [JobManagementApiUser] WITH PASSWORD = N'$(JobManagementApiUserPwd)';
 GO
 
 GO
