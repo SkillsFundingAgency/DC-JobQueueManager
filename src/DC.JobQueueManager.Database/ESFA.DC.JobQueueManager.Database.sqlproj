@@ -65,6 +65,7 @@
     <Folder Include="Security\" />
     <Folder Include="ReferenceData" />
     <Folder Include="dbo\Views" />
+    <Folder Include="dbo\Functions\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Job.sql" />
@@ -91,6 +92,9 @@
     <None Include="ReferenceData\ReturnPeriod.sql" />
     <Build Include="Security\JobManagementSchedulerUser.sql" />
     <Build Include="Security\JobManagementApiUser.sql" />
+    <Build Include="dbo\Tables\Schedule.sql" />
+    <Build Include="dbo\Functions\IsJobInProgress.sql" />
+    <Build Include="dbo\Functions\CanProcessJob.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
