@@ -55,9 +55,14 @@ END
 
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[dbo].[GetJobByPriority] TO [JobQueueManagerSchedulerUser]
-    AS [dbo];
+--GRANT EXECUTE
+--    ON OBJECT::[dbo].[GetJobByPriority] TO [JobQueueManagerSchedulerUser]
+--    AS [dbo];
 
 GO
 
+GRANT EXECUTE
+    ON OBJECT::[dbo].[GetJobByPriority] TO [JobManagementSchedulerUser]
+    AS [dbo];
+
+GO

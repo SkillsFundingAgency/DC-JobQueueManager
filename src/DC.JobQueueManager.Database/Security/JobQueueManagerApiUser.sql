@@ -1,5 +1,5 @@
-﻿CREATE USER [JobQueueManagerApiUser]
-    WITH PASSWORD = N'$(JobQueueManagerApiUserPwd)';
-GO
-	GRANT CONNECT TO [JobQueueManagerApiUser]
-GO
+﻿--CREATE USER [JobQueueManagerApiUser]
+--    WITH PASSWORD = N'$(JobQueueManagerApiUserPwd)';
+--GO
+--	GRANT CONNECT TO [JobQueueManagerApiUser]
+--GO
