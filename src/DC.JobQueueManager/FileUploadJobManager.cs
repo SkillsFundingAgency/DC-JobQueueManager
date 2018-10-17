@@ -120,32 +120,41 @@ namespace ESFA.DC.JobQueueManager
             {
                 var entities = context.FileUploadJobMetaDataEntities.Include(x => x.Job).Where(x => x.Ukprn == ukprn)
                     .ToList();
-                foreach (var entity in entities)
-                {
-                    var model = new FileUploadJob();
-                    JobConverter.Convert(entity, model);
-                    items.Add(model);
-                }
+                return ConvertJobs(entities);
+            }
+        }
 
-                return items;
+        public IEnumerable<FileUploadJob> GetJobsByUkprnForPeriod(long ukprn, int period)
+        {
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entities = context.FileUploadJobMetaDataEntities.Include(x => x.Job)
+                    .Where(x => x.Ukprn == ukprn && x.PeriodNumber == period)
+                    .ToList();
+                return ConvertJobs(entities);
             }
         }
 
         public IEnumerable<FileUploadJob> GetAllJobs()
         {
-            var items = new List<FileUploadJob>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
                 var entities = context.FileUploadJobMetaDataEntities.Include(x => x.Job).ToList();
-                foreach (var entity in entities)
-                {
-                    var model = new FileUploadJob();
-                    JobConverter.Convert(entity, model);
-                    items.Add(model);
-                }
-
-                return items;
+                return ConvertJobs(entities);
             }
+        }
+
+        public IEnumerable<FileUploadJob> ConvertJobs(IEnumerable<FileUploadJobMetaDataEntity> entities)
+        {
+            var items = new List<FileUploadJob>();
+            foreach (var entity in entities)
+            {
+                var model = new FileUploadJob();
+                JobConverter.Convert(entity, model);
+                items.Add(model);
+            }
+
+            return items;
         }
 
         public void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation)
