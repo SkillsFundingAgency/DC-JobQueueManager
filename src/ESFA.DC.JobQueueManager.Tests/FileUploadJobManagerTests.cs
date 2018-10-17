@@ -158,7 +158,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Ukprn = 999900,
                 PeriodNumber = 2
             });
-            var result = manager.GetJobsByUkprnForPeriod(100, 2).ToList();
+            var result = manager.GetJobsByUkprnForPeriod(999900, 2).ToList();
 
             result.Should().NotBeNull();
             result.Count().Should().Be(2);
