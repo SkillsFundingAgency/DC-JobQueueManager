@@ -8,5 +8,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         bool UpdateJobStage(long jobId, bool isFirstStage);
 
         IEnumerable<FileUploadJob> GetJobsByUkprn(long ukprn);
+
+        IEnumerable<FileUploadJob> GetJobsByUkprnForPeriod(long ukprn, int period);
     }
 }
