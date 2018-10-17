@@ -32,22 +32,8 @@ BEGIN
 
 	WHERE [Status] = 1
 	AND IsNull(c.IsOpen,1) = 1 
-	AND 
-	(
-		jt.ProcessingOverrideFlag = 1 
-		OR
-		(
-			jt.ProcessingOverrideFlag IS NULL 
-			AND	Exists (select 1 from ReturnPeriod rp Where CollectionId = c.CollectionId And
-				j.DateTimeSubmittedUTC between rp.StartDateTimeUTC AND rp.EndDateTimeUTC)
-		)
-	)
-	
-	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] j1  (nolock) 
-					 LEFT JOIN dbo.FileUploadJobMetaData meta1 WITH (NOLOCK)
-						ON j1.JobId = meta1.JobId
-					WHERE [Status] IN (2,3) 
-					  And ( [JobType] = 4  Or ([JobType] In (1,2,3) And meta.[Ukprn] = meta1.[Ukprn]) ))
+	AND dbo.CanProcessJob(c.CollectionId,j.DateTimeSubmittedUTC,j.JobType,meta.IsFirstStage) = 1
+	AND dbo.IsJobInProgress(meta.Ukprn) = 0
 					
 	ORDER BY [Priority] DESC, j.JobId
 

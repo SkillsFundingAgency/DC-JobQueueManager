@@ -137,6 +137,34 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
+        public void GetJobsByUkprnForPeriod_Success()
+        {
+            var manager = GetJobManager();
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                Ukprn = 100,
+                PeriodNumber = 1
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 999900,
+                PeriodNumber = 2
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 999900,
+                PeriodNumber = 2
+            });
+            var result = manager.GetJobsByUkprnForPeriod(999900, 2).ToList();
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(2);
+        }
+
+        [Fact]
         public void GetAllJobs_Success()
         {
             var manager = GetJobManager();
