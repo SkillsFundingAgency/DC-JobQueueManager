@@ -110,21 +110,12 @@
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="JobManagementApiUserPwd">
-      <DefaultValue>
-      </DefaultValue>
+      <DefaultValue>xxxxxxxxx.x.x.x.x.x..x..xxx.</DefaultValue>
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="JobManagementSchedulerUserPwd">
       <DefaultValue>NotUsedlocally</DefaultValue>
       <Value>$(SqlCmdVar__6)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
-      <DefaultValue>NotUsedlocally</DefaultValue>
-      <Value>$(SqlCmdVar__1)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="JobQueueManagerSchedulerUserPwd">
-      <DefaultValue>NotUsedlocally</DefaultValue>
-      <Value>$(SqlCmdVar__5)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="RELEASE_RELEASENAME">
       <DefaultValue>LocalRelease</DefaultValue>
