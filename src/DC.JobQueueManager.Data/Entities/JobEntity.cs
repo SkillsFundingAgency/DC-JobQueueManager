@@ -10,8 +10,6 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
 
         [Required] [Range(1, 3)] public short JobType { get; set; }
 
-        public long? Ukprn { get; set; }
-
         [Required] [Range(1, 5)] public short Priority { get; set; }
 
         [Required] public DateTime DateTimeSubmittedUtc { get; set; }
@@ -25,5 +23,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public string SubmittedBy { get; set; }
 
         public string NotifyEmail { get; set; }
+
+        public short? CrossLoadingStatus { get; set; }
    }
 }

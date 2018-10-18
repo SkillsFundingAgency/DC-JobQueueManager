@@ -6,10 +6,10 @@ CREATE TABLE [dbo].[Job](
 	[DateTimeSubmittedUTC] [datetime] NOT NULL,
 	[DateTimeUpdatedUTC] [datetime] NULL,
 	[SubmittedBy] [varchar](50) NULL,
-	[Ukprn] [bigint] NULL,
 	[Status] [smallint] NOT NULL,
 	[RowVersion] [timestamp] NOT NULL,
- [NotifyEmail] NVARCHAR(500) NULL, 
+    [NotifyEmail] NVARCHAR(500) NULL, 
+    [CrossLoadingStatus] SMALLINT NULL , 
     CONSTRAINT [PK_Job_memoryoptimizedtable] PRIMARY KEY CLUSTERED 
 (
 	[JobId] ASC

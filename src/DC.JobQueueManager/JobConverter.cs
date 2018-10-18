@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
@@ -6,9 +7,9 @@ using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public static class IlrJobConverter
+    public static class JobConverter
     {
-        public static JobEntity Convert(IlrJob source)
+        public static JobEntity Convert(Job source)
         {
             if (source == null)
             {
@@ -20,46 +21,61 @@ namespace ESFA.DC.JobQueueManager
             return entity;
         }
 
-        public static IlrJob Convert(JobEntity source)
+        public static Job Convert(JobEntity source)
         {
             if (source == null)
             {
                 return null;
             }
 
-            var entity = new IlrJob();
+            var entity = new Job();
             Convert(source, entity);
             return entity;
         }
 
-        public static void Convert(IlrJob source, JobEntity destination)
+        public static void Convert(Job source, JobEntity destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.JobType = (short)source.JobType;
             destination.Priority = source.Priority;
             destination.Status = (short)source.Status;
-            destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
             destination.RowVersion = source.RowVersion == null ? null : System.Text.Encoding.UTF8.GetBytes(source.RowVersion);
+            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (short)source.CrossLoadingStatus : (short?)null;
         }
 
-        public static void Convert(JobEntity source, IlrJob destination)
+        public static void Convert(JobEntity source, Job destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.Priority = source.Priority;
             destination.Status = (JobStatusType)source.Status;
-            destination.Ukprn = source.Ukprn;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
+            destination.JobType = (JobType)source.JobType;
+            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (JobStatusType)source.CrossLoadingStatus.Value : (JobStatusType?)null;
         }
 
-        public static void Convert(IlrJobMetaDataEntity source, IlrJob destination)
+        public static void Convert(JobEntity source, FileUploadJob destination)
+        {
+            destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
+            destination.Priority = source.Priority;
+            destination.Status = (JobStatusType)source.Status;
+            destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
+            destination.JobId = source.JobId;
+            destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
+            destination.SubmittedBy = source.SubmittedBy;
+            destination.NotifyEmail = source.NotifyEmail;
+            destination.JobType = (JobType)source.JobType;
+            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (JobStatusType)source.CrossLoadingStatus.Value : (JobStatusType?)null;
+        }
+
+        public static void Convert(FileUploadJobMetaDataEntity source, FileUploadJob destination)
         {
             if (source == null)
             {
@@ -68,7 +84,7 @@ namespace ESFA.DC.JobQueueManager
 
             if (destination == null)
             {
-                destination = new IlrJob();
+                destination = new FileUploadJob();
             }
 
             destination.FileName = source.FileName;
@@ -78,9 +94,11 @@ namespace ESFA.DC.JobQueueManager
             destination.IsFirstStage = source.IsFirstStage;
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
+            destination.Ukprn = source.Ukprn;
+            Convert(source.Job, destination);
         }
 
-        public static void Convert(IlrJob source, IlrJobMetaDataEntity destination)
+        public static void Convert(FileUploadJob source, FileUploadJobMetaDataEntity destination)
         {
             if (source == null)
             {
@@ -89,7 +107,7 @@ namespace ESFA.DC.JobQueueManager
 
             if (destination == null)
             {
-                destination = new IlrJobMetaDataEntity();
+                destination = new FileUploadJobMetaDataEntity();
             }
 
             destination.FileName = source.FileName;
@@ -99,6 +117,7 @@ namespace ESFA.DC.JobQueueManager
             destination.IsFirstStage = source.IsFirstStage;
             destination.CollectionName = source.CollectionName;
             destination.PeriodNumber = source.PeriodNumber;
+            destination.Ukprn = source.Ukprn;
         }
     }
 }

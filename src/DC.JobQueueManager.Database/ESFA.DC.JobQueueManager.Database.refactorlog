@@ -14,4 +14,102 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="JobStatus" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3c04e071-db7b-4f83-8441-5190baa5692d" ChangeDateTime="09/18/2018 13:12:35">
+    <Property Name="ElementName" Value="[dbo].[JobStatusType].[StatusId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobStatusType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTypeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="500176e7-6c54-47d2-b7c3-83e4e70ab901" ChangeDateTime="09/18/2018 13:12:42">
+    <Property Name="ElementName" Value="[dbo].[JobStatusType].[StatusTitle]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobStatusType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Title" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5975b8ab-cdf2-4e65-96ec-d464b35fc53d" ChangeDateTime="09/18/2018 13:12:47">
+    <Property Name="ElementName" Value="[dbo].[JobStatusType].[StatusDescription]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobStatusType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Description" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fbcc6177-49bc-4b9a-bdd4-dff1386391c1" ChangeDateTime="09/21/2018 15:29:41">
+    <Property Name="ElementName" Value="[dbo].[JobType].[IsCrossLoaded]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsCrossLoadingActive" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="265bd58a-35a9-45a7-9f0c-883c415bd435" ChangeDateTime="09/21/2018 15:48:46">
+    <Property Name="ElementName" Value="[dbo].[JobType].[IsCrossLoadingActive]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsCrossLoadingEnabled" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4b5ce0d7-3b26-4026-9f4d-dba7b36b86c5" ChangeDateTime="09/24/2018 14:35:54">
+    <Property Name="ElementName" Value="[dbo].[Job].[IsCorssLoaded]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Job]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsCrossLoaded" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="60a8bcfb-fbd3-4514-99c7-0885fd46e426" ChangeDateTime="09/25/2018 13:36:04">
+    <Property Name="ElementName" Value="[dbo].[Job].[IsCrossLoaded]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Job]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CrossLoadingStatus" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b7f62cac-6cef-4741-a044-9db098c7fc25" ChangeDateTime="10/09/2018 12:37:35">
+    <Property Name="ElementName" Value="[dbo].[JobType].[ProcessingOverride]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProcessingOverrideFlag" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f60c7600-090f-4d25-bfa8-bf7cf1c3ab4c" ChangeDateTime="10/09/2018 14:59:02">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[Column1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ReturnWindowOpen" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4dc05023-0535-4804-a6e9-002b48eb2358" ChangeDateTime="10/09/2018 15:02:49">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateIdOpenPeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6387d8b5-0d0f-438e-ac55-771b398227ae" ChangeDateTime="10/09/2018 15:02:59">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[ReturnWindowOpen]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateIdOpenPeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="44c4c91b-7d3f-4331-b000-a9aaddd2daa4" ChangeDateTime="10/09/2018 15:03:08">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateIdOpenPeriod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateIdClosePeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="50a394e1-dc00-470b-9f06-fe00780d0247" ChangeDateTime="10/09/2018 15:04:19">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateIdOpenPeriod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateOpenPeriod" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6840c252-8e9a-4b83-bfbb-072f496c959e" ChangeDateTime="10/09/2018 15:04:23">
+    <Property Name="ElementName" Value="[dbo].[JobEmailTemplate].[TemplateIdClosePeriod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobEmailTemplate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TemplateClosePeriod" />
+  </Operation>
 </Operations>

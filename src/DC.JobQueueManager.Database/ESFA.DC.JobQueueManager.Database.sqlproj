@@ -64,16 +64,37 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="Security\" />
     <Folder Include="ReferenceData" />
+    <Folder Include="dbo\Views" />
+    <Folder Include="dbo\Functions\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Job.sql" />
     <Build Include="dbo\Stored Procedures\GetJobByPriority.sql" />
     <Build Include="Security\JobQueueManagerApiUser.sql" />
     <Build Include="Security\RoleMemberships.sql" />
-    <Build Include="dbo\Tables\IlrJobMetaData.sql" />
+    <Build Include="dbo\Tables\FileUploadJobMetaData.sql" />
     <Build Include="Security\JobQueueManagerSchedulerUser.sql" />
     <Build Include="dbo\Tables\JobStatusType.sql" />
     <Build Include="dbo\Tables\JobEmailTemplate.sql" />
+    <None Include="ReferenceData\JobType.sql" />
+    <Build Include="dbo\Tables\JobType.sql" />
+    <None Include="ReferenceData\JobEmailTemplate.sql" />
+    <None Include="ReferenceData\Schedule.sql" />
+    <Build Include="dbo\Tables\Collection.sql" />
+    <Build Include="dbo\Tables\CollectionType.sql" />
+    <Build Include="dbo\Tables\Organisation.sql" />
+    <Build Include="dbo\Tables\OrganisationCollection.sql" />
+    <Build Include="dbo\Tables\ReturnPeriod.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Add_UKPRN_to_Collection.sql" />
+    <Build Include="dbo\Views\vw_CurrentCollectionReturnPeriods.sql" />
+    <None Include="ReferenceData\Collections.sql" />
+    <None Include="ReferenceData\CollectionType.sql" />
+    <None Include="ReferenceData\ReturnPeriod.sql" />
+    <Build Include="Security\JobManagementSchedulerUser.sql" />
+    <Build Include="Security\JobManagementApiUser.sql" />
+    <Build Include="dbo\Tables\Schedule.sql" />
+    <Build Include="dbo\Functions\IsJobInProgress.sql" />
+    <Build Include="dbo\Functions\CanProcessJob.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
@@ -88,13 +109,13 @@
       <DefaultValue>yyy.yyy.yyy</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
-      <DefaultValue>NotUsedlocally</DefaultValue>
-      <Value>$(SqlCmdVar__1)</Value>
+    <SqlCmdVariable Include="JobManagementApiUserPwd">
+      <DefaultValue>xxxxxxxxx.x.x.x.x.x..x..xxx.</DefaultValue>
+      <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="JobQueueManagerSchedulerUserPwd">
+    <SqlCmdVariable Include="JobManagementSchedulerUserPwd">
       <DefaultValue>NotUsedlocally</DefaultValue>
-      <Value>$(SqlCmdVar__5)</Value>
+      <Value>$(SqlCmdVar__6)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="RELEASE_RELEASENAME">
       <DefaultValue>LocalRelease</DefaultValue>

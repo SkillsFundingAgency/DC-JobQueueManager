@@ -4,7 +4,7 @@
 -- Create Date: 
 -- Description: 
 -- =============================================
-CREATE PROCEDURE GetJobByPriority
+CREATE PROCEDURE [dbo].[GetJobByPriority]
 AS
 BEGIN
     -- SET NOCOUNT ON added to prevent extra result sets from
@@ -12,7 +12,7 @@ BEGIN
     SET NOCOUNT ON
 
 	SELECT TOP 1 
-		   [JobId]
+		   j.JobId
 		  ,[JobType]
 		  ,[Priority]
 		  ,[DateTimeSubmittedUTC]
@@ -22,21 +22,33 @@ BEGIN
 		  ,[RowVersion]
 		  ,[SubmittedBy]
 		  ,[NotifyEmail]
+		  ,[CrossLoadingStatus]
 	FROM [dbo].[Job] j WITH (nolock) 
+	INNER JOIN [dbo].[JobType] jt WITH (nolock) 
+		on jt.JobTypeId = j.JobType
+	LEFT JOIN dbo.FileUploadJobMetaData meta WITH (NOLOCK)
+		ON j.JobId = meta.JobId
+	LEFT JOIN dbo.[Collection] c ON c.[Name] = meta.CollectionName
+
 	WHERE [Status] = 1
-	AND NOT EXISTS (SELECT 1 FROM [dbo].[Job] (nolock) 
-					WHERE [Status] IN (2,3) 
-					  And ( [JobType] = 2  Or ([JobType] =1 And [Ukprn] = j.[Ukprn]) )
-					)
-	ORDER BY [Priority] DESC, [JobId]
+	AND IsNull(c.IsOpen,1) = 1 
+	AND dbo.CanProcessJob(c.CollectionId,j.DateTimeSubmittedUTC,j.JobType,meta.IsFirstStage) = 1
+	AND dbo.IsJobInProgress(meta.Ukprn) = 0
+					
+	ORDER BY [Priority] DESC, j.JobId
 
 END
 
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[dbo].[GetJobByPriority] TO [JobQueueManagerSchedulerUser]
-    AS [dbo];
+--GRANT EXECUTE
+--    ON OBJECT::[dbo].[GetJobByPriority] TO [JobQueueManagerSchedulerUser]
+--    AS [dbo];
 
 GO
 
+GRANT EXECUTE
+    ON OBJECT::[dbo].[GetJobByPriority] TO [JobManagementSchedulerUser]
+    AS [dbo];
+
+GO
