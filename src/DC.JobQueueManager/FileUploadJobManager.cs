@@ -79,7 +79,8 @@ namespace ESFA.DC.JobQueueManager
                     Job = entity,
                     CollectionName = job.CollectionName,
                     PeriodNumber = job.PeriodNumber,
-                    Ukprn = job.Ukprn
+                    Ukprn = job.Ukprn,
+                    TermsAccepted = job.TermsAccepted
                 };
                 context.Jobs.Add(entity);
                 context.FileUploadJobMetaDataEntities.Add(metaEntity);
