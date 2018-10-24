@@ -95,6 +95,7 @@
     <Build Include="dbo\Tables\Schedule.sql" />
     <Build Include="dbo\Functions\IsJobInProgress.sql" />
     <Build Include="dbo\Functions\CanProcessJob.sql" />
+    <None Include="__Add.Multiple.UKPRN.to.Collection.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
