@@ -3,8 +3,14 @@ DECLARE @SummaryOfChanges_JobEmailTemplate TABLE ([EventId] varchar(500), [Actio
 
 MERGE INTO [dbo].[JobEmailTemplate] AS Target
 USING (VALUES
-		('3cfbfb6b-0a8e-48f1-b716-268af491696b','90a341c2-dcf2-41b7-87c7-4e341f02616d',1,1,1),
-		('e2219426-4cd8-4bb6-9f96-f77ea040699a',NULL,4,1,1)
+		('3cfbfb6b-0a8e-48f1-b716-268af491696b','90a341c2-dcf2-41b7-87c7-4e341f02616d',1,1,1), --ILR
+		('e2219426-4cd8-4bb6-9f96-f77ea040699a',NULL,4,1,1),--ILR
+
+		('0cff79db-9e77-4f67-aa37-5d10752751f3',NULL,1,1,2),--EAS
+		('8ad7d223-fae9-4b37-a5e5-9aaa13fdc7c5',NULL,4,1,2),--EAS
+
+		('78237b46-7602-454f-9c3d-ec2601554909',NULL,1,1,3),--ESF
+		('61c0129b-f03d-4e7f-b188-4dc59293cace',NULL,4,1,3)--ESF
 	  )
 	AS Source([TemplateOpenPeriod],[TemplateClosePeriod], [JobStatus], [Active],[JobType])
 	ON Target.[TemplateOpenPeriod] = Source.[TemplateOpenPeriod]

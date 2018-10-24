@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using ESFA.DC.Jobs.Model;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
@@ -12,6 +11,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 
         IEnumerable<T> GetAllJobs();
 
-        void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation);
+        void SendEmailNotification(long jobId);
     }
 }
