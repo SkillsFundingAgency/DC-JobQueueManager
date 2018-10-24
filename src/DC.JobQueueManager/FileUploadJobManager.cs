@@ -5,11 +5,14 @@ using System.Globalization;
 using System.Linq;
 using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
+using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
+using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
+using ESFA.DC.Logging.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager
@@ -18,15 +21,22 @@ namespace ESFA.DC.JobQueueManager
     {
         private readonly DbContextOptions _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IEmailNotifier _emailNotifier;
+        private readonly ILogger _logger;
 
         public FileUploadJobManager(
             DbContextOptions contextOptions,
             IDateTimeProvider dateTimeProvider,
-            IReturnCalendarService returnCalendarService)
-        : base(contextOptions, returnCalendarService)
+            IReturnCalendarService returnCalendarService,
+            IEmailTemplateManager emailTemplateManager,
+            IEmailNotifier emailNotifier,
+            ILogger logger)
+        : base(contextOptions, returnCalendarService, emailTemplateManager)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
+            _emailNotifier = emailNotifier;
+            _logger = logger;
         }
 
         public FileUploadJob GetJobById(long jobId)
@@ -85,6 +95,13 @@ namespace ESFA.DC.JobQueueManager
                 context.Jobs.Add(entity);
                 context.FileUploadJobMetaDataEntities.Add(metaEntity);
                 context.SaveChanges();
+
+                //send email on create for esf and eas
+                if (job.JobType != JobType.IlrSubmission)
+                {
+                    SendEmailNotification(entity.JobId);
+                }
+
                 return entity.JobId;
             }
         }
@@ -158,22 +175,43 @@ namespace ESFA.DC.JobQueueManager
             return items;
         }
 
-        public void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation)
+        public void SendEmailNotification(long jobId)
         {
-            var job = GetJobById(jobId);
-            if (job != null)
+            try
             {
-                var nextReturnPeriod = GetNextReturnPeriod(job.CollectionName);
-                personalisation.Add("FileName", job.FileName);
-                personalisation.Add("CollectionName", job.CollectionName);
-                personalisation.Add(
-                    "PeriodName",
-                    $"R{job.PeriodNumber.ToString("00", NumberFormatInfo.InvariantInfo)}");
-                personalisation.Add("Ukprn", job.Ukprn);
-                if (nextReturnPeriod != null)
+                var job = GetJobById(jobId);
+                var template = GetTemplate(jobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
+
+                if (!string.IsNullOrEmpty(template))
                 {
-                    personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dd MMMM yyyy"));
+                    var personalisation = new Dictionary<string, dynamic>();
+
+                    var submittedAt = _dateTimeProvider.ConvertUtcToUk(job.DateTimeSubmittedUtc);
+
+                    personalisation.Add("JobId", job.JobId);
+                    personalisation.Add("Name", job.SubmittedBy);
+                    personalisation.Add(
+                        "DateTimeSubmitted",
+                        string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
+
+                    var nextReturnPeriod = GetNextReturnPeriod(job.CollectionName);
+                    personalisation.Add("FileName", job.FileName);
+                    personalisation.Add("CollectionName", job.CollectionName);
+                    personalisation.Add(
+                        "PeriodName",
+                        $"R{job.PeriodNumber.ToString("00", NumberFormatInfo.InvariantInfo)}");
+                    personalisation.Add("Ukprn", job.Ukprn);
+                    if (nextReturnPeriod != null)
+                    {
+                        personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dd MMMM yyyy"));
+                    }
+
+                    _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Sending email failed for job {jobId}", ex);
             }
         }
     }
