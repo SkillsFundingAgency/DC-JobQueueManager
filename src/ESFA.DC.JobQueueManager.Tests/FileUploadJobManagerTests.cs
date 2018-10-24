@@ -7,8 +7,10 @@ using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
+using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.JobStatus.Interface;
+using ESFA.DC.Logging.Interfaces;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -206,7 +208,13 @@ namespace ESFA.DC.JobQueueManager.Tests
 
         private FileUploadJobManager GetJobManager()
         {
-            return new FileUploadJobManager(GetContextOptions(), new Mock<IDateTimeProvider>().Object, new Mock<IReturnCalendarService>().Object);
+            return new FileUploadJobManager(
+                GetContextOptions(),
+                new Mock<IDateTimeProvider>().Object,
+                new Mock<IReturnCalendarService>().Object,
+                new Mock<IEmailTemplateManager>().Object,
+                new Mock<IEmailNotifier>().Object,
+                new Mock<ILogger>().Object);
         }
     }
 }

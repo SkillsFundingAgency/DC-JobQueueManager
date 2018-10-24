@@ -34,7 +34,7 @@ namespace ESFA.DC.JobQueueManager
             IEmailTemplateManager emailTemplateManager,
             ILogger logger,
             IReturnCalendarService returnCalendarService)
-            : base(contextOptions, returnCalendarService)
+            : base(contextOptions, returnCalendarService, emailTemplateManager)
         {
             _contextOptions = contextOptions;
             _dateTimeProvider = dateTimeProvider;
@@ -61,7 +61,8 @@ namespace ESFA.DC.JobQueueManager
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
                     NotifyEmail = job.NotifyEmail,
-                    CrossLoadingStatus = IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
+                    CrossLoadingStatus =
+                        IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
                 };
                 context.Jobs.Add(entity);
                 context.SaveChanges();
@@ -162,7 +163,8 @@ namespace ESFA.DC.JobQueueManager
 
                 JobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
-                context.Entry(entity).Property("RowVersion").OriginalValue = job.RowVersion == null ? null : Convert.FromBase64String(job.RowVersion);
+                context.Entry(entity).Property("RowVersion").OriginalValue =
+                    job.RowVersion == null ? null : Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
 
                 try
@@ -171,7 +173,7 @@ namespace ESFA.DC.JobQueueManager
 
                     if (statusChanged)
                     {
-                        SendEmailNotification(job.JobId, job.CrossLoadingStatus ?? job.Status, job.JobType, job.DateTimeSubmittedUtc);
+                        SendEmailNotification(job);
                     }
 
                     return true;
@@ -209,7 +211,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (statusChanged)
                 {
-                    SendEmailNotification(jobId, status, (JobType)entity.JobType, entity.DateTimeSubmittedUtc);
+                    SendEmailNotification(jobId);
                 }
 
                 return true;
@@ -241,43 +243,35 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public void SendEmailNotification(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc)
+        public void SendEmailNotification(Job job)
         {
             try
             {
-                var template = _emailTemplateManager.GetTemplate(jobId, status, jobType, dateTimeJobSubmittedUtc);
+                var template =
+                    _emailTemplateManager.GetTemplate(job.JobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
 
                 if (!string.IsNullOrEmpty(template))
                 {
                     var personalisation = new Dictionary<string, dynamic>();
-                    var job = GetJobById(jobId);
 
-                    PopulatePersonalisation(jobId, personalisation);
-
-                    if (jobType == JobType.IlrSubmission || jobType == JobType.EsfSubmission ||
-                        jobType == JobType.EasSubmission)
-                    {
-                        _fileUploadJobManager.PopulatePersonalisation(jobId, personalisation);
-                    }
+                    var submittedAt = _dateTimeProvider.ConvertUtcToUk(job.DateTimeSubmittedUtc);
+                    personalisation.Add("JobId", job.JobId);
+                    personalisation.Add("Name", job.SubmittedBy);
+                    personalisation.Add("DateTimeSubmitted", string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
 
                     _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Sending email failed for job {jobId}", ex);
+                _logger.LogError($"Sending email failed for job {job.JobId}", ex);
             }
         }
 
-        public void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation)
+        public void SendEmailNotification(long jobId)
         {
             var job = GetJobById(jobId);
-            var submittedAt = _dateTimeProvider.ConvertUtcToUk(job.DateTimeSubmittedUtc);
-            personalisation.Add("JobId", job.JobId);
-            personalisation.Add("Name", job.SubmittedBy);
-            personalisation.Add(
-                "DateTimeSubmitted",
-                string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
+            SendEmailNotification(job);
         }
     }
 }
