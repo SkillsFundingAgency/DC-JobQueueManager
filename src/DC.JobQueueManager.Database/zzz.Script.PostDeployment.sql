@@ -65,18 +65,29 @@ RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 	:r .\ReferenceData\JobEmailTemplate.sql
 	:r .\ReferenceData\CollectionType.sql
 	:r .\ReferenceData\Collections.sql
-	:r .\ReferenceData\ReturnPeriod.sql
+	:r .\ReferenceData\ReturnPeriod_ESF.sql
+	:r .\ReferenceData\ReturnPeriod_EAS1819.sql
+	--:r .\ReferenceData\ReturnPeriod_EAS1920.sql
+	:r .\ReferenceData\ReturnPeriod_ILR1819.sql
+	--:r .\ReferenceData\ReturnPeriod_ILR1920.sql
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO
 
 RAISERROR('		         JobManagementApiUser',10,1) WITH NOWAIT;
 ALTER USER [JobManagementApiUser] WITH PASSWORD = N'$(JobManagementApiUserPwd)';
-
 GO
 
 RAISERROR('		         JobManagementSchedulerUser',10,1) WITH NOWAIT;
 ALTER USER [JobManagementSchedulerUser] WITH PASSWORD = N'$(JobManagementSchedulerUserPwd)';
+GO
+
+RAISERROR('		         JobManagementSchedulerUser',10,1) WITH NOWAIT;
+ALTER USER [JobManagement_RO_User] WITH PASSWORD = N'$(ROUserPassword)';
+GO
+
+RAISERROR('		         User DSCI',10,1) WITH NOWAIT;
+ALTER USER [User_DSCI] WITH PASSWORD = N'$(DsciUserPassword)';
 GO
 
 RAISERROR('Completed',10,1) WITH NOWAIT;

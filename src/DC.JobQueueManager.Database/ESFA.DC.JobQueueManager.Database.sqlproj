@@ -79,7 +79,6 @@
     <None Include="ReferenceData\JobType.sql" />
     <Build Include="dbo\Tables\JobType.sql" />
     <None Include="ReferenceData\JobEmailTemplate.sql" />
-    <None Include="ReferenceData\Schedule.sql" />
     <Build Include="dbo\Tables\Collection.sql" />
     <Build Include="dbo\Tables\CollectionType.sql" />
     <Build Include="dbo\Tables\Organisation.sql" />
@@ -89,13 +88,22 @@
     <Build Include="dbo\Views\vw_CurrentCollectionReturnPeriods.sql" />
     <None Include="ReferenceData\Collections.sql" />
     <None Include="ReferenceData\CollectionType.sql" />
-    <None Include="ReferenceData\ReturnPeriod.sql" />
+    <None Include="ReferenceData\ReturnPeriod_ILR1819.sql" />
     <Build Include="Security\JobManagementSchedulerUser.sql" />
     <Build Include="Security\JobManagementApiUser.sql" />
     <Build Include="dbo\Tables\Schedule.sql" />
     <Build Include="dbo\Functions\IsJobInProgress.sql" />
     <Build Include="dbo\Functions\CanProcessJob.sql" />
     <None Include="__Add.Multiple.UKPRN.to.Collection.sql" />
+    <None Include="ReferenceData\ReturnPeriod_EAS1819.sql" />
+    <None Include="ReferenceData\ReturnPeriod_ESF.sql" />
+    <None Include="ReferenceData\ReturnPeriod_EAS1920.sql" />
+    <None Include="ReferenceData\ReturnPeriod_ILR1920.sql" />
+    <Build Include="dbo\Views\vw_JobInfo.sql" />
+    <Build Include="Security\Role_DataViewer.sql" />
+    <Build Include="Security\User_DsciUser.sql" />
+    <Build Include="Security\User_RO.sql" />
+    <Build Include="Security\Role_DataProcessor.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
@@ -110,17 +118,25 @@
       <DefaultValue>yyy.yyy.yyy</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="DsciUserPassword">
+      <DefaultValue>NotUsedlocally3</DefaultValue>
+      <Value>$(SqlCmdVar__8)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="JobManagementApiUserPwd">
-      <DefaultValue>xxxxxxxxx.x.x.x.x.x..x..xxx.</DefaultValue>
+      <DefaultValue>NotUsedlocally1</DefaultValue>
       <Value>$(SqlCmdVar__7)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="JobManagementSchedulerUserPwd">
-      <DefaultValue>NotUsedlocally</DefaultValue>
+      <DefaultValue>NotUsedlocally2</DefaultValue>
       <Value>$(SqlCmdVar__6)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="RELEASE_RELEASENAME">
       <DefaultValue>LocalRelease</DefaultValue>
       <Value>$(SqlCmdVar__4)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ROUserPassword">
+      <DefaultValue>NotUsedlocally4</DefaultValue>
+      <Value>$(SqlCmdVar__9)</Value>
     </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
@@ -128,5 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ESFA.DC.JobQueueManager.Database.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="zz.Script.PreDeployment.sql" />
   </ItemGroup>
 </Project>

@@ -8,9 +8,11 @@ BEGIN
 			SELECT NewRecords.[CollectionId], NewRecords.[Name], NewRecords.[IsOpen], CT.[CollectionTypeId]
 			FROM 
 			(
-				  SELECT 1 AS [CollectionId], N'ILR1819' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType]
-			UNION SELECT 2 AS [CollectionId], N'EAS' as [Name],     1 as [IsOpen], N'EAS' as [CollectionType]
-			UNION SELECT 3 AS [CollectionId], N'ESF' as [Name],     1 as [IsOpen], N'ESF' as [CollectionType]
+					  SELECT 1 AS [CollectionId], N'ILR1819' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType]
+				UNION SELECT 2 AS [CollectionId], N'EAS1819' as [Name], 1 as [IsOpen], N'EAS' as [CollectionType]
+				UNION SELECT 3 AS [CollectionId], N'ESF'     as [Name], 1 as [IsOpen], N'ESF' as [CollectionType]
+				UNION SELECT 4 AS [CollectionId], N'EAS1920' as [Name], 1 as [IsOpen], N'EAS' as [CollectionType]
+				UNION SELECT 5 AS [CollectionId], N'ILR1920' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType]
 			) AS NewRecords
 			INNER JOIN [dbo].[CollectionType] CT
 				ON CT.[TYPE] = NewRecords.[CollectionType]
@@ -41,5 +43,5 @@ BEGIN
 		SET @UpdateCount_C = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_Collection WHERE [Action] = 'Update' GROUP BY Action),0);
 		SET @DeleteCount_C = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_Collection WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-		RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'    Collection', @AddCount_C, @UpdateCount_C, @DeleteCount_C) WITH NOWAIT;
+		RAISERROR('		         %s - Added %i - Update %i - Delete %i',10,1,'   Collection', @AddCount_C, @UpdateCount_C, @DeleteCount_C) WITH NOWAIT;
 END
