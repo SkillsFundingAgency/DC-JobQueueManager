@@ -145,4 +145,7 @@
   <ItemGroup>
     <RefactorLog Include="ESFA.DC.JobQueueManager.Database.refactorlog" />
   </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="zz.Script.PreDeployment.sql" />
+  </ItemGroup>
 </Project>

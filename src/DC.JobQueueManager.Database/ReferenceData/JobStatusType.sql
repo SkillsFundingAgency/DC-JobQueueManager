@@ -36,5 +36,5 @@ USING (VALUES
 	SET @UpdateCount_JST = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobStatusType WHERE [Action] = 'Update' GROUP BY Action),0);
 	SET @DeleteCount_JST = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobStatusType WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-	RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'JobStatusType', @AddCount_JST, @UpdateCount_JST, @DeleteCount_JST) WITH NOWAIT;
+	RAISERROR('		         %s - Added %i - Update %i - Delete %i',10,1,'JobStatusType', @AddCount_JST, @UpdateCount_JST, @DeleteCount_JST) WITH NOWAIT;
 

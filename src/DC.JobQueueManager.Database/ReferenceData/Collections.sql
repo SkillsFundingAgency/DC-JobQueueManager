@@ -43,5 +43,5 @@ BEGIN
 		SET @UpdateCount_C = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_Collection WHERE [Action] = 'Update' GROUP BY Action),0);
 		SET @DeleteCount_C = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_Collection WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-		RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'    Collection', @AddCount_C, @UpdateCount_C, @DeleteCount_C) WITH NOWAIT;
+		RAISERROR('		         %s - Added %i - Update %i - Delete %i',10,1,'   Collection', @AddCount_C, @UpdateCount_C, @DeleteCount_C) WITH NOWAIT;
 END

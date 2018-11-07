@@ -74,7 +74,7 @@ BEGIN
 			SET @UpdateCount_RT_EAS1819 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1819 WHERE [Action] = 'Update' GROUP BY Action),0);
 			SET @DeleteCount_RT_EAS1819 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1819 WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-			RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'  ReturnPeriod', @AddCount_RT_EAS1819, @UpdateCount_RT_EAS1819, @DeleteCount_RT_EAS1819) WITH NOWAIT;
+			RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod', @AddCount_RT_EAS1819, @UpdateCount_RT_EAS1819, @DeleteCount_RT_EAS1819) WITH NOWAIT;
 
 			--SELECT t.*, soc.Action FROM @DataTable_EAS1819 t LEFT JOIN @SummaryOfChanges_ReturnPeriod_EAS1819 soc ON t.[CollectionId] = soc.[CollectionId] AND t.[PeriodNumber] = soc.[PeriodNumber]
 			
