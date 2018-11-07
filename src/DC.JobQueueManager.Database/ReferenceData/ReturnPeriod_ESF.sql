@@ -94,7 +94,7 @@ BEGIN
 			SET @UpdateCount_RT_ESF = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_ESF WHERE [Action] = 'Update' GROUP BY Action),0);
 			SET @DeleteCount_RT_ESF = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_ESF WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-			RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod', @AddCount_RT_ESF, @UpdateCount_RT_ESF, @DeleteCount_RT_ESF) WITH NOWAIT;
+			RAISERROR('		      %s : %s    - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod',@CollectionNameESF, @AddCount_RT_ESF, @UpdateCount_RT_ESF, @DeleteCount_RT_ESF) WITH NOWAIT;
 
 			--SELECT t.*, soc.Action FROM @DataTable_ESF t LEFT JOIN @SummaryOfChanges_ReturnPeriod_ESF soc ON t.[CollectionId] = soc.[CollectionId] AND t.[PeriodNumber] = soc.[PeriodNumber]
 			

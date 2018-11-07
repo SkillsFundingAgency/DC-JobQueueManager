@@ -92,7 +92,7 @@ BEGIN
 			SET @UpdateCount_RT_ILR1920 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_ILR1920 WHERE [Action] = 'Update' GROUP BY Action),0);
 			SET @DeleteCount_RT_ILR1920 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_ILR1920 WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-			RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod', @AddCount_RT_ILR1920, @UpdateCount_RT_ILR1920, @DeleteCount_RT_ILR1920) WITH NOWAIT;
+			RAISERROR('		      %s : %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod',CollectionNameILR1920, @AddCount_RT_ILR1920, @UpdateCount_RT_ILR1920, @DeleteCount_RT_ILR1920) WITH NOWAIT;
 
 			--SELECT t.*, soc.Action FROM @DataTable_ILR1920 t LEFT JOIN @SummaryOfChanges_ReturnPeriod_ILR1920 soc ON t.[CollectionId] = soc.[CollectionId] AND t.[PeriodNumber] = soc.[PeriodNumber]
 			
