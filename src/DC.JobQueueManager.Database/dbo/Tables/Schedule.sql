@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Schedule] (
-    [ID]                  BIGINT         IDENTITY (1, 1) NOT NULL,
+    [ID]                  BIGINT         NOT NULL IDENTITY (1, 1),
     [Enabled]             BIT            NOT NULL,
     [MinuteIsCadence]     BIT            NULL,
     [Minute]              TINYINT        NULL,

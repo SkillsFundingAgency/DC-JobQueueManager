@@ -8,9 +8,11 @@ BEGIN
 			SELECT NewRecords.[CollectionId], NewRecords.[Name], NewRecords.[IsOpen], CT.[CollectionTypeId]
 			FROM 
 			(
-				  SELECT 1 AS [CollectionId], N'ILR1819' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType]
-			UNION SELECT 2 AS [CollectionId], N'EAS' as [Name],     1 as [IsOpen], N'EAS' as [CollectionType]
-			UNION SELECT 3 AS [CollectionId], N'ESF' as [Name],     1 as [IsOpen], N'ESF' as [CollectionType]
+					  SELECT 1 AS [CollectionId], N'ILR1819' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType]
+				UNION SELECT 2 AS [CollectionId], N'EAS1819' as [Name], 1 as [IsOpen], N'EAS' as [CollectionType]
+				UNION SELECT 3 AS [CollectionId], N'ESF'     as [Name], 1 as [IsOpen], N'ESF' as [CollectionType]
+				UNION SELECT 4 AS [CollectionId], N'EAS1920' as [Name], 1 as [IsOpen], N'EAS' as [CollectionType]
+				UNION SELECT 5 AS [CollectionId], N'ILR1920' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType]
 			) AS NewRecords
 			INNER JOIN [dbo].[CollectionType] CT
 				ON CT.[TYPE] = NewRecords.[CollectionType]

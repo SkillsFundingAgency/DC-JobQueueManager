@@ -2,7 +2,7 @@
     [ReturnPeriodId]   INT          NOT NULL IDENTITY(1,1),
     [StartDateTimeUTC] DATETIME     NOT NULL,
     [EndDateTimeUTC]   DATETIME     NOT NULL,
-    [PeriodNumber]     INT NOT NULL,
+    [PeriodNumber]     INT			NOT NULL,
     [CollectionId]     INT          NOT NULL,
     [CalendarMonth]    INT          NOT NULL,
     [CalendarYear]     INT          NOT NULL,

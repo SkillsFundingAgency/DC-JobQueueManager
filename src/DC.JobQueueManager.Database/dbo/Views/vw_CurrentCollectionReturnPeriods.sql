@@ -1,25 +1,32 @@
-﻿CREATE VIEW [dbo].[vw_CurrentCollectionReturnPeriods]
+﻿CREATE VIEW [dbo].[vw_JobInfo]
 AS 
-	SELECT 
-	   O.[Ukprn] as UKPRN
-	  ,O.[Name] as OrgName
-	  ,C.[CollectionId] as CollectionId
-	  ,C.[Name] as CollectionName
-	  ,C.[IsOpen] as IsOpen
-	  ,CT.[Type] as CollectionType
-	  ,CT.[Description] as Description
-      ,RP.[StartDateTimeUTC] as StartDateTimeUTC
-      ,RP.[EndDateTimeUTC] as EndDateTimeUTC
-      ,RP.[PeriodNumber] as PeriodNumber
-      ,RP.[CalendarMonth] as CalendarMonth
-      ,RP.[CalendarYear] as CalendarYear
-FROM [dbo].[Organisation] O
-INNER JOIN [dbo].[OrganisationCollection] OC
-	ON OC.[OrganisationId] = O.[OrganisationId]
-INNER JOIN [dbo].[Collection] C
-	ON C.[CollectionId] = OC.[CollectionId]
-INNER JOIN [dbo].[CollectionType] CT
-	ON C.[CollectionTypeId] = CT.[CollectionTypeId]
-INNER JOIN [dbo].[ReturnPeriod] RP
-	ON RP.[CollectionId] = C.[CollectionId]
-   AND GETUTCDATE() BETWEEN RP.[StartDateTimeUTC] AND RP.[EndDateTimeUTC]
+
+SELECT FUJMD.[Ukprn]
+      ,J.[JobId]
+      ,JT.[Description]
+      ,J.[JobType]
+      ,J.[Priority]
+      ,J.[DateTimeSubmittedUTC]
+      ,J.[DateTimeUpdatedUTC]
+	  ,DATEDIFF(SS,[DateTimeSubmittedUTC],[DateTimeUpdatedUTC]) as TimeDiff_Seconds
+      ,J.[SubmittedBy]
+      ,JST.[StatusDescription]
+      ,J.[Status]
+      --,J.[RowVersion]
+      --,J.[NotifyEmail]
+	  ,FUJMD.[FileName]
+      ,FUJMD.[FileSize]
+      ,FUJMD.[StorageReference]
+      ,FUJMD.[IsFirstStage]
+      ,FUJMD.[CollectionName]
+      ,FUJMD.[PeriodNumber]
+      --,FUJMD.[TermsAccepted]
+      ,J.[CrossLoadingStatus]
+FROM [dbo].[Job] AS J
+INNER JOIN [dbo].[JobStatusType] AS JST
+   ON JST.[StatusId] = J.[Status]
+INNER JOIN [dbo].[JobType] AS JT
+   ON JT.[JobTypeId] = J.[JobType]
+LEFT JOIN [dbo].[FileUploadJobMetaData] FUJMD
+	ON J.[JobId] = FUJMD.[JobId]
+
