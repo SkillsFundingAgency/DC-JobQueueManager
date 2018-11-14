@@ -141,6 +141,27 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
+        public void GetJobsByUkprnForDateRange_Success()
+        {
+            var manager = GetJobManager();
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                Ukprn = 100
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 100
+            });
+
+            var result = manager.GetJobsByUkprnForDateRange(100, DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow).ToList();
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(2);
+        }
+
+        [Fact]
         public void GetJobsByUkprnForPeriod_Success()
         {
             var manager = GetJobManager();
@@ -208,9 +229,11 @@ namespace ESFA.DC.JobQueueManager.Tests
 
         private FileUploadJobManager GetJobManager()
         {
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetNowUtc()).Returns(DateTime.UtcNow);
             return new FileUploadJobManager(
                 GetContextOptions(),
-                new Mock<IDateTimeProvider>().Object,
+                dateTimeProviderMock.Object,
                 new Mock<IReturnCalendarService>().Object,
                 new Mock<IEmailTemplateManager>().Object,
                 new Mock<IEmailNotifier>().Object,

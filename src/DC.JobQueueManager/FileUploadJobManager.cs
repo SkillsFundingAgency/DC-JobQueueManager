@@ -142,6 +142,21 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
+        public IEnumerable<FileUploadJob> GetJobsByUkprnForDateRange(long ukprn, DateTime startDateTimeUtc, DateTime endDateTimeUtc)
+        {
+            var items = new List<FileUploadJob>();
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entities = context.FileUploadJobMetaDataEntities
+                    .Include(x => x.Job)
+                    .Where(x => x.Ukprn == ukprn &&
+                                x.Job.DateTimeSubmittedUtc >= startDateTimeUtc &&
+                                x.Job.DateTimeSubmittedUtc <= endDateTimeUtc)
+                    .ToList();
+                return ConvertJobs(entities);
+            }
+        }
+
         public IEnumerable<FileUploadJob> GetJobsByUkprnForPeriod(long ukprn, int period)
         {
             using (var context = new JobQueueDataContext(_contextOptions))
