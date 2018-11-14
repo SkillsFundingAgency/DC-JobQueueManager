@@ -6,7 +6,6 @@
 --DROP FUNCTION IsReturnWindowOpen
 CREATE FUNCTION CanProcessJob
 (
-	-- Add the parameters for the function here
 	@collectionId int,
 	@dateTimeSubmittedUTC datetime,
 	@jobType smallint,
@@ -29,6 +28,10 @@ BEGIN
 	if @overrideFlag = 0
 		Return 0
 	
+	--If reference data type then don't check collections etc 
+	if @jobType = 4
+		Return 1
+
 	--If ILR type then allow first stage 
 	if @jobType = 1 AND IsNull(@isFirstStage,1) = 1
 		Return 1

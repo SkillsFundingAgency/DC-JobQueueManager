@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
@@ -114,7 +115,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             result.Count().Should().Be(3);
         }
 
-        public void GetJobByPriority_Ilr_NoJobs()
+        public async Task GetJobByPriority_Ilr_NoJobs()
         {
             using (var connection = new SqliteConnection("DataSource=:memory:"))
             {
@@ -130,12 +131,12 @@ namespace ESFA.DC.JobQueueManager.Tests
                 }
 
                 var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
-                var result = manager.GetJobByPriority();
-                result.Should().BeNull();
+                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync();
+                result.Should().BeEmpty();
             }
         }
 
-        public void GetJobByPriority_Ilr_submission()
+        public async Task GetJobByPriority_Ilr_submission()
         {
             using (var connection = new SqliteConnection("DataSource=:memory:"))
             {
@@ -151,19 +152,22 @@ namespace ESFA.DC.JobQueueManager.Tests
                 }
 
                 var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
-                manager.AddJob(new Job()
+                manager.AddJob(new Job
                 {
                     Priority = 1,
                     Status = JobStatusType.Ready,
                 });
-                manager.AddJob(new Job()
+                manager.AddJob(new Job
                 {
                     Priority = 2,
                     Status = JobStatusType.Ready,
                 });
-                var result = manager.GetJobByPriority();
-                result.JobId.Should().Be(2);
-                result.JobType.Should().Be(JobType.IlrSubmission);
+
+                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync();
+                result.Should().NotBeEmpty();
+                Job job = result.First();
+                job.JobId.Should().Be(2);
+                job.JobType.Should().Be(JobType.IlrSubmission);
             }
         }
 

@@ -92,7 +92,6 @@
     <Build Include="Security\JobManagementSchedulerUser.sql" />
     <Build Include="Security\JobManagementApiUser.sql" />
     <Build Include="dbo\Tables\Schedule.sql" />
-    <Build Include="dbo\Functions\IsJobInProgress.sql" />
     <Build Include="dbo\Functions\CanProcessJob.sql" />
     <None Include="__Add.Multiple.UKPRN.to.Collection.sql" />
     <None Include="ReferenceData\ReturnPeriod_EAS1819.sql" />

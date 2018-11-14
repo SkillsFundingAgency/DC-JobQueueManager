@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
@@ -9,11 +9,9 @@ using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
-using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using ESFA.DC.Logging.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ESFA.DC.JobQueueManager
 {
@@ -104,19 +102,20 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public Job GetJobByPriority()
+        public async Task<IEnumerable<Job>> GetJobsByPriorityAsync()
         {
+            List<Job> jobs = new List<Job>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var jobEntity = context.Jobs.FromSql("GetJobByPriority").FirstOrDefault();
-                if (jobEntity == null)
-                {
-                    return null;
-                }
+                JobEntity[] jobEntities = await context.Jobs.FromSql("GetJobByPriority").ToArrayAsync();
 
-                var job = JobConverter.Convert(jobEntity);
-                return job;
+                foreach (JobEntity jobEntity in jobEntities)
+                {
+                    jobs.Add(JobConverter.Convert(jobEntity));
+                }
             }
+
+            return jobs;
         }
 
         public void RemoveJobFromQueue(long jobId)
