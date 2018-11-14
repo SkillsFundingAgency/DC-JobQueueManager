@@ -102,12 +102,12 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public async Task<IEnumerable<Job>> GetJobsByPriorityAsync()
+        public async Task<IEnumerable<Job>> GetJobsByPriorityAsync(int resultCount)
         {
             List<Job> jobs = new List<Job>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                JobEntity[] jobEntities = await context.Jobs.FromSql("GetJobByPriority").ToArrayAsync();
+                JobEntity[] jobEntities = await context.Jobs.FromSql("dbo.GetJobByPriority @ResultCount={0}", resultCount).ToArrayAsync();
 
                 foreach (JobEntity jobEntity in jobEntities)
                 {

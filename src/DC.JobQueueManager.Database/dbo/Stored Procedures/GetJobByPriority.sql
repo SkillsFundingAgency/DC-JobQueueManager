@@ -5,6 +5,7 @@
 -- Description: 
 -- =============================================
 CREATE PROCEDURE [dbo].[GetJobByPriority]
+	@ResultCount int
 AS
 BEGIN
     -- SET NOCOUNT ON added to prevent extra result sets from
@@ -97,7 +98,7 @@ BEGIN
 		End
 	End
 
-	Select [JobId], [JobType], [Priority], [DateTimeSubmittedUTC], [DateTimeUpdatedUTC], [Status], [RowVersion], [SubmittedBy], [NotifyEmail], [CrossLoadingStatus]
+	Select Top (@ResultCount) [JobId], [JobType], [Priority], [DateTimeSubmittedUTC], [DateTimeUpdatedUTC], [Status], [RowVersion], [SubmittedBy], [NotifyEmail], [CrossLoadingStatus]
 	From @ReturnResults
 
 END

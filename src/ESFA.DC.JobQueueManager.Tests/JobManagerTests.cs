@@ -131,7 +131,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                 }
 
                 var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
-                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync();
+                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync(100);
                 result.Should().BeEmpty();
             }
         }
@@ -163,7 +163,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     Status = JobStatusType.Ready,
                 });
 
-                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync();
+                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync(100);
                 result.Should().NotBeEmpty();
                 Job job = result.First();
                 job.JobId.Should().Be(2);

@@ -8,7 +8,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IJobManager : IBaseJobManager<Job>
     {
-        Task<IEnumerable<Job>> GetJobsByPriorityAsync();
+        Task<IEnumerable<Job>> GetJobsByPriorityAsync(int resultCount);
 
         void RemoveJobFromQueue(long jobId);
 
