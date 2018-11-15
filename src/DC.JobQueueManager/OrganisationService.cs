@@ -46,7 +46,8 @@ namespace ESFA.DC.JobQueueManager
                 {
                     CollectionTitle = y.CollectionEntity.Name,
                     IsOpen = y.CollectionEntity.IsOpen,
-                    CollectionType = y.CollectionEntity.CollectionTypeEntity.Type
+                    CollectionType = y.CollectionEntity.CollectionTypeEntity.Type,
+                    CollectionYear = y.CollectionEntity.CollectionYear
                 });
 
             return items;
@@ -66,7 +67,8 @@ namespace ESFA.DC.JobQueueManager
                 {
                     CollectionTitle = data.CollectionEntity.Name,
                     IsOpen = data.CollectionEntity.IsOpen,
-                    CollectionType = data.CollectionEntity.CollectionTypeEntity.Type
+                    CollectionType = data.CollectionEntity.CollectionTypeEntity.Type,
+                    CollectionYear = data.CollectionEntity.CollectionYear
                 };
             }
 
