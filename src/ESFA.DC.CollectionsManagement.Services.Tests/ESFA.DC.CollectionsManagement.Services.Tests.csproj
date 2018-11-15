@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="ESFA.DC.CollectionsManagement.Interfaces" Version="0.1.0-beta0001" />
-    <PackageReference Include="ESFA.DC.CollectionsManagement.Models" Version="0.1.5-beta0001" />
+    <PackageReference Include="ESFA.DC.CollectionsManagement.Models" Version="0.1.6-beta0001" />
     <PackageReference Include="ESFA.DC.DateTimeProvider.Interface" Version="0.1.6-beta0001" />
     <PackageReference Include="FluentAssertions" Version="5.4.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.1" />
