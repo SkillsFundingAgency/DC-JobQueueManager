@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -90,7 +89,8 @@ namespace ESFA.DC.JobQueueManager
                     CollectionName = job.CollectionName,
                     PeriodNumber = job.PeriodNumber,
                     Ukprn = job.Ukprn,
-                    TermsAccepted = job.TermsAccepted
+                    TermsAccepted = job.TermsAccepted,
+                    CollectionYear = job.CollectionYear
                 };
                 context.Job.Add(entity);
                 context.FileUploadJobMetaData.Add(metaEntity);
