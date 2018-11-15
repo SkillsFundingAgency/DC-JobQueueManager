@@ -96,6 +96,7 @@ namespace ESFA.DC.JobQueueManager
             destination.PeriodNumber = source.PeriodNumber;
             destination.Ukprn = source.Ukprn;
             destination.TermsAccepted = source.TermsAccepted;
+            destination.CollectionYear = source.CollectionYear;
             Convert(source.Job, destination);
         }
 
@@ -120,6 +121,7 @@ namespace ESFA.DC.JobQueueManager
             destination.PeriodNumber = source.PeriodNumber;
             destination.Ukprn = source.Ukprn;
             destination.TermsAccepted = source.TermsAccepted;
+            destination.CollectionYear = source.CollectionYear;
         }
     }
 }
