@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{944325EF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.JobNotifications", "ESFA.DC.JobNotifications\ESFA.DC.JobNotifications.csproj", "{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESFA.DC.CollectionsManagement.Services.Tests", "ESFA.DC.CollectionsManagement.Services.Tests\ESFA.DC.CollectionsManagement.Services.Tests.csproj", "{5E918503-932B-4A4A-89EC-A23350EC97C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,12 +51,17 @@ Global
 		{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88E1AA51-A206-4CDC-BF07-B34ED3E320DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E918503-932B-4A4A-89EC-A23350EC97C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E918503-932B-4A4A-89EC-A23350EC97C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E918503-932B-4A4A-89EC-A23350EC97C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E918503-932B-4A4A-89EC-A23350EC97C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3ECD70C9-3C71-466B-9F0D-F4A1F460A009} = {944325EF-7167-4841-B148-A1381F26205A}
+		{5E918503-932B-4A4A-89EC-A23350EC97C0} = {944325EF-7167-4841-B148-A1381F26205A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6FC39500-F619-4685-8EC0-2350B76A6B7C}

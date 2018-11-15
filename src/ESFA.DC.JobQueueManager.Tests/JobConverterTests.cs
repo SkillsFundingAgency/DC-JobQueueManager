@@ -101,7 +101,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 Ukprn = 1000,
                 CollectionName = "ILR1819",
                 PeriodNumber = 10,
-                FileSize = 1000
+                FileSize = 1000,
+                CollectionYear = 1819
             };
 
             var entity = new FileUploadJobMetaDataEntity();
@@ -114,6 +115,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             entity.CollectionName.Should().Be("ILR1819");
             entity.PeriodNumber.Should().Be(10);
             entity.FileSize.Should().Be(1000);
+            entity.CollectionYear.Should().Be(1819);
         }
 
         [Fact]
@@ -128,7 +130,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 CollectionName = "ILR1819",
                 PeriodNumber = 10,
                 FileSize = 1000,
-                Job = new JobEntity() { JobId = 1 }
+                Job = new JobEntity() { JobId = 1 },
+                CollectionYear = 1819
             };
 
             var job = new FileUploadJob();
@@ -141,6 +144,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             job.CollectionName.Should().Be("ILR1819");
             job.PeriodNumber.Should().Be(10);
             job.FileSize.Should().Be(1000);
+            job.CollectionYear.Should().Be(1819);
         }
     }
 }

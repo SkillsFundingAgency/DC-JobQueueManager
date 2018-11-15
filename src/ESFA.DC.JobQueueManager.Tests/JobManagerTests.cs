@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -43,7 +42,6 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(JobType.IlrSubmission)]
         [InlineData(JobType.EsfSubmission)]
         [InlineData(JobType.EasSubmission)]
-        [InlineData(JobType.ReferenceData)]
         public void AddJob_Success_Values(JobType jobType)
         {
             var job = new Job

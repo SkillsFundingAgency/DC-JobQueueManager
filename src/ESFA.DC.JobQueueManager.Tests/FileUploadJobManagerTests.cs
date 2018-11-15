@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -53,7 +52,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 IsFirstStage = true,
                 CollectionName = "ILR1718",
                 PeriodNumber = 10,
-                TermsAccepted = true
+                TermsAccepted = true,
+                CollectionYear = 1819
             };
 
             var manager = GetJobManager();
@@ -71,6 +71,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.CollectionName.Should().Be("ILR1718");
             savedJob.PeriodNumber.Should().Be(10);
             savedJob.TermsAccepted.Should().Be(true);
+            savedJob.CollectionYear.Should().Be(1819);
         }
 
         [Fact]

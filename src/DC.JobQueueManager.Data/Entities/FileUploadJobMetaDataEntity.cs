@@ -31,5 +31,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public long Ukprn { get; set; }
 
         public bool? TermsAccepted { get; set; }
+
+        public int CollectionYear { get; set; }
     }
 }
