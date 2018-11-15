@@ -13,6 +13,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
+using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
@@ -42,11 +43,11 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.Schedules.Add(new Schedule
+                    context.Schedule.Add(new Schedule
                     {
                         Enabled = true,
                         ExecuteOnceOnly = true,
-                        ExternalDataType = "ULN"
+                        JobTypeId = 40
                     });
                     await context.SaveChangesAsync();
 
@@ -55,10 +56,10 @@ namespace ESFA.DC.JobQueueManager.Tests
                         scheduleService.Object,
                         dateTimeProvider.Object,
                         logger.Object);
-                    IEnumerable<string> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
+                    IEnumerable<JobType> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
                     results.Should().HaveCount(1);
 
-                    var schedules = await context.Schedules.ToListAsync();
+                    var schedules = await context.Schedule.ToListAsync();
                     schedules.Should().BeEmpty();
                 }
             }
@@ -88,10 +89,10 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.Schedules.Add(new Schedule
+                    context.Schedule.Add(new Schedule
                     {
                         Enabled = true,
-                        ExternalDataType = "ULN"
+                        JobTypeId = 40
                     });
                     await context.SaveChangesAsync();
                 }
@@ -101,12 +102,12 @@ namespace ESFA.DC.JobQueueManager.Tests
                     scheduleService.Object,
                     dateTimeProvider.Object,
                     logger.Object);
-                IEnumerable<string> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
+                IEnumerable<JobType> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
                 results.Should().HaveCount(1);
 
                 using (var context = new JobQueueDataContext(options))
                 {
-                    var schedules = await context.Schedules.ToListAsync();
+                    var schedules = await context.Schedule.ToListAsync();
                     schedules.Should().HaveCount(1);
                     schedules[0].LastExecuteDateTime.Should().Be(utcNow.TrimSeconds());
                 }

@@ -214,7 +214,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             result.Count().Should().Be(3);
         }
 
-        private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
+        private DbContextOptions<JobQueueDataContext> GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()

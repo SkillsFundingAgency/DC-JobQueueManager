@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
-using ESFA.DC.CollectionsManagement.Models;
 using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
-using ESFA.DC.Jobs.Model.Enums;
-using ESFA.DC.JobStatus.Interface;
 using FluentAssertions;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
+using JobStatusType = ESFA.DC.JobStatus.Interface.JobStatusType;
+using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
+using ReturnPeriod = ESFA.DC.CollectionsManagement.Models.ReturnPeriod;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
@@ -37,7 +34,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             using (var context = new JobQueueDataContext(contextOptions))
             {
                 context.Database.EnsureCreated();
-                context.JobEmailTemplates.Add(new JobEmailTemplateEntity()
+                context.JobEmailTemplate.Add(new JobEmailTemplate()
                 {
                     JobType = (short)JobType.IlrSubmission,
                     JobStatus = (short)JobStatusType.Completed,
@@ -45,9 +42,9 @@ namespace ESFA.DC.JobQueueManager.Tests
                     TemplateOpenPeriod = "template_open",
                     TemplateClosePeriod = "template_close"
                 });
-                context.FileUploadJobMetaDataEntities.Add(new FileUploadJobMetaDataEntity()
+                context.FileUploadJobMetaData.Add(new FileUploadJobMetaData()
                 {
-                    Job = new JobEntity()
+                    Job = new Job()
                     {
                         JobId = 1,
                         JobType = (short)JobType.IlrSubmission
@@ -67,7 +64,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             template.Should().Be(isClose ? "template_close" : "template_open");
         }
 
-        private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
+        private DbContextOptions<JobQueueDataContext> GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()

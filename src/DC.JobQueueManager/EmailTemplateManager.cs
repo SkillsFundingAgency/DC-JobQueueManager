@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ESFA.DC.CollectionsManagement.Models;
 using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Interfaces;
-using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +13,12 @@ namespace ESFA.DC.JobQueueManager
 {
     public class EmailTemplateManager : IEmailTemplateManager
     {
-        private readonly DbContextOptions _contextOptions;
+        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
         private readonly IReturnCalendarService _returnCalendarService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public EmailTemplateManager(
-            DbContextOptions contextOptions,
+            DbContextOptions<JobQueueDataContext> contextOptions,
             IReturnCalendarService returnCalendarService,
             IDateTimeProvider dateTimeProvider)
         {
@@ -35,7 +31,7 @@ namespace ESFA.DC.JobQueueManager
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var job = context.FileUploadJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId);
+                var job = context.FileUploadJobMetaData.SingleOrDefault(x => x.JobId == jobId);
 
                 ReturnPeriod period = null;
                 if (job != null)
@@ -44,8 +40,8 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 var emailTemplate =
-                    context.JobEmailTemplates.SingleOrDefault(
-                        x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active);
+                    context.JobEmailTemplate.SingleOrDefault(
+                        x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active.Value);
 
                 if (emailTemplate == null)
                 {

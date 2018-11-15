@@ -7,7 +7,6 @@ using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
-using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
@@ -43,13 +42,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(JobType.IlrSubmission)]
         [InlineData(JobType.EsfSubmission)]
         [InlineData(JobType.EasSubmission)]
-        [InlineData(JobType.ReferenceData)]
+        [InlineData(JobType.ReferenceDataEPA)]
+        [InlineData(JobType.ReferenceDataFCS)]
         public void AddJob_Success_Values(JobType jobType)
         {
             var job = new Job
             {
-                DateTimeSubmittedUtc = System.DateTime.UtcNow,
-                DateTimeUpdatedUtc = System.DateTime.UtcNow,
+                DateTimeSubmittedUtc = DateTime.UtcNow,
+                DateTimeUpdatedUtc = DateTime.UtcNow,
                 JobId = 0,
                 Priority = 1,
                 RowVersion = null,
@@ -68,7 +68,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             savedJob.Should().NotBeNull();
 
             savedJob.JobId.Should().Be(1);
-            savedJob.DateTimeSubmittedUtc.Should().BeOnOrBefore(System.DateTime.UtcNow);
+            savedJob.DateTimeSubmittedUtc.Should().BeOnOrBefore(DateTime.UtcNow);
             savedJob.DateTimeUpdatedUtc.Should().BeNull();
             savedJob.JobType.Should().Be(jobType);
             savedJob.Priority.Should().Be(1);
@@ -155,12 +155,12 @@ namespace ESFA.DC.JobQueueManager.Tests
                 manager.AddJob(new Job
                 {
                     Priority = 1,
-                    Status = JobStatusType.Ready,
+                    Status = JobStatusType.Ready
                 });
                 manager.AddJob(new Job
                 {
                     Priority = 2,
-                    Status = JobStatusType.Ready,
+                    Status = JobStatusType.Ready
                 });
 
                 IEnumerable<Job> result = await manager.GetJobsByPriorityAsync(100);
@@ -197,7 +197,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             var manager = GetJobManager();
             manager.AddJob(new Job
             {
-                Status = status,
+                Status = status
             });
             Assert.Throws<ArgumentOutOfRangeException>(() => manager.RemoveJobFromQueue(1));
         }
@@ -206,9 +206,9 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void RemoveJobFromQueue_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job()
+            manager.AddJob(new Job
             {
-                Status = JobStatusType.Ready,
+                Status = JobStatusType.Ready
             });
             var jobs = manager.GetAllJobs();
             jobs.Count().Should().Be(1);
@@ -231,14 +231,14 @@ namespace ESFA.DC.JobQueueManager.Tests
         {
             var manager = GetJobManager();
             Assert.Throws<ArgumentException>(() => manager.UpdateJob(
-                new Job() { JobId = 1000 }));
+                new Job { JobId = 1000 }));
         }
 
         [Fact]
         public void UpdateJob_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job()
+            manager.AddJob(new Job
             {
                 Status = JobStatusType.Ready,
                 JobType = JobType.IlrSubmission
@@ -254,7 +254,7 @@ namespace ESFA.DC.JobQueueManager.Tests
 
             var updatedJob = manager.GetJobById(1);
             updatedJob.JobType.Should().Be(JobType.IlrSubmission);
-            updatedJob.DateTimeUpdatedUtc.Should().BeOnOrBefore(System.DateTime.UtcNow);
+            updatedJob.DateTimeUpdatedUtc.Should().BeOnOrBefore(DateTime.UtcNow);
             updatedJob.Priority.Should().Be(2);
             updatedJob.Status.Should().Be(JobStatusType.Completed);
             updatedJob.SubmittedBy.Should().Be("test");
@@ -280,9 +280,9 @@ namespace ESFA.DC.JobQueueManager.Tests
         public void UpdateJobStatus_Success()
         {
             var manager = GetJobManager();
-            manager.AddJob(new Job()
+            manager.AddJob(new Job
             {
-                Status = JobStatusType.Ready,
+                Status = JobStatusType.Ready
             });
             manager.UpdateJobStatus(1, JobStatusType.Completed);
 
@@ -311,9 +311,11 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                     if (crossLoadingStatus.HasValue)
                     {
-                        context.JobTypes.Add(new JobTypeEntity()
+                        context.JobType.Add(new Data.Entities.JobType
                         {
                             IsCrossLoadingEnabled = true,
+                            Title = "Title",
+                            Description = "Description",
                             JobTypeId = 1
                         });
                         context.SaveChanges();
@@ -333,7 +335,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     emailTemplateManager.Object,
                     It.IsAny<ILogger>(),
                     new Mock<IReturnCalendarService>().Object);
-                manager.AddJob(new Job()
+                manager.AddJob(new Job
                 {
                     Status = JobStatusType.Ready,
                     JobType = JobType.IlrSubmission,
@@ -367,9 +369,11 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.JobTypes.Add(new JobTypeEntity()
+                    context.JobType.Add(new Data.Entities.JobType
                     {
                         IsCrossLoadingEnabled = true,
+                        Title = "Title",
+                        Description = "Description",
                         JobTypeId = 1
                     });
                     context.SaveChanges();
@@ -388,7 +392,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     emailTemplateManager.Object,
                     It.IsAny<ILogger>(),
                     new Mock<IReturnCalendarService>().Object);
-                manager.AddJob(new Job()
+                manager.AddJob(new Job
                 {
                     Status = JobStatusType.Ready,
                     JobType = JobType.IlrSubmission,
@@ -417,9 +421,11 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.JobTypes.Add(new JobTypeEntity()
+                    context.JobType.Add(new Data.Entities.JobType
                     {
                         IsCrossLoadingEnabled = true,
+                        Title = "Title",
+                        Description = "Description",
                         JobTypeId = 1
                     });
                     context.SaveChanges();
@@ -438,7 +444,7 @@ namespace ESFA.DC.JobQueueManager.Tests
             }
         }
 
-        private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
+        private DbContextOptions<JobQueueDataContext> GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()

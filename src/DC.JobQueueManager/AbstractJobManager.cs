@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ESFA.DC.CollectionsManagement.Models;
 using ESFA.DC.CollectionsManagement.Services.Interface;
-using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model.Enums;
@@ -15,12 +12,12 @@ namespace ESFA.DC.JobQueueManager
 {
     public abstract class AbstractJobManager
     {
-        private readonly DbContextOptions _contextOptions;
+        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
         private readonly IReturnCalendarService _returnCalendarService;
         private readonly IEmailTemplateManager _emailTemplateManager;
 
         protected AbstractJobManager(
-            DbContextOptions contextOptions,
+            DbContextOptions<JobQueueDataContext> contextOptions,
             IReturnCalendarService returnCalendarService,
             IEmailTemplateManager emailTemplateManager)
         {
@@ -33,7 +30,7 @@ namespace ESFA.DC.JobQueueManager
         {
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.JobTypes.SingleOrDefault(x => x.JobTypeId == (short)jobType);
+                var entity = context.JobType.SingleOrDefault(x => x.JobTypeId == (short)jobType);
                 return entity != null && entity.IsCrossLoadingEnabled;
             }
         }

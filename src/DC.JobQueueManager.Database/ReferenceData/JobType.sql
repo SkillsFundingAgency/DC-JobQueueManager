@@ -3,27 +3,27 @@ DECLARE @SummaryOfChanges_JobType TABLE ([EventId] INT, [Action] VARCHAR(100));
 
 MERGE INTO [dbo].[JobType] AS Target
 USING (VALUES
-		(1,'IlrSubmission','IlrSubmission'),
-		(2,'EasSubmission','EasSubmission'),
-		(3,'EsfSubmission','EsfSubmission'),
-		(4,'ReferenceData','ReferenceData'),
-		(5,'PeriodEnd','PeriodEnd')
-		
+		(1,'IlrSubmission','IlrSubmission', 1),
+		(2,'EasSubmission','EasSubmission', 1),
+		(3,'EsfSubmission','EsfSubmission', 1),		
+		(20,'PeriodEnd','PeriodEnd', 2),
+		(40,'ReferenceData EPA','ReferenceData EPA', 3),
+		(41,'ReferenceData FCS','ReferenceData FCS', 3)
 	  )
-	AS Source([JobTypeId], [Title], [Description])
+	AS Source([JobTypeId], [Title], [Description], [JobTypeGroupId])
 	ON Target.[JobTypeId] = Source.[JobTypeId]
 	WHEN MATCHED 
 			AND EXISTS 
-				(		SELECT Target.[Description]
-							  ,Target.[Title]
+				(		SELECT Target.[JobTypeId]
 					EXCEPT 
-						SELECT Source.[Description]
-						      ,Source.[Title]
+						SELECT Source.[JobTypeId]
 				)
-		  THEN UPDATE SET Target.[Description] = Source.[Description],
-			              Target.[Title] = Source.[Title]
-	WHEN NOT MATCHED BY TARGET THEN INSERT([JobTypeId], [Title], [Description]) 
-								   VALUES ([JobTypeId], [Title], [Description])
+		  THEN UPDATE SET Target.[JobTypeId] = Source.[JobTypeId],
+						  Target.[Description] = Source.[Description],
+			              Target.[Title] = Source.[Title],
+						  Target.[JobTypeGroupId] = Source.[JobTypeGroupId]
+	WHEN NOT MATCHED BY TARGET THEN INSERT([JobTypeId], [Title], [Description], [JobTypeGroupId]) 
+								   VALUES ([JobTypeId], [Title], [Description], [JobTypeGroupId])
 	WHEN NOT MATCHED BY SOURCE THEN DELETE
 	OUTPUT Inserted.[JobTypeId],$action INTO @SummaryOfChanges_JobType([EventId],[Action])
 ;

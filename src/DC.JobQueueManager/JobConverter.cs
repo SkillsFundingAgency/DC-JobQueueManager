@@ -1,39 +1,35 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using ESFA.DC.JobQueueManager.Data.Entities;
+﻿using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.Jobs.Model;
-using ESFA.DC.Jobs.Model.Enums;
-using ESFA.DC.JobStatus.Interface;
 
 namespace ESFA.DC.JobQueueManager
 {
     public static class JobConverter
     {
-        public static JobEntity Convert(Job source)
+        public static JobQueueManager.Data.Entities.Job Convert(Jobs.Model.Job source)
         {
             if (source == null)
             {
                 return null;
             }
 
-            var entity = new JobEntity();
+            var entity = new JobQueueManager.Data.Entities.Job();
             Convert(source, entity);
             return entity;
         }
 
-        public static Job Convert(JobEntity source)
+        public static Jobs.Model.Job Convert(JobQueueManager.Data.Entities.Job source)
         {
             if (source == null)
             {
                 return null;
             }
 
-            var entity = new Job();
+            var entity = new Jobs.Model.Job();
             Convert(source, entity);
             return entity;
         }
 
-        public static void Convert(Job source, JobEntity destination)
+        public static void Convert(Jobs.Model.Job source, JobQueueManager.Data.Entities.Job destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.JobType = (short)source.JobType;
@@ -47,35 +43,35 @@ namespace ESFA.DC.JobQueueManager
             destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (short)source.CrossLoadingStatus : (short?)null;
         }
 
-        public static void Convert(JobEntity source, Job destination)
+        public static void Convert(JobQueueManager.Data.Entities.Job source, Jobs.Model.Job destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.Priority = source.Priority;
-            destination.Status = (JobStatusType)source.Status;
+            destination.Status = (JobStatus.Interface.JobStatusType)source.Status;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
-            destination.JobType = (JobType)source.JobType;
-            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (JobStatusType)source.CrossLoadingStatus.Value : (JobStatusType?)null;
+            destination.JobType = (Jobs.Model.Enums.JobType)source.JobType;
+            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (JobStatus.Interface.JobStatusType)source.CrossLoadingStatus.Value : (JobStatus.Interface.JobStatusType?)null;
         }
 
-        public static void Convert(JobEntity source, FileUploadJob destination)
+        public static void Convert(JobQueueManager.Data.Entities.Job source, FileUploadJob destination)
         {
             destination.DateTimeSubmittedUtc = source.DateTimeSubmittedUtc;
             destination.Priority = source.Priority;
-            destination.Status = (JobStatusType)source.Status;
+            destination.Status = (JobStatus.Interface.JobStatusType)source.Status;
             destination.DateTimeUpdatedUtc = source.DateTimeUpdatedUtc;
             destination.JobId = source.JobId;
             destination.RowVersion = source.RowVersion == null ? null : System.Convert.ToBase64String(source.RowVersion);
             destination.SubmittedBy = source.SubmittedBy;
             destination.NotifyEmail = source.NotifyEmail;
-            destination.JobType = (JobType)source.JobType;
-            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (JobStatusType)source.CrossLoadingStatus.Value : (JobStatusType?)null;
+            destination.JobType = (Jobs.Model.Enums.JobType)source.JobType;
+            destination.CrossLoadingStatus = source.CrossLoadingStatus.HasValue ? (JobStatus.Interface.JobStatusType)source.CrossLoadingStatus.Value : (JobStatus.Interface.JobStatusType?)null;
         }
 
-        public static void Convert(FileUploadJobMetaDataEntity source, FileUploadJob destination)
+        public static void Convert(FileUploadJobMetaData source, FileUploadJob destination)
         {
             if (source == null)
             {
@@ -88,7 +84,7 @@ namespace ESFA.DC.JobQueueManager
             }
 
             destination.FileName = source.FileName;
-            destination.FileSize = source.FileSize;
+            destination.FileSize = source.FileSize.GetValueOrDefault(0);
             destination.StorageReference = source.StorageReference;
             destination.JobId = source.JobId;
             destination.IsFirstStage = source.IsFirstStage;
@@ -99,7 +95,7 @@ namespace ESFA.DC.JobQueueManager
             Convert(source.Job, destination);
         }
 
-        public static void Convert(FileUploadJob source, FileUploadJobMetaDataEntity destination)
+        public static void Convert(FileUploadJob source, FileUploadJobMetaData destination)
         {
             if (source == null)
             {
@@ -108,7 +104,7 @@ namespace ESFA.DC.JobQueueManager
 
             if (destination == null)
             {
-                destination = new FileUploadJobMetaDataEntity();
+                destination = new FileUploadJobMetaData();
             }
 
             destination.FileName = source.FileName;

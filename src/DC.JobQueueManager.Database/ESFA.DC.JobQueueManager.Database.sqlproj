@@ -103,10 +103,12 @@
     <Build Include="Security\User_DsciUser.sql" />
     <Build Include="Security\User_RO.sql" />
     <Build Include="Security\Role_DataProcessor.sql" />
+    <Build Include="dbo\Tables\JobTypeGroup.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
     <None Include="ReferenceData\JobStatusType.sql" />
+    <None Include="ReferenceData\JobTypeGroup.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="BUILD_BRANCHNAME">

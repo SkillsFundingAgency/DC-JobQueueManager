@@ -6,18 +6,17 @@ using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
-using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
-using ESFA.DC.Jobs.Model;
-using ESFA.DC.JobStatus.Interface;
 using ESFA.DC.Logging.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Job = ESFA.DC.JobQueueManager.Data.Entities.Job;
+using JobStatusType = ESFA.DC.JobStatus.Interface.JobStatusType;
 
 namespace ESFA.DC.JobQueueManager
 {
     public sealed class JobManager : AbstractJobManager, IJobManager
     {
-        private readonly DbContextOptions _contextOptions;
+        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IEmailNotifier _emailNotifier;
         private readonly IFileUploadJobManager _fileUploadJobManager;
@@ -25,7 +24,7 @@ namespace ESFA.DC.JobQueueManager
         private readonly ILogger _logger;
 
         public JobManager(
-            DbContextOptions contextOptions,
+            DbContextOptions<JobQueueDataContext> contextOptions,
             IDateTimeProvider dateTimeProvider,
             IEmailNotifier emailNotifier,
             IFileUploadJobManager fileUploadJobManager,
@@ -42,7 +41,7 @@ namespace ESFA.DC.JobQueueManager
             _logger = logger;
         }
 
-        public long AddJob(Job job)
+        public long AddJob(Jobs.Model.Job job)
         {
             if (job == null)
             {
@@ -51,7 +50,7 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = new JobEntity
+                var entity = new Job
                 {
                     DateTimeSubmittedUtc = _dateTimeProvider.GetNowUtc(),
                     JobType = (short)job.JobType,
@@ -62,26 +61,25 @@ namespace ESFA.DC.JobQueueManager
                     CrossLoadingStatus =
                         IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
                 };
-                context.Jobs.Add(entity);
+                context.Job.Add(entity);
                 context.SaveChanges();
                 return entity.JobId;
             }
         }
 
-        public IEnumerable<Job> GetAllJobs()
+        public IEnumerable<Jobs.Model.Job> GetAllJobs()
         {
-            var jobs = new List<Job>();
+            var jobs = new List<Jobs.Model.Job>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var jobEntities = context.Jobs.ToList();
-                jobEntities.ForEach(x =>
-                    jobs.Add(JobConverter.Convert(x)));
+                var jobEntities = context.Job.ToList();
+                jobEntities.ForEach(x => jobs.Add(JobConverter.Convert(x)));
             }
 
             return jobs;
         }
 
-        public Job GetJobById(long jobId)
+        public Jobs.Model.Job GetJobById(long jobId)
         {
             if (jobId == 0)
             {
@@ -90,26 +88,26 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
+                var entity = context.Job.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
                 }
 
-                var job = new Job();
+                var job = new Jobs.Model.Job();
                 JobConverter.Convert(entity, job);
                 return job;
             }
         }
 
-        public async Task<IEnumerable<Job>> GetJobsByPriorityAsync(int resultCount)
+        public async Task<IEnumerable<Jobs.Model.Job>> GetJobsByPriorityAsync(int resultCount)
         {
-            List<Job> jobs = new List<Job>();
+            List<Jobs.Model.Job> jobs = new List<Jobs.Model.Job>();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                JobEntity[] jobEntities = await context.Jobs.FromSql("dbo.GetJobByPriority @ResultCount={0}", resultCount).ToArrayAsync();
+                Job[] jobEntities = await context.Job.FromSql("dbo.GetJobByPriority @ResultCount={0}", resultCount).ToArrayAsync();
 
-                foreach (JobEntity jobEntity in jobEntities)
+                foreach (Job jobEntity in jobEntities)
                 {
                     jobs.Add(JobConverter.Convert(jobEntity));
                 }
@@ -127,7 +125,7 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var jobEntity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
+                var jobEntity = context.Job.SingleOrDefault(x => x.JobId == jobId);
                 if (jobEntity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -138,12 +136,12 @@ namespace ESFA.DC.JobQueueManager
                     throw new ArgumentOutOfRangeException("Job is already moved from ready status, unable to delete");
                 }
 
-                context.Jobs.Remove(jobEntity);
+                context.Job.Remove(jobEntity);
                 context.SaveChanges();
             }
         }
 
-        public bool UpdateJob(Job job)
+        public bool UpdateJob(Jobs.Model.Job job)
         {
             if (job == null)
             {
@@ -152,7 +150,7 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.Jobs.SingleOrDefault(x => x.JobId == job.JobId);
+                var entity = context.Job.SingleOrDefault(x => x.JobId == job.JobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {job.JobId} does not exist");
@@ -194,7 +192,7 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
+                var entity = context.Job.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -226,7 +224,7 @@ namespace ESFA.DC.JobQueueManager
 
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.Jobs.SingleOrDefault(x => x.JobId == jobId);
+                var entity = context.Job.SingleOrDefault(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -242,7 +240,7 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public void SendEmailNotification(Job job)
+        public void SendEmailNotification(Jobs.Model.Job job)
         {
             try
             {

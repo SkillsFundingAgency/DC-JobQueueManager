@@ -95,7 +95,7 @@ namespace ESFA.DC.JobQueueManager.ExternalData
             {
                 if (!Enum.IsDefined(typeof(DayOfWeek), (int)schedule.DayOfTheWeek))
                 {
-                    _logger.LogWarning($"{nameof(schedule.DayOfTheWeek)} is not a valid {nameof(DayOfWeek)} for schedule {schedule.ID}, skipping this part of the rule");
+                    _logger.LogWarning($"{nameof(schedule.DayOfTheWeek)} is not a valid {nameof(DayOfWeek)} for schedule {schedule.Id}, skipping this part of the rule");
                 }
                 else
                 {

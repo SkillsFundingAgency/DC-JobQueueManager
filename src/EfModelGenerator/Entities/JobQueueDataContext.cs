@@ -1,9 +1,8 @@
 ﻿using System;
-using ESFA.DC.JobQueueManager.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace ESFA.DC.JobQueueManager.Data
+namespace ESFA.DC.JobQueueManager.Data.Entities
 {
     public partial class JobQueueDataContext : DbContext
     {
@@ -17,28 +16,26 @@ namespace ESFA.DC.JobQueueManager.Data
         }
 
         public virtual DbSet<Collection> Collection { get; set; }
-
         public virtual DbSet<CollectionType> CollectionType { get; set; }
-
         public virtual DbSet<FileUploadJobMetaData> FileUploadJobMetaData { get; set; }
-
         public virtual DbSet<Job> Job { get; set; }
-
         public virtual DbSet<JobEmailTemplate> JobEmailTemplate { get; set; }
-
         public virtual DbSet<JobStatusType> JobStatusType { get; set; }
-
         public virtual DbSet<JobType> JobType { get; set; }
-
         public virtual DbSet<JobTypeGroup> JobTypeGroup { get; set; }
-
         public virtual DbSet<Organisation> Organisation { get; set; }
-
         public virtual DbSet<OrganisationCollection> OrganisationCollection { get; set; }
-
         public virtual DbSet<ReturnPeriod> ReturnPeriod { get; set; }
-
         public virtual DbSet<Schedule> Schedule { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=.\\;Database=JobManagement;Trusted_Connection=True;");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -113,6 +110,7 @@ namespace ESFA.DC.JobQueueManager.Data
                 entity.Property(e => e.NotifyEmail).HasMaxLength(500);
 
                 entity.Property(e => e.RowVersion)
+                    .IsRequired()
                     .IsRowVersion();
 
                 entity.Property(e => e.SubmittedBy)
