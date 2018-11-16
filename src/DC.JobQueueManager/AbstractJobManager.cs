@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 using ESFA.DC.CollectionsManagement.Models;
-using ESFA.DC.CollectionsManagement.Services.Interface;
-using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
+using IReturnCalendarService = ESFA.DC.JobQueueManager.Interfaces.IReturnCalendarService;
 
 namespace ESFA.DC.JobQueueManager
 {

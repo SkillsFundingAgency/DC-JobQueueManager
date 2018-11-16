@@ -16,5 +16,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public int JobTypeId { get; set; }
         public bool ExecuteOnceOnly { get; set; }
         public DateTime? LastExecuteDateTime { get; set; }
+
+        public JobType JobType { get; set; }
     }
 }

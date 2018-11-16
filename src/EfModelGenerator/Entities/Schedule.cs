@@ -13,8 +13,10 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public byte? DayOfTheMonth { get; set; }
         public byte? Month { get; set; }
         public byte? DayOfTheWeek { get; set; }
-        public string JobTypeId { get; set; }
+        public int JobTypeId { get; set; }
         public bool ExecuteOnceOnly { get; set; }
         public DateTime? LastExecuteDateTime { get; set; }
+
+        public JobType JobType { get; set; }
     }
 }

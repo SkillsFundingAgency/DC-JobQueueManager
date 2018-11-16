@@ -24,10 +24,10 @@ USING (VALUES
 	OUTPUT Inserted.[JobTypeGroupId],$action INTO @SummaryOfChanges_JobTypeGroup([EventId],[Action])
 ;
 
-	DECLARE @AddCount_JT INT, @UpdateCount_JT INT, @DeleteCount_JT INT
-	SET @AddCount_JT  = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobTypeGroup WHERE [Action] = 'Insert' GROUP BY Action),0);
-	SET @UpdateCount_JT = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobTypeGroup WHERE [Action] = 'Update' GROUP BY Action),0);
-	SET @DeleteCount_JT = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobTypeGroup WHERE [Action] = 'Delete' GROUP BY Action),0);
+	DECLARE @AddCount_JTG INT, @UpdateCount_JTG INT, @DeleteCount_JTG INT
+	SET @AddCount_JTG  = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobTypeGroup WHERE [Action] = 'Insert' GROUP BY Action),0);
+	SET @UpdateCount_JTG = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobTypeGroup WHERE [Action] = 'Update' GROUP BY Action),0);
+	SET @DeleteCount_JTG = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_JobTypeGroup WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-	RAISERROR('		               %s - Added %i - Update %i - Delete %i',10,1,'JobType', @AddCount_JT, @UpdateCount_JT, @DeleteCount_JT) WITH NOWAIT;
+	RAISERROR('		               %s - Added %i - Update %i - Delete %i',10,1,'JobType', @AddCount_JTG, @UpdateCount_JTG, @DeleteCount_JTG) WITH NOWAIT;
 

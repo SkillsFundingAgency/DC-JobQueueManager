@@ -17,27 +17,16 @@ namespace ESFA.DC.JobQueueManager.Data
         }
 
         public virtual DbSet<Collection> Collection { get; set; }
-
         public virtual DbSet<CollectionType> CollectionType { get; set; }
-
         public virtual DbSet<FileUploadJobMetaData> FileUploadJobMetaData { get; set; }
-
         public virtual DbSet<Job> Job { get; set; }
-
         public virtual DbSet<JobEmailTemplate> JobEmailTemplate { get; set; }
-
         public virtual DbSet<JobStatusType> JobStatusType { get; set; }
-
         public virtual DbSet<JobType> JobType { get; set; }
-
         public virtual DbSet<JobTypeGroup> JobTypeGroup { get; set; }
-
         public virtual DbSet<Organisation> Organisation { get; set; }
-
         public virtual DbSet<OrganisationCollection> OrganisationCollection { get; set; }
-
         public virtual DbSet<ReturnPeriod> ReturnPeriod { get; set; }
-
         public virtual DbSet<Schedule> Schedule { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,16 +35,18 @@ namespace ESFA.DC.JobQueueManager.Data
             {
                 entity.Property(e => e.CollectionId).ValueGeneratedNever();
 
+                entity.Property(e => e.CollectionYear).HasDefaultValueSql("((1819))");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.CollectionNavigation)
-                    .WithOne(p => p.InverseCollectionNavigation)
-                    .HasForeignKey<Collection>(d => d.CollectionId)
+                entity.HasOne(d => d.CollectionType)
+                    .WithMany(p => p.Collection)
+                    .HasForeignKey(d => d.CollectionTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Collection_Collection");
+                    .HasConstraintName("FK_Collection_CollectionType");
             });
 
             modelBuilder.Entity<CollectionType>(entity =>
@@ -82,6 +73,8 @@ namespace ESFA.DC.JobQueueManager.Data
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('ILR1819')");
+
+                entity.Property(e => e.CollectionYear).HasDefaultValueSql("((1819))");
 
                 entity.Property(e => e.FileName)
                     .HasMaxLength(250)
@@ -168,7 +161,8 @@ namespace ESFA.DC.JobQueueManager.Data
                 entity.HasOne(d => d.JobTypeGroup)
                     .WithMany(p => p.JobType)
                     .HasForeignKey(d => d.JobTypeGroupId)
-                    .HasConstraintName("FK_JobType_JobTypeGroup");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobType_JobTypeGroupId");
             });
 
             modelBuilder.Entity<JobTypeGroup>(entity =>
@@ -241,9 +235,13 @@ namespace ESFA.DC.JobQueueManager.Data
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.JobTypeId).IsRequired();
-
                 entity.Property(e => e.LastExecuteDateTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.JobType)
+                    .WithMany(p => p.Schedule)
+                    .HasForeignKey(d => d.JobTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Schedule_JobType");
             });
         }
     }

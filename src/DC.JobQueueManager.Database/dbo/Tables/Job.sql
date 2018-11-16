@@ -7,7 +7,7 @@ CREATE TABLE [dbo].[Job](
 	[DateTimeUpdatedUTC]	DATETIME		NULL,
 	[SubmittedBy]			VARCHAR(50)		NULL,
 	[Status]				SMALLINT		NOT NULL,
-	[RowVersion]			TIMESTAMP		NOT NULL,
+	[RowVersion]			TIMESTAMP		NULL,
     [NotifyEmail]			NVARCHAR(500)	NULL, 
     [CrossLoadingStatus]	SMALLINT		NULL , 
     CONSTRAINT [PK_Job_memoryoptimizedtable] PRIMARY KEY CLUSTERED ( [JobId] ASC )

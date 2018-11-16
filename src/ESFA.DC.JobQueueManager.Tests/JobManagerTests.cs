@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
-using ESFA.DC.Jobs.Model;
-using ESFA.DC.Jobs.Model.Enums;
-using ESFA.DC.JobStatus.Interface;
 using ESFA.DC.Logging.Interfaces;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
@@ -18,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
+using Job = ESFA.DC.Jobs.Model.Job;
+using JobStatusType = ESFA.DC.JobStatus.Interface.JobStatusType;
+using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
@@ -311,12 +311,19 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.Database.EnsureCreated();
                     if (crossLoadingStatus.HasValue)
                     {
+                        context.JobTypeGroup.Add(new JobTypeGroup
+                        {
+                            JobTypeGroupId = 1,
+                            Description = "Collection Submission",
+                            ConcurrentExecutionCount = 25
+                        });
                         context.JobType.Add(new Data.Entities.JobType
                         {
                             IsCrossLoadingEnabled = true,
                             Title = "Title",
                             Description = "Description",
-                            JobTypeId = 1
+                            JobTypeId = 1,
+                            JobTypeGroupId = 1
                         });
                         context.SaveChanges();
                     }
@@ -369,12 +376,19 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
+                    context.JobTypeGroup.Add(new JobTypeGroup
+                    {
+                        JobTypeGroupId = 1,
+                        Description = "Collection Submission",
+                        ConcurrentExecutionCount = 25
+                    });
                     context.JobType.Add(new Data.Entities.JobType
                     {
                         IsCrossLoadingEnabled = true,
                         Title = "Title",
                         Description = "Description",
-                        JobTypeId = 1
+                        JobTypeId = 1,
+                        JobTypeGroupId = 1
                     });
                     context.SaveChanges();
                 }
@@ -421,12 +435,19 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
+                    context.JobTypeGroup.Add(new JobTypeGroup
+                    {
+                        JobTypeGroupId = 1,
+                        Description = "Collection Submission",
+                        ConcurrentExecutionCount = 25
+                    });
                     context.JobType.Add(new Data.Entities.JobType
                     {
                         IsCrossLoadingEnabled = true,
                         Title = "Title",
                         Description = "Description",
-                        JobTypeId = 1
+                        JobTypeId = 1,
+                        JobTypeGroupId = 1
                     });
                     context.SaveChanges();
                 }

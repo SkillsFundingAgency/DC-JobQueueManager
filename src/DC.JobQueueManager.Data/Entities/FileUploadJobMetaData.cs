@@ -15,6 +15,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public int PeriodNumber { get; set; }
         public long Ukprn { get; set; }
         public bool? TermsAccepted { get; set; }
+        public int CollectionYear { get; set; }
 
         public Job Job { get; set; }
     }

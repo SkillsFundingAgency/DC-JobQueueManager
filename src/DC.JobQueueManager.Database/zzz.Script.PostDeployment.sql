@@ -61,6 +61,7 @@ GO
 
 RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 	:r .\ReferenceData\JobStatusType.sql
+	:r .\ReferenceData\JobTypeGroup.sql
 	:r .\ReferenceData\JobType.sql
 	:r .\ReferenceData\JobEmailTemplate.sql
 	:r .\ReferenceData\CollectionType.sql

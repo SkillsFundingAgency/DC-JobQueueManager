@@ -14,7 +14,7 @@ namespace ESFA.DC.JobQueueManager
         private readonly JobQueueDataContext _collectionsManagementContext;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public ReturnCalendarService(DbContextOptions dbContextOptions, IDateTimeProvider dateTimeProvider)
+        public ReturnCalendarService(DbContextOptions<JobQueueDataContext> dbContextOptions, IDateTimeProvider dateTimeProvider)
         {
             _collectionsManagementContext = new JobQueueDataContext(dbContextOptions);
             _dateTimeProvider = dateTimeProvider;
@@ -22,8 +22,8 @@ namespace ESFA.DC.JobQueueManager
 
         public async Task<ReturnPeriod> GetPeriodAsync(string collectionName, DateTime dateTimeUtc)
         {
-            var data = await _collectionsManagementContext.ReturnPeriods.Include(x => x.CollectionEntity).Where(x =>
-                    x.CollectionEntity.Name == collectionName &&
+            var data = await _collectionsManagementContext.ReturnPeriod.Include(x => x.Collection).Where(x =>
+                    x.Collection.Name == collectionName &&
                     dateTimeUtc >= x.StartDateTimeUtc
                     && dateTimeUtc <= x.EndDateTimeUtc)
                 .FirstOrDefaultAsync();
@@ -44,14 +44,14 @@ namespace ESFA.DC.JobQueueManager
         public async Task<ReturnPeriod> GetNextPeriodAsync(string collectionName)
         {
             var currentDateTime = _dateTimeProvider.GetNowUtc();
-            var data = await _collectionsManagementContext.ReturnPeriods.Include(x => x.CollectionEntity).Where(x =>
-                    x.CollectionEntity.Name == collectionName &&
+            var data = await _collectionsManagementContext.ReturnPeriod.Include(x => x.Collection).Where(x =>
+                    x.Collection.Name == collectionName &&
                     x.StartDateTimeUtc > currentDateTime).OrderBy(x => x.StartDateTimeUtc)
                 .FirstOrDefaultAsync();
             return Convert(data);
         }
 
-        public ReturnPeriod Convert(Data.Entities.ReturnPeriodEntity data)
+        public ReturnPeriod Convert(Data.Entities.ReturnPeriod data)
         {
             if (data == null)
             {
@@ -65,7 +65,7 @@ namespace ESFA.DC.JobQueueManager
                 StartDateTimeUtc = data.StartDateTimeUtc,
                 CalendarMonth = data.CalendarMonth,
                 CalendarYear = data.CalendarYear,
-                CollectionName = data.CollectionEntity.Name
+                CollectionName = data.Collection.Name
             };
             return period;
         }
