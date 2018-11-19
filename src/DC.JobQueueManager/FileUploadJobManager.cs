@@ -168,6 +168,22 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
+        public FileUploadJob GetLatestJobByUkprn(long ukprn)
+        {
+            var result = new FileUploadJob();
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entity = context.FileUploadJobMetaData
+                    .Include(x => x.Job)
+                    .OrderByDescending(x => x.Job.DateTimeSubmittedUtc)
+                    .FirstOrDefault();
+
+                JobConverter.Convert(entity, result);
+            }
+
+            return result;
+        }
+
         public IEnumerable<FileUploadJob> GetAllJobs()
         {
             using (var context = new JobQueueDataContext(_contextOptions))
