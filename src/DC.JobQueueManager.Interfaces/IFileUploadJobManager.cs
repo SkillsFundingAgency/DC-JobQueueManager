@@ -14,6 +14,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 
         IEnumerable<FileUploadJob> GetJobsByUkprnForDateRange(long ukprn, DateTime startDateTimeUtc, DateTime endDateTimeUtc);
 
-        FileUploadJob GetLatestJobByUkprn(long ukprn);
+        FileUploadJob GetLatestJobByUkprn(long ukprn, string collectionName);
     }
 }
