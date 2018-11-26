@@ -5,9 +5,9 @@ BEGIN
 
 	MERGE INTO [dbo].[CollectionType] AS Target
 	USING (VALUES
-			(1, N'ILR', N'ILR (Individualised Learner Records)'),
-			(2, N'EAS', N'EAS (Earnings Adjustment Statement)'),
-			(3, N'ESF', N'ESF (European Social Fund) supplementary data')
+			(1, N'ILR', N'Upload ILR (Individualised Learner Records) data'),
+			(2, N'EAS', N'Update EAS (Earnings Adjustment Statement)'),
+			(3, N'ESF', N'Upload ESF (European Social Fund) supplementary data')
 		  )
 		AS Source([CollectionTypeId], [Type], [Description])
 		ON Target.[CollectionTypeId] = Source.[CollectionTypeId]
