@@ -7,7 +7,7 @@
     [DayOfTheMonth]       TINYINT        NULL,
     [Month]               TINYINT        NULL,
     [DayOfTheWeek]        TINYINT        NULL,
-    [JobTypeId]    INT NOT NULL,
+    [JobTypeId]           INT            NOT NULL,
     [ExecuteOnceOnly]     BIT            NOT NULL,
     [LastExecuteDateTime] DATETIME       NULL,
     CONSTRAINT [PK_Schedule] PRIMARY KEY CLUSTERED ([ID] ASC), 

@@ -10,7 +10,7 @@ CREATE TABLE [dbo].[FileUploadJobMetaData](
     [PeriodNumber]		INT				 NOT NULL DEFAULT 1, 
     [Ukprn]				BIGINT			 NOT NULL, 
     [TermsAccepted]		BIT				 NULL, 
-    [CollectionYear] INT NOT NULL DEFAULT 1819, 
+    [CollectionYear]    INT NOT NULL DEFAULT 1819, 
     CONSTRAINT [PK_Job_FileUploadJobMetaData] PRIMARY KEY CLUSTERED ([Id] ASC ), 
     CONSTRAINT [FK_FileUploadJobMetaData_ToJob] FOREIGN KEY (JobId) REFERENCES [Job](JobId) 
 )
