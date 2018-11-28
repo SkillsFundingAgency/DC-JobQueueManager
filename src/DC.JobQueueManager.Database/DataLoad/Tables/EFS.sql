@@ -1,0 +1,4 @@
+﻿CREATE TABLE [DataLoad].[EFS]
+(
+	 [Ukprn] BIGINT NOT NULL PRIMARY KEY
+)

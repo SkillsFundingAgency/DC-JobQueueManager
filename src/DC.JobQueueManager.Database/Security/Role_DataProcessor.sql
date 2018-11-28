@@ -14,3 +14,16 @@ GRANT
 ON SCHEMA::[dbo]
 	TO [DataProcessor]
 GO
+
+-- Grant access rights to a specific schema in the database
+GRANT 
+	DELETE, 
+	EXECUTE, 
+	INSERT, 
+	REFERENCES, 
+	SELECT, 
+	UPDATE, 
+	VIEW DEFINITION 
+ON SCHEMA::[DataLoad]
+	TO [DataProcessor]
+GO

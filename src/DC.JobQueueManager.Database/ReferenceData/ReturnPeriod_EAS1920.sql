@@ -8,17 +8,34 @@ DECLARE @DataTable_EAS1920 TABLE ([CollectionId] INT NOT NULL, [PeriodNumber] IN
 DECLARE @CollectionId_EAS1920 INT = (SELECT [CollectionId] FROM [dbo].[Collection] WHERE [Name] = @CollectionNameEAS1920)
 DECLARE @SummaryOfChanges_ReturnPeriod_EAS1920 TABLE ([CollectionId] INT, [PeriodNumber] INT, [Action] VARCHAR(100));
 
-;WITH CTE_Full([CollectionId],[CollectionName],[PeriodNumber],[StartDateTimeUTC],[EndDateTimeUTC], [CalendarMonth],[CalendarYear] )
+;WITH CTE_RAW_Data([PeriodNumber],[EndDateTimeUTC])
+AS
+
+(		  SELECT  1 as [PeriodNumber] , CONVERT(DATETIME, N'2018-09-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  2 as [PeriodNumber] , CONVERT(DATETIME, N'2018-10-04T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  3 as [PeriodNumber] , CONVERT(DATETIME, N'2018-11-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  4 as [PeriodNumber] , CONVERT(DATETIME, N'2018-12-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  5 as [PeriodNumber] , CONVERT(DATETIME, N'2019-01-07T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  6 as [PeriodNumber] , CONVERT(DATETIME, N'2019-02-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  7 as [PeriodNumber] , CONVERT(DATETIME, N'2019-03-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  8 as [PeriodNumber] , CONVERT(DATETIME, N'2019-04-04T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT  9 as [PeriodNumber] , CONVERT(DATETIME, N'2019-05-07T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT 10 as [PeriodNumber] , CONVERT(DATETIME, N'2019-06-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT 11 as [PeriodNumber] , CONVERT(DATETIME, N'2019-07-04T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT 12 as [PeriodNumber] , CONVERT(DATETIME, N'2019-08-06T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT 13 as [PeriodNumber] , CONVERT(DATETIME, N'2019-09-13T18:05:00.000') as [EndDateTimeUTC]
+	UNION SELECT 14 as [PeriodNumber] , CONVERT(DATETIME, N'2019-10-17T18:05:00.000') as [EndDateTimeUTC]
+)
+, CTE_Full([CollectionId],[CollectionName],[PeriodNumber],[StartDateTimeUTC],[EndDateTimeUTC])
 AS
 (	   
-		SELECT  
-			 @CollectionId_EAS1920 as [CollectionId]
-			,@CollectionNameEAS1920 as [CollectionName]
-			,1 as [PeriodNumber]
-			,CONVERT(DATETIME, N'2019-08-06T18:05:00.000') AS [StartDateTimeUTC]
-			,CONVERT(DATETIME, N'2020-09-06T18:05:00.000') AS [EndDateTimeUTC]	
-			,CONVERT(INT, 1) AS [CalendarMonth]	
-			,CONVERT(INT, 2018) AS [CalendarYear]	
+	SELECT 	 
+		 @CollectionId_EAS1920 as [CollectionNameId]
+		,@CollectionNameEAS1920 as [CollectionName]
+		,[PeriodNumber] 
+		,DATEADD(MI,@MinsToRemove_EAS1920,LAG([EndDateTimeUTC], 1,CONVERT(DATETIME,CONVERT(CHAR(4),YEAR([EndDateTimeUTC])) + '-08-22T18:05:00.000')) OVER (ORDER BY [PeriodNumber])) as [StartDateTimeUTC]
+		,[EndDateTimeUTC]	
+	FROM CTE_RAW_Data
 )
 
 INSERT INTO @DataTable_EAS1920([CollectionId], [PeriodNumber], [StartDateTimeUTC], [EndDateTimeUTC], [CalendarMonth], [CalendarYear])
@@ -26,8 +43,8 @@ SELECT    @CollectionId_EAS1920 as [CollectionId]
 		, NewRecords.[PeriodNumber]
 		, NewRecords.[StartDateTimeUTC]
 		, NewRecords.[EndDateTimeUTC]
-		, NewRecords.[CalendarMonth]
-		, NewRecords.[CalendarYear]
+		, MONTH([StartDateTimeUTC]) as [CalendarMonth]
+		, YEAR([StartDateTimeUTC]) as [CalendarYear]
 FROM CTE_Full NewRecords
 
 --SELECT * FROM @DataTable_EAS1920
@@ -75,7 +92,7 @@ BEGIN
 			SET @UpdateCount_RT_EAS1920 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1920 WHERE [Action] = 'Update' GROUP BY Action),0);
 			SET @DeleteCount_RT_EAS1920 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1920 WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-			RAISERROR('		      %s : %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod',CollectionNameEAS1920, @AddCount_RT_EAS1920, @UpdateCount_RT_EAS1920, @DeleteCount_RT_EAS1920) WITH NOWAIT;
+			RAISERROR('		      %s : %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod',@CollectionNameEAS1920, @AddCount_RT_EAS1920, @UpdateCount_RT_EAS1920, @DeleteCount_RT_EAS1920) WITH NOWAIT;
 
 			--SELECT t.*, soc.Action FROM @DataTable_EAS1920 t LEFT JOIN @SummaryOfChanges_ReturnPeriod_EAS1920 soc ON t.[CollectionId] = soc.[CollectionId] AND t.[PeriodNumber] = soc.[PeriodNumber]
 			
@@ -113,10 +130,10 @@ BEGIN
 -------------------------------------------------------------------------------------- 
 -- 
 END
-
-*/ 
+ */
+ GO
 -- ROLLBACK
 -- DBCC CHECKIDENT ('dbo.ReturnPeriod', RESEED, 1);  
 -- SELECT * FROM [dbo].[ReturnPeriod]
-
+GO
 

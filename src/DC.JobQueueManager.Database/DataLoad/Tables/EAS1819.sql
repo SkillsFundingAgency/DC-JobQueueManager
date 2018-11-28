@@ -1,0 +1,4 @@
+﻿CREATE TABLE [DataLoad].[EAS]
+(
+	 [Ukprn] BIGINT NOT NULL PRIMARY KEY
+)

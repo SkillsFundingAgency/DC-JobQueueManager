@@ -1,0 +1,4 @@
+﻿CREATE TABLE [DataLoad].[ILR1920]
+(
+	 [Ukprn] BIGINT NOT NULL PRIMARY KEY
+)

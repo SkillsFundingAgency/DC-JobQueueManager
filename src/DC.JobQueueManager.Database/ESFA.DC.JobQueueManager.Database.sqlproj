@@ -66,6 +66,9 @@
     <Folder Include="ReferenceData" />
     <Folder Include="dbo\Views" />
     <Folder Include="dbo\Functions\" />
+    <Folder Include="DataLoad" />
+    <Folder Include="DataLoad\Tables" />
+    <Folder Include="DataLoad\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Job.sql" />
@@ -104,11 +107,20 @@
     <Build Include="Security\User_RO.sql" />
     <Build Include="Security\Role_DataProcessor.sql" />
     <Build Include="dbo\Tables\JobTypeGroup.sql" />
+    <Build Include="dbo\Views\vw_OrganisationCollectionAssignment.sql" />
+    <Build Include="DataLoad\Tables\ILR1819.sql" />
+    <Build Include="DataLoad\Tables\EAS1819.sql" />
+    <Build Include="DataLoad\Tables\EFS.sql" />
+    <Build Include="DataLoad\Tables\ILR1920.sql" />
+    <Build Include="DataLoad\Stored Procedures\usp_Add_OrganisationToCollections.sql" />
+    <Build Include="dbo\Stored Procedures\usp_DisplayDeploymentProperties.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
     <None Include="ReferenceData\JobStatusType.sql" />
     <None Include="ReferenceData\JobTypeGroup.sql" />
+    <Build Include="Security\DataLoad.sql" />
+    <None Include="z.ExtendedProperties.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="BUILD_BRANCHNAME">
