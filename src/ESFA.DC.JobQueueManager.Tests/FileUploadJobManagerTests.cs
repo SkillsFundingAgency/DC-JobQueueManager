@@ -191,6 +191,42 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
+        public void GetLatestJobByUkprnAndContractReference_Success()
+        {
+            var manager = GetJobManager();
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                Ukprn = 10000116,
+                PeriodNumber = 1,
+                FileName = "10000116/SUPPDATA-10000116-ESF-2270-20181109-090919.csv",
+                CollectionName = "ESF"
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 10000116,
+                PeriodNumber = 2,
+                FileName = "10000116/SUPPDATA-10000116-ESF-99999-20181109-090919.csv",
+                CollectionName = "ESF"
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 3,
+                Ukprn = 10000119,
+                PeriodNumber = 2,
+                FileName = "10000119/SUPPDATA-10000119-ESF-2270-20181109-090919.csv",
+                CollectionName = "ESF"
+            });
+            var result = manager.GetLatestJobByUkprnAndContractReference(10000116, "ESF-2270", "ESF");
+
+            result.Should().NotBeNull();
+            result.FileName.Should().Be("10000116/SUPPDATA-10000116-ESF-2270-20181109-090919.csv");
+            result.Ukprn.Should().Be(10000116);
+            result.JobId.Should().Be(1);
+        }
+
+        [Fact]
         public void GetAllJobs_Success()
         {
             var manager = GetJobManager();
