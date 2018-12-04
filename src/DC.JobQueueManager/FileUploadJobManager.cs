@@ -185,6 +185,28 @@ namespace ESFA.DC.JobQueueManager
             return result;
         }
 
+        public FileUploadJob GetLatestJobByUkprnAndContractReference(long ukprn, string contractReference, string collectionName)
+        {
+            var result = new FileUploadJob();
+            var fileNameSearchQuery = $"{ukprn}/SUPPDATA-{ukprn}-{contractReference}-";
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entity = context.FileUploadJobMetaData
+                    .Include(x => x.Job)
+                    .Where(
+                        x => x.Ukprn == ukprn &&
+                             x.CollectionName.Equals(collectionName, StringComparison.CurrentCultureIgnoreCase) &&
+                             x.FileName.StartsWith(fileNameSearchQuery))
+                    .OrderByDescending(x => x.Job.DateTimeSubmittedUtc)
+                    .FirstOrDefault();
+
+                JobConverter.Convert(entity, result);
+            }
+
+            return result;
+        }
+
+
         public IEnumerable<FileUploadJob> GetAllJobs()
         {
             using (var context = new JobQueueDataContext(_contextOptions))
