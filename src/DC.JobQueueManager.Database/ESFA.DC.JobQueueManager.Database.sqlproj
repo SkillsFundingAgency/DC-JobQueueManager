@@ -114,6 +114,8 @@
     <Build Include="DataLoad\Tables\ILR1920.sql" />
     <Build Include="DataLoad\Stored Procedures\usp_Add_OrganisationToCollections.sql" />
     <Build Include="dbo\Stored Procedures\usp_DisplayDeploymentProperties.sql" />
+    <Build Include="dbo\Tables\JobTopicTask.sql" />
+    <Build Include="dbo\Tables\JobTopic.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />

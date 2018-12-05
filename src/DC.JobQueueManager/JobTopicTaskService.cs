@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public class JobTopicTaskService : IJobTopicTasksService, IDisposable
+    public class JobTopicTaskService : IJobTopicTaskService, IDisposable
     {
 
         private readonly JobQueueDataContext _context;
@@ -21,7 +21,7 @@ namespace ESFA.DC.JobQueueManager
             _context = new JobQueueDataContext(dbContextOptions);
         }
 
-        public IEnumerable<ITopicItem> GetTopicItems(JobType jobType, bool isFirstStage = false)
+        public IEnumerable<ITopicItem> GetTopicItems(JobType jobType, bool isFirstStage = true)
         {
             var topics = new List<TopicItem>();
 
@@ -41,10 +41,12 @@ namespace ESFA.DC.JobQueueManager
                 foreach (var topicEntity in topicsData)
                 {
                     var tasks = new List<string>();
-                    if (topicEntity.JobTopicTask.Any())
+                    var topicTaskEntities = topicEntity.JobTopicTask.Where(x => x.Enabled == true)
+                        .OrderByDescending(x => x.TaskOrder).ToList();
+
+                    if (topicTaskEntities.Any())
                     {
-                        tasks.AddRange(topicEntity.JobTopicTask.OrderByDescending(x => x.TaskOrder)
-                            .Select(x => x.TaskName));
+                        tasks.AddRange(topicTaskEntities.Select(x => x.TaskName));
                     }
 
                     var taskItem = new List<ITaskItem>()
