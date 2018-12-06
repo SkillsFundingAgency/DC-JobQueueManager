@@ -26,7 +26,7 @@ namespace ESFA.DC.JobQueueManager
             var topics = new List<TopicItem>();
 
             var topicsData = _context.JobTopic.Where(x => x.JobTypeId == (short)jobType
-                                                      && x.IsFirstStage == isFirstStage
+                                                      && (!x.IsFirstStage.HasValue || x.IsFirstStage == isFirstStage)
                                                       && x.Enabled == true)
                                                     .OrderBy(x => x.TopicOrder)
                                                     .Include(x => x.JobTopicTask);

@@ -13,9 +13,9 @@ BEGIN
 			(6, 1, N'Funding', 3, 0, 1),
 			(7, 1, N'Deds', 4, 0, 1),
 			(8, 1, N'Reports', 5, 0, 1),
-			(9, 2, N'Process', 1, 0, 1),
-			(10, 2, N'Reports', 1, 0, 1),
-			(11, 3, N'Process', 1, 0, 1)
+			(9, 2, N'Process', 1, null, 1),
+			(10, 2, N'Reports', 1, null, 1),
+			(11, 3, N'Process', 1, null, 1)
 		  )
 		AS Source([JobTopicId],[JobTypeId],[TopicName],[TopicOrder],[IsFirstStage],[Enabled] )
 		ON Target.[JobTopicId] = Source.[JobTopicId]
