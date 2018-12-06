@@ -116,6 +116,7 @@
     <Build Include="dbo\Stored Procedures\usp_DisplayDeploymentProperties.sql" />
     <Build Include="dbo\Tables\JobTopicTask.sql" />
     <Build Include="dbo\Tables\JobTopic.sql" />
+    <None Include="ReferenceData\JobTopicTask.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />
@@ -123,6 +124,7 @@
     <None Include="ReferenceData\JobTypeGroup.sql" />
     <Build Include="Security\DataLoad.sql" />
     <None Include="z.ExtendedProperties.sql" />
+    <None Include="ReferenceData\JobTopic.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="BUILD_BRANCHNAME">

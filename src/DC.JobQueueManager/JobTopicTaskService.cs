@@ -28,7 +28,7 @@ namespace ESFA.DC.JobQueueManager
             var topicsData = _context.JobTopic.Where(x => x.JobTypeId == (short)jobType
                                                       && x.IsFirstStage == isFirstStage
                                                       && x.Enabled == true)
-                                                    .OrderByDescending(x => x.TopicOrder)
+                                                    .OrderBy(x => x.TopicOrder)
                                                     .Include(x => x.JobTopicTask);
             var emptyTaskItem = new TaskItem()
                 {
@@ -36,13 +36,13 @@ namespace ESFA.DC.JobQueueManager
                     SupportsParallelExecution = false
                 };
 
-            if (topics.Any())
+            if (topicsData.Any())
             {
                 foreach (var topicEntity in topicsData)
                 {
                     var tasks = new List<string>();
                     var topicTaskEntities = topicEntity.JobTopicTask.Where(x => x.Enabled == true)
-                        .OrderByDescending(x => x.TaskOrder).ToList();
+                        .OrderBy(x => x.TaskOrder).ToList();
 
                     if (topicTaskEntities.Any())
                     {

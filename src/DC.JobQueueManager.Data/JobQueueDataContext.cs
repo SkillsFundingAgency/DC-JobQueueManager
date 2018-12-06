@@ -248,32 +248,32 @@ namespace ESFA.DC.JobQueueManager.Data
 
             modelBuilder.Entity<JobTopic>(entity =>
             {
-                entity.HasIndex(e => e.Id)
+                entity.HasIndex(e => e.JobTopicId)
                     .HasName("IX_JobTopic")
                     .IsUnique();
 
                 entity.Property(e => e.Enabled)
                     .IsRequired()
-                    .HasDefaultValueSql("((1))");
+                    .HasDefaultValueSql("1");
 
                 entity.Property(e => e.TopicName)
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.TopicOrder).HasDefaultValueSql("((1))");
+                entity.Property(e => e.TopicOrder).HasDefaultValueSql("1");
             });
 
             modelBuilder.Entity<JobTopicTask>(entity =>
             {
                 entity.Property(e => e.Enabled)
                     .IsRequired()
-                    .HasDefaultValueSql("((1))");
+                    .HasDefaultValueSql("1");
 
                 entity.Property(e => e.TaskName)
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.TaskOrder).HasDefaultValueSql("((1))");
+                entity.Property(e => e.TaskOrder).HasDefaultValueSql("1");
 
                 entity.HasOne(d => d.JobTopic)
                     .WithMany(p => p.JobTopicTask)

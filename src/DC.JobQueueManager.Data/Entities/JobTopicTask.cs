@@ -2,7 +2,7 @@
 {
     public partial class JobTopicTask
     {
-        public int Id { get; set; }
+        public int JobTopicTaskId { get; set; }
         public int JobTopicId { get; set; }
         public string TaskName { get; set; }
         public short TaskOrder { get; set; }

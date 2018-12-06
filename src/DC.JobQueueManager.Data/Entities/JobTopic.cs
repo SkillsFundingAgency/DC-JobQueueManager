@@ -9,7 +9,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
             JobTopicTask = new HashSet<JobTopicTask>();
         }
 
-        public int Id { get; set; }
+        public int JobTopicId { get; set; }
         public short JobTypeId { get; set; }
         public string TopicName { get; set; }
         public short TopicOrder { get; set; }
