@@ -6,7 +6,7 @@
     <RootNamespace>ESFA.DC.JobQueueManager</RootNamespace>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.38</Version>
+    <Version>0.1.63</Version>
     <Authors>DC</Authors>
     <Company>ESFA</Company>
     <Description>Implementation of Job Queue Manager</Description>
@@ -27,6 +27,8 @@
 
   <ItemGroup>
     <PackageReference Include="ESFA.DC.DateTimeProvider.Interface" Version="0.1.5-beta0001" />
+    <PackageReference Include="ESFA.DC.JobContext" Version="0.1.16-beta0001" />
+    <PackageReference Include="ESFA.DC.JobContext.Interface" Version="0.1.16-beta0001" />
     <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.27-beta0001" />
     <PackageReference Include="ESFA.DC.JobStatus.Interface" Version="0.1.12-beta0001" />
     <PackageReference Include="ESFA.DC.Logging" Version="0.1.1-beta0001" />

@@ -28,6 +28,8 @@ namespace ESFA.DC.JobQueueManager.Data
         public virtual DbSet<OrganisationCollection> OrganisationCollection { get; set; }
         public virtual DbSet<ReturnPeriod> ReturnPeriod { get; set; }
         public virtual DbSet<Schedule> Schedule { get; set; }
+        public virtual DbSet<JobTopic> JobTopic { get; set; }
+        public virtual DbSet<JobTopicTask> JobTopicTask { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -242,6 +244,42 @@ namespace ESFA.DC.JobQueueManager.Data
                     .HasForeignKey(d => d.JobTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Schedule_JobType");
+            });
+
+            modelBuilder.Entity<JobTopic>(entity =>
+            {
+                entity.HasIndex(e => e.JobTopicId)
+                    .HasName("IX_JobTopic")
+                    .IsUnique();
+
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("1");
+
+                entity.Property(e => e.TopicName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TopicOrder).HasDefaultValueSql("1");
+            });
+
+            modelBuilder.Entity<JobTopicTask>(entity =>
+            {
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("1");
+
+                entity.Property(e => e.TaskName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TaskOrder).HasDefaultValueSql("1");
+
+                entity.HasOne(d => d.JobTopic)
+                    .WithMany(p => p.JobTopicTask)
+                    .HasForeignKey(d => d.JobTopicId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobTopicTask_JobTopic");
             });
         }
     }
