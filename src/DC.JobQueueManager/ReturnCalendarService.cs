@@ -35,6 +35,15 @@ namespace ESFA.DC.JobQueueManager
             return null;
         }
 
+        public async Task<ReturnPeriod> GetPreviousPeriodAsync(string collectionName, DateTime dateTimeUtc)
+        {
+            var data = await _collectionsManagementContext.ReturnPeriod.Include(x => x.Collection).Where(x =>
+                    x.Collection.Name == collectionName &&
+                    x.StartDateTimeUtc < dateTimeUtc).OrderByDescending(x => x.StartDateTimeUtc)
+                .FirstOrDefaultAsync();
+            return Convert(data);
+        }
+
         public async Task<ReturnPeriod> GetCurrentPeriodAsync(string collectionName)
         {
             var currentDateTime = _dateTimeProvider.GetNowUtc();

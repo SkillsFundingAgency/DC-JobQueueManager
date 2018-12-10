@@ -17,5 +17,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         FileUploadJob GetLatestJobByUkprn(long ukprn, string collectionName);
 
         FileUploadJob GetLatestJobByUkprnAndContractReference(long ukprn, string contractReference, string collectionName);
+
+        IEnumerable<FileUploadJob> GetLatestJobsPerPeriodByUkprn(long ukprn, DateTime startDateTimeUtc, DateTime endDateTimeUtc);
     }
 }

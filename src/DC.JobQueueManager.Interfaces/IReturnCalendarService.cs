@@ -11,5 +11,7 @@ namespace ESFA.DC.JobQueueManager.Interfaces
         Task<ReturnPeriod> GetNextPeriodAsync(string collectionName);
 
         Task<ReturnPeriod> GetPeriodAsync(string collectionName, DateTime dateTimeUTC);
+
+        Task<ReturnPeriod> GetPreviousPeriodAsync(string collectionName, DateTime dateTimeUtc);
     }
 }
