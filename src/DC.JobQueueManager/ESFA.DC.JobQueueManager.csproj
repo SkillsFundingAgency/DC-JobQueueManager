@@ -6,7 +6,7 @@
     <RootNamespace>ESFA.DC.JobQueueManager</RootNamespace>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.63</Version>
+    <Version>0.1.66</Version>
     <Authors>DC</Authors>
     <Company>ESFA</Company>
     <Description>Implementation of Job Queue Manager</Description>

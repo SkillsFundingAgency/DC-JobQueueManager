@@ -168,6 +168,22 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
+        public IEnumerable<FileUploadJob> GetLatestJobsPerPeriodByUkprn(long ukprn, DateTime startDateTimeUtc, DateTime endDateTimeUtc)
+        {
+            using (var context = new JobQueueDataContext(_contextOptions))
+            {
+                var entities = context.FileUploadJobMetaData.Include(x => x.Job)
+                    .Where(x => x.Ukprn == ukprn && 
+                                x.Job.Status == (short)JobStatusType.Completed &&
+                                x.Job.DateTimeSubmittedUtc >= startDateTimeUtc &&
+                                x.Job.DateTimeSubmittedUtc <= endDateTimeUtc)
+                    .GroupBy(x => new { x.CollectionYear, x.PeriodNumber })
+                    .Select(g => g.OrderByDescending(x => x.Job.DateTimeSubmittedUtc).FirstOrDefault())
+                    .ToList();
+                return ConvertJobs(entities);
+            }
+        }
+
         public FileUploadJob GetLatestJobByUkprn(long ukprn, string collectionName)
         {
             var result = new FileUploadJob();
