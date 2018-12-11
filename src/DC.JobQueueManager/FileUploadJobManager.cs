@@ -177,7 +177,7 @@ namespace ESFA.DC.JobQueueManager
                                 x.Job.Status == (short)JobStatusType.Completed &&
                                 x.Job.DateTimeSubmittedUtc >= startDateTimeUtc &&
                                 x.Job.DateTimeSubmittedUtc <= endDateTimeUtc)
-                    .GroupBy(x => new { x.CollectionYear, x.PeriodNumber })
+                    .GroupBy(x => new { x.CollectionYear, x.PeriodNumber, x.Job.JobType})
                     .Select(g => g.OrderByDescending(x => x.Job.DateTimeSubmittedUtc).FirstOrDefault())
                     .ToList();
                 return ConvertJobs(entities);
