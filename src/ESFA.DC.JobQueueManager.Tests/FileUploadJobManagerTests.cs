@@ -16,6 +16,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
+using JobStatusType = ESFA.DC.JobStatus.Interface.JobStatusType;
+using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
@@ -249,6 +251,79 @@ namespace ESFA.DC.JobQueueManager.Tests
 
             result.Should().NotBeNull();
             result.Count().Should().Be(3);
+        }
+
+        [Fact]
+        public void GetLatestJobsPerPeriodByUkprn_Success()
+        {
+            var manager = GetJobManager();
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                JobType = JobType.EsfSubmission,
+                Ukprn = 10000116,
+                FileName = "esf.csv",
+                CollectionName = "ESF",
+                CollectionYear = 1819,
+                Status = JobStatusType.Completed,
+                PeriodNumber = 1,
+                DateTimeSubmittedUtc = DateTime.Now.AddMinutes(-10),
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                JobType = JobType.EasSubmission,
+                Ukprn = 10000116,
+                FileName = "eas.csv",
+                CollectionName = "EAS",
+                CollectionYear = 1819,
+                PeriodNumber = 1,
+                Status = JobStatusType.Completed,
+                DateTimeSubmittedUtc = DateTime.Now.AddMinutes(-10),
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 3,
+                Ukprn = 10000116,
+                FileName = "ilr1819.xml",
+                CollectionName = "ILR1819",
+                CollectionYear = 1819,
+                PeriodNumber = 1,
+                JobType = JobType.IlrSubmission,
+                Status = JobStatusType.Completed,
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 4,
+                Ukprn = 10000116,
+                FileName = "ilr1718.xml",
+                CollectionName = "ILR1718",
+                CollectionYear = 1718,
+                PeriodNumber = 1,
+                JobType = JobType.IlrSubmission,
+                Status = JobStatusType.Completed,
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 5,
+                Ukprn = 10000116,
+                FileName = "ilr_latest_not_completed.xml",
+                CollectionName = "ILR1819",
+                CollectionYear = 1819,
+                PeriodNumber = 1,
+                JobType = JobType.IlrSubmission,
+                Status = JobStatusType.Failed,
+                DateTimeSubmittedUtc = DateTime.Now.AddMinutes(-50),
+            });
+
+            var result = manager.GetLatestJobsPerPeriodByUkprn(10000116, DateTime.Now.AddDays(-1), DateTime.Now).ToList();
+
+            result.Should().NotBeNull();
+            result.Count().Should().Be(4);
+            result.Single(x => x.JobType == JobType.EsfSubmission && x.JobId == 1 && x.FileName == "esf.csv").Should().NotBeNull();
+            result.Single(x => x.JobType == JobType.EasSubmission && x.JobId == 2 && x.FileName == "eas.csv").Should().NotBeNull();
+            result.Single(x => x.JobType == JobType.IlrSubmission && x.JobId == 3 && x.FileName == "ilr1819.xml" && x.CollectionYear == 1819).Should().NotBeNull();
+            result.Single(x => x.JobType == JobType.IlrSubmission && x.JobId == 4 && x.FileName == "ilr1718.xml" && x.CollectionYear == 1718).Should().NotBeNull();
         }
 
         private DbContextOptions<JobQueueDataContext> GetContextOptions([CallerMemberName]string functionName = "")
