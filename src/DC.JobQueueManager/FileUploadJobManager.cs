@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -201,22 +202,24 @@ namespace ESFA.DC.JobQueueManager
             return result;
         }
 
-        public FileUploadJob GetLatestJobByUkprn(long[] ukprns)
+        public IEnumerable<FileUploadJob> GetLatestJobByUkprn(long[] ukprns)
         {
-            var result = new FileUploadJob();
             using (var context = new JobQueueDataContext(_contextOptions))
             {
-                var entity = context.FileUploadJobMetaData
-                    .Include(x => x.Job)
-                    .Where(x => ukprns.Contains(x.Ukprn))
-                    .OrderBy(x => x.Ukprn)
-                    .ThenByDescending(x => x.Job.DateTimeSubmittedUtc)
-                    .FirstOrDefault();
+                var entities = context.FileUploadJobMetaData
+                    .Join(context.Job,
+                        metadata => metadata.JobId,
+                        job => job.JobId,
+                        (metadata,job) => new { metadata, job})
+                    .Where(x => ukprns.Contains(x.metadata.Ukprn))
+                    .GroupBy(x => x.metadata.Ukprn)
+                    .Select(g => g.OrderByDescending(x => x.job.DateTimeSubmittedUtc).FirstOrDefault())
+                    .ToList();
 
-                JobConverter.Convert(entity, result);
+                entities.ForEach(x => x.metadata.Job = x.job);
+
+                return ConvertJobs(entities.Select(x => x.metadata));
             }
-
-            return result;
         }
 
         public FileUploadJob GetLatestJobByUkprnAndContractReference(long ukprn, string contractReference, string collectionName)

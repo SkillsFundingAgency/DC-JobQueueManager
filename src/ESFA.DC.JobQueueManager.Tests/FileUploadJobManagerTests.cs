@@ -231,11 +231,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void GetLatestJobByUkprn_Success()
         {
-            var contextOptions = GetContextOptions();
-            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
-            dateTimeProviderMock.Setup(x => x.GetNowUtc()).Returns(DateTime.UtcNow.AddDays(1));
-
-            var manager = GetJobManager(dateTimeProviderMock.Object, contextOptions);
+            var manager = GetJobManager();
             manager.AddJob(new FileUploadJob()
             {
                 JobId = 1,
@@ -245,11 +241,9 @@ namespace ESFA.DC.JobQueueManager.Tests
                 CollectionName = "ILR1819"
             });
 
-            manager = GetJobManager(null, contextOptions);
-
             manager.AddJob(new FileUploadJob()
             {
-                JobId = 3,
+                JobId = 2,
                 Ukprn = 10000116,
                 PeriodNumber = 2,
                 FileName = "10000116/SUPPDATA-10000116-ESF-99999-20181109-090919.csv",
@@ -257,19 +251,25 @@ namespace ESFA.DC.JobQueueManager.Tests
             });
             manager.AddJob(new FileUploadJob()
             {
-                JobId = 2,
+                JobId = 3,
                 Ukprn = 10000116,
                 PeriodNumber = 2,
                 FileName = "eas.csv",
                 CollectionName = "EAS"
             });
-            var result = manager.GetLatestJobByUkprn(new long[] { 10000116 });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 4,
+                Ukprn = 10000119,
+                PeriodNumber = 2,
+                FileName = "eas11.csv",
+                CollectionName = "EAS"
+            });
+            var items = manager.GetLatestJobByUkprn(new long[] { 10000116, 10000119 });
+            items.Should().NotBeEmpty();
 
-            result.Should().NotBeNull();
-            result.FileName.Should().Be("ilr.xml");
-            result.Ukprn.Should().Be(10000116);
-            result.CollectionName.Should().Be("ILR1819");
-            result.JobId.Should().Be(1);
+            items.Single(x => x.FileName.Equals("ilr.xml") && x.Ukprn == 10000116 && x.JobId == 1).Should().NotBeNull();
+            items.Single(x => x.FileName.Equals("eas11.csv") && x.Ukprn == 10000119 && x.JobId == 4).Should().NotBeNull();
         }
 
         [Fact]
