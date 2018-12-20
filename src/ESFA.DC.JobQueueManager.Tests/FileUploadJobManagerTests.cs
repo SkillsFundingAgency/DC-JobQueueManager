@@ -229,6 +229,50 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
+        public void GetLatestJobByUkprn_Success()
+        {
+            var contextOptions = GetContextOptions();
+            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+            dateTimeProviderMock.Setup(x => x.GetNowUtc()).Returns(DateTime.UtcNow.AddDays(1));
+
+            var manager = GetJobManager(dateTimeProviderMock.Object, contextOptions);
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 1,
+                Ukprn = 10000116,
+                PeriodNumber = 1,
+                FileName = "ilr.xml",
+                CollectionName = "ILR1819"
+            });
+
+            manager = GetJobManager(null, contextOptions);
+
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 3,
+                Ukprn = 10000116,
+                PeriodNumber = 2,
+                FileName = "10000116/SUPPDATA-10000116-ESF-99999-20181109-090919.csv",
+                CollectionName = "ESF"
+            });
+            manager.AddJob(new FileUploadJob()
+            {
+                JobId = 2,
+                Ukprn = 10000116,
+                PeriodNumber = 2,
+                FileName = "eas.csv",
+                CollectionName = "EAS"
+            });
+            var result = manager.GetLatestJobByUkprn(new long[] { 10000116 });
+
+            result.Should().NotBeNull();
+            result.FileName.Should().Be("ilr.xml");
+            result.Ukprn.Should().Be(10000116);
+            result.CollectionName.Should().Be("ILR1819");
+            result.JobId.Should().Be(1);
+        }
+
+        [Fact]
         public void GetAllJobs_Success()
         {
             var manager = GetJobManager();
@@ -339,13 +383,13 @@ namespace ESFA.DC.JobQueueManager.Tests
             return options;
         }
 
-        private FileUploadJobManager GetJobManager()
+        private FileUploadJobManager GetJobManager(IDateTimeProvider dateTimeProvider = null, DbContextOptions<JobQueueDataContext> dbContextOptions = null)
         {
             var dateTimeProviderMock = new Mock<IDateTimeProvider>();
             dateTimeProviderMock.Setup(x => x.GetNowUtc()).Returns(DateTime.UtcNow);
             return new FileUploadJobManager(
-                GetContextOptions(),
-                dateTimeProviderMock.Object,
+                dbContextOptions ?? GetContextOptions(),
+                dateTimeProvider ?? dateTimeProviderMock.Object,
                 new Mock<IReturnCalendarService>().Object,
                 new Mock<IEmailTemplateManager>().Object,
                 new Mock<IEmailNotifier>().Object,
