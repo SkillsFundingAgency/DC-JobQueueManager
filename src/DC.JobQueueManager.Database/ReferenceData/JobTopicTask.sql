@@ -35,9 +35,9 @@ BEGIN
 			(25, 11, N'Storage', 2, 1),									-- ESF Submission
 			(26, 11, N'Reporting', 3, 1),								-- ESF Submission
 
-			(28, 40,  N'Fcs', 1, 0),   -- Ref Data : FCS
-			(29, 41,  N'Epa', 1, 0),   -- Ref Data : EPA
-			(20, 42,  N'Uln', 1, 0)	   -- Ref Data : Uln
+			(28, 13,  N'Fcs', 1, 0),   -- Ref Data : FCS
+			(29, 14,  N'Epa', 1, 0),   -- Ref Data : EPA
+			(30, 15,  N'Uln', 1, 0)	   -- Ref Data : Uln
 		  )
 		AS Source([JobTopicTaskId],[JobTopicId],[TaskName],[TaskOrder],[Enabled])
 		ON Target.[JobTopicTaskId] = Source.[JobTopicTaskId]
@@ -73,3 +73,84 @@ BEGIN
 
 		RAISERROR('		        %s - Added %i - Update %i - Delete %i',10,1,'JobTopic', @AddCount_JTT, @UpdateCount_JTT, @DeleteCount_JTT) WITH NOWAIT;
 END
+
+
+
+
+/*
+
+SELECT
+	JT.[JobTopicId]
+	,X.[TaskName]
+	,X.[TaskOrder]
+	,X.[Enabled] 
+	--,JT.*
+	--,T.*
+FROM 
+(
+      SELECT 1 as TaskOrder, 1 as [Enabled], N'Validation' as TaskName, N'Process'  as TopicName, N'EasSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 2 as TaskOrder, 1 as [Enabled], N'Storage' as TaskName, N'Process'  as TopicName, N'EasSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 3 as TaskOrder, 1 as [Enabled], N'Reporting' as TaskName, N'Process'  as TopicName, N'EasSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 1 as [Enabled], N'TaskGenerateAdultFundingClaimReport' as TaskName, N'Reports'  as TopicName, N'EasSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 2 as TaskOrder, 1 as [Enabled], N'TaskGenerateFundingSummaryReport' as TaskName, N'Reports'  as TopicName, N'EasSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 1 as [Enabled], N'Validation' as TaskName, N'Process'  as TopicName, N'EsfSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 2 as TaskOrder, 1 as [Enabled], N'Storage' as TaskName, N'Process'  as TopicName, N'EsfSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 3 as TaskOrder, 1 as [Enabled], N'Reporting' as TaskName, N'Process'  as TopicName, N'EsfSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 1 as [Enabled], N'TaskGenerateValidationReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 0 as [Enabled], N'TaskGenerateDataMatchReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 1 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 1 as [Enabled], N'PersistDataToDeds' as TaskName, N'Deds'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 1 as [Enabled], N'ALB' as TaskName, N'Funding'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 2 as TaskOrder, 1 as [Enabled], N'FM25' as TaskName, N'Funding'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 3 as TaskOrder, 1 as [Enabled], N'FM35' as TaskName, N'Funding'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 4 as TaskOrder, 1 as [Enabled], N'FM36' as TaskName, N'Funding'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 5 as TaskOrder, 1 as [Enabled], N'FM70' as TaskName, N'Funding'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 7 as TaskOrder, 1 as [Enabled], N'FM81' as TaskName, N'Funding'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 1 as TaskOrder, 0 as [Enabled], N'TaskGenerateDataMatchReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 2 as TaskOrder, 1 as [Enabled], N'TaskGenerateValidationReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 3 as TaskOrder, 1 as [Enabled], N'TaskGenerateAllbOccupancyReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 4 as TaskOrder, 1 as [Enabled], N'TaskGenerateFundingSummaryReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 5 as TaskOrder, 1 as [Enabled], N'TaskGenerateMainOccupancyReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 6 as TaskOrder, 1 as [Enabled], N'TaskGenerateMathsAndEnglishReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 7 as TaskOrder, 1 as [Enabled], N'TaskGenerateAppsAdditionalPaymentsReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 8 as TaskOrder, 1 as [Enabled], N'TaskGenerateAppsIndicativeEarningsReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 9 as TaskOrder, 1 as [Enabled], N'TaskGenerateTrailblazerEmployerIncentivesReport' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+UNION SELECT 10 as TaskOrder, 1 as [Enabled], N'TaskGenerateFundingClaim1619Report' as TaskName, N'Reports'  as TopicName, N'IlrSubmission'  as JobType, 0 as IsFirstStage 
+
+) as X
+INNER JOIN [dbo].[JobType] T
+	ON T.[Title] = X.[JobType]
+INNER JOIN [dbo].[JobTopic] JT 
+	 ON JT.[TopicName] = X.[TopicName]
+	AND ISNULL(JT.[IsFirstStage],-99) = X.[IsFirstStage]
+	AND T.[JobTypeId]= JT.[JobTypeId]
+--ORDER BY T.[JobTypeGroupId],X.[JobType],X.[IsFirstStage] DESC, X.[TopicName], X.[TaskOrder]
+--INTERSECT 
+--EXCEPT
+SELECT --[JobTopicTaskId],
+[JobTopicId],[TaskName],[TaskOrder],[Enabled]  FROM  [dbo].[JobTopicTask] 
+
+
+
+ --SELECT * FROM [dbo].[JobType] 
+-- SELECT * FROM [dbo].[JobTopic] 
+
+/*
+
+SELECT 'UNION SELECT ' --+ CONVERT(VARCHAR,JTT.[JobTopicId]) + ' as JobTopicId,  ' 
+		  + CONVERT(VARCHAR,JTT.[TaskOrder]) + ' as TaskOrder, ' 
+		  + CONVERT(VARCHAR,JTT.[Enabled]) + ' as [Enabled], '
+		  + 'N''' + JTT.[TaskName] + ''' as TaskName, '
+		  + 'N''' + JT.[TopicName] + '''  as TopicName, '
+		  + 'N''' + T.[Title] + '''  as JobType, '
+		  + CONVERT(VARCHAR,ISNULL(JT.[IsFirstStage],-99)) + ' as IsFirstStage '
+		  --,T.*
+FROM [dbo].[JobTopicTask] JTT
+INNER JOIN [dbo].[JobTopic] JT 
+	ON JT.[JobTopicId] = JTT.[JobTopicId]
+INNER JOIN [dbo].[JobType] T
+	ON T.[JobTypeId] = JT.[JobTypeId]
+ORDER BY T.[JobTypeGroupId], T.[Title],JT.[IsFirstStage] DESC, JT.[TopicName], JTT.[TaskOrder]
+
+
+*/
+
