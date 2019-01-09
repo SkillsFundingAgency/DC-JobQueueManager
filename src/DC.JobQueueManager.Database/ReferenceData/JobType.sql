@@ -8,7 +8,8 @@ USING (VALUES
 		(3,'EsfSubmission','EsfSubmission', 1),		
 		(20,'PeriodEnd','PeriodEnd', 2),
 		(40,'ReferenceData EPA','ReferenceData EPA', 3),
-		(41,'ReferenceData FCS','ReferenceData FCS', 3)
+		(41,'ReferenceData FCS','ReferenceData FCS', 3),
+		(42,'ReferenceData ULN','ReferenceData ULN', 3)
 	  )
 	AS Source([JobTypeId], [Title], [Description], [JobTypeGroupId])
 	ON Target.[JobTypeId] = Source.[JobTypeId]

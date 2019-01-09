@@ -5,17 +5,28 @@ BEGIN
 
 	MERGE INTO [dbo].[JobTopic] AS Target
 	USING (VALUES
-			 (1, 1, N'FileValidation', 1, 1, 1),
-			(2, 1, N'Validation', 2, 1, 1),
-			(3, 1, N'Reports', 3, 1, 1),
-			(4, 1, N'FileValidation', 1, 0, 1),
-			(5, 1, N'Validation', 2, 0, 1),
-			(6, 1, N'Funding', 3, 0, 1),
-			(7, 1, N'Deds', 4, 0, 1),
-			(8, 1, N'Reports', 5, 0, 1),
-			(9, 2, N'Process', 1, null, 1),
+			-- ILR Data
+			(1,  1, N'FileValidation', 1, 1, 1),
+			(2,  1, N'Validation', 2, 1, 1),
+			(3,  1, N'Reports', 3, 1, 1),
+			(4,  1, N'FileValidation', 1, 0, 1),
+			(5,  1, N'Validation', 2, 0, 1),
+			(6,  1, N'Funding', 3, 0, 1),
+		   (12,  1, N'GenerateFM36Payments', 4, 0, 0),
+			(7,  1, N'Deds', 5, 0, 1),
+			(8,  1, N'Reports', 6, 0, 1),
+
+			-- EAS Submission
+			(9,  2, N'Process', 1, null, 1),
 			(10, 2, N'Reports', 1, null, 1),
-			(11, 3, N'Process', 1, null, 1)
+
+			-- ESF Submission
+			(11, 3, N'Process', 1, null, 1),
+
+			-- Reference Data
+			(13, 40, N'Process', 1, null, 0),
+			(14, 41, N'Process', 1, null, 0),
+			(15, 42, N'Process', 1, null, 0)
 		  )
 		AS Source([JobTopicId],[JobTypeId],[TopicName],[TopicOrder],[IsFirstStage],[Enabled] )
 		ON Target.[JobTopicId] = Source.[JobTopicId]
