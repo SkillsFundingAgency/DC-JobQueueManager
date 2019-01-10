@@ -1,7 +1,8 @@
 ﻿
 CREATE VIEW [dbo].[vw_OrganisationCollectionAssignment]
 AS 
-	SELECT O.UKPRN, O.[Name]
+	SELECT TOP 100 PERCENT
+	         O.UKPRN, O.[Name]
 			,(CASE WHEN ILR1819.[CollectionName] IS NULL THEN 'NO' ELSE 'YES' END) AS ILR1819
 			,(CASE WHEN ESF.[CollectionName] IS NULL THEN 'NO' ELSE 'YES' END) AS ESF
 			,(CASE WHEN EAS1819.[CollectionName] IS NULL THEN 'NO' ELSE 'YES' END) AS EAS1819
@@ -15,4 +16,5 @@ AS
 	LEFT JOIN [dbo].[vw_CurrentCollectionReturnPeriods] EAS1819
 	  ON O.[UKPRN] = EAS1819.[UKPRN]
 	 AND  EAS1819.[CollectionName] = 'EAS1819' 
+	 ORDER BY O.UKPRN
 

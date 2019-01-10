@@ -15,3 +15,4 @@ SELECT
 FROM [dbo].[Schedule] S
 INNER JOIN [dbo].[JobType] JT 
 	ON JT.[JobTypeId] = S.[JobTypeId]
+
