@@ -74,9 +74,6 @@ BEGIN
 		RAISERROR('		        %s - Added %i - Update %i - Delete %i',10,1,'JobTopic', @AddCount_JTT, @UpdateCount_JTT, @DeleteCount_JTT) WITH NOWAIT;
 END
 
-
-
-
 /*
 
 SELECT
@@ -134,7 +131,6 @@ SELECT --[JobTopicTaskId],
  --SELECT * FROM [dbo].[JobType] 
 -- SELECT * FROM [dbo].[JobTopic] 
 
-/*
 
 SELECT 'UNION SELECT ' --+ CONVERT(VARCHAR,JTT.[JobTopicId]) + ' as JobTopicId,  ' 
 		  + CONVERT(VARCHAR,JTT.[TaskOrder]) + ' as TaskOrder, ' 
@@ -150,7 +146,6 @@ INNER JOIN [dbo].[JobTopic] JT
 INNER JOIN [dbo].[JobType] T
 	ON T.[JobTypeId] = JT.[JobTypeId]
 ORDER BY T.[JobTypeGroupId], T.[Title],JT.[IsFirstStage] DESC, JT.[TopicName], JTT.[TaskOrder]
-
 
 */
 
