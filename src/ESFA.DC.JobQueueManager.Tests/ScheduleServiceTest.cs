@@ -13,7 +13,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void CanExecuteScheduleLastExecutionTime()
         {
-            var dateTimeUtcNow = new DateTime(2018, 10, 21, 16, 0, 0, DateTimeKind.Utc);
+            var dateTimeUtcNow = new DateTime(DateTime.UtcNow.Year, 10, 21, 16, 0, 0, DateTimeKind.Utc);
             var logger = new Mock<ILogger>();
 
             var schedule = new Schedule
@@ -34,7 +34,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void CanExecuteScheduleRemoveOldDateFalse()
         {
-            var dateTimeUtcNow = new DateTime(2018, 10, 21, 16, 0, 0, DateTimeKind.Utc);
+            var dateTimeUtcNow = new DateTime(DateTime.UtcNow.Year, 10, 21, 16, 0, 0, DateTimeKind.Utc);
             var logger = new Mock<ILogger>();
 
             var schedule = new Schedule
@@ -54,7 +54,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [Fact]
         public void CanExecuteScheduleRemoveOldDateTrue()
         {
-            var dateTimeUtcNow = new DateTime(2018, 10, 21, 16, 0, 0, DateTimeKind.Utc);
+            var dateTimeUtcNow = new DateTime(DateTime.UtcNow.Year, 10, 21, 16, 0, 0, DateTimeKind.Utc);
             var logger = new Mock<ILogger>();
 
             var schedule = new Schedule

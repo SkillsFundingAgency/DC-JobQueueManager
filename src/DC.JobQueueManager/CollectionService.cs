@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ESFA.DC.CollectionsManagement.Models;
 using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Collection = ESFA.DC.CollectionsManagement.Models.Collection;
 
 namespace ESFA.DC.JobQueueManager
 {

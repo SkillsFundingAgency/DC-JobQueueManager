@@ -15,8 +15,8 @@ AS
 		  --,J.*
 		  --,JT.*
 		  --,JTT.*
-	FROM [dbo].[JobTopicTask] JTT
-	INNER JOIN [dbo].[JobTopic] JT 
+	FROM [dbo].[JobSubscriptionTask] JTT
+	INNER JOIN [dbo].[JobTopicSubscription] JT 
 		ON JT.[JobTopicId] = JTT.[JobTopicId]
 	INNER JOIN [dbo].[JobType] J
 		ON J.[JobTypeId] = JT.[JobTypeId]

@@ -3,7 +3,7 @@ BEGIN
 
 	DECLARE @SummaryOfChanges_JobTopicTasks TABLE ([JobTopicTaskId] INT, [Action] VARCHAR(100));
 
-	MERGE INTO [dbo].[JobTopicTask] AS Target
+	MERGE INTO [dbo].[JobSubscriptionTask] AS Target
 	USING (VALUES
 			( 1, 3,  N'TaskGenerateValidationReport', 1, 1),    -- ILR Stage 1
 			( 2, 3,  N'TaskGenerateDataMatchReport', 1, 0),     -- ILR Stage 1

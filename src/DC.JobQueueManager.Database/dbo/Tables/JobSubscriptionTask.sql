@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[JobTopicTask] (
+﻿CREATE TABLE [dbo].[JobSubscriptionTask] (
     [JobTopicTaskId]         INT            NOT NULL,
     [JobTopicId] INT            NOT NULL,
     [TaskName]   NVARCHAR (500) NOT NULL,
@@ -9,6 +9,7 @@
     --[ModifiedOn]           DATETIME       CONSTRAINT [def_dbo_JobTopicTask_ModifiedOn] DEFAULT (getdate()) NULL,
     --[ModifiedBy]           NVARCHAR (100) CONSTRAINT [def_dbo_JobTopicTask_ModifiedBy] DEFAULT (suser_sname()) NULL,
     CONSTRAINT [PK_JobTopicTask] PRIMARY KEY CLUSTERED ([JobTopicTaskId] ASC),
-    CONSTRAINT [FK_JobTopicTask_JobTopic] FOREIGN KEY ([JobTopicId]) REFERENCES [dbo].[JobTopic] ([JobTopicId])
+	CONSTRAINT [FK_JobTopicSubscription_JobTopic] FOREIGN KEY ([JobTopicId]) REFERENCES [dbo].[JobTopicSubscription] ([JobTopicId]),
+    CONSTRAINT [FK_JobTopicTask_JobTopic] FOREIGN KEY ([JobTopicId]) REFERENCES [dbo].[JobTopicSubscription] ([JobTopicId])
 );
 

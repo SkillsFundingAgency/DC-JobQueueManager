@@ -15,7 +15,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public string Name { get; set; }
         public bool IsOpen { get; set; }
         public int CollectionTypeId { get; set; }
-        public int? CollectionYear { get; set; }
+        public int CollectionYear { get; set; }
 
         public CollectionType CollectionType { get; set; }
         public ICollection<OrganisationCollection> OrganisationCollection { get; set; }

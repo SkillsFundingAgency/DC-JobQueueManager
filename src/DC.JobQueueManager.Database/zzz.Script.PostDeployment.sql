@@ -29,8 +29,8 @@ RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 	--:r .\ReferenceData\ReturnPeriod_EAS1920.sql
 	:r .\ReferenceData\ReturnPeriod_ILR1819.sql
 	--:r .\ReferenceData\ReturnPeriod_ILR1920.sql
-	:r .\ReferenceData\JobTopic.sql
-	:r .\ReferenceData\JobTopicTask.sql
+	:r .\ReferenceData\JobTopicSubscription.sql
+	:r .\ReferenceData\JobSubscriptionTask.sql
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
 GO

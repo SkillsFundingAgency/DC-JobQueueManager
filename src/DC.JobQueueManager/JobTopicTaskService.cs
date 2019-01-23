@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ESFA.DC.JobContext;
 using ESFA.DC.JobContext.Interface;
 using ESFA.DC.JobQueueManager.Data;
@@ -25,23 +24,23 @@ namespace ESFA.DC.JobQueueManager
         {
             var topics = new List<TopicItem>();
 
-            var topicsData = _context.JobTopic.Where(x => x.JobTypeId == (short)jobType
+            var topicsData = _context.JobTopicSubscription.Where(x => x.JobTypeId == (short)jobType
                                                       && (!x.IsFirstStage.HasValue || x.IsFirstStage == isFirstStage)
                                                       && x.Enabled == true)
                                                     .OrderBy(x => x.TopicOrder)
-                                                    .Include(x => x.JobTopicTask);
+                                                    .Include(x => x.JobSubscriptionTask);
             var emptyTaskItem = new TaskItem()
-                {
-                    Tasks = new List<string>() { string.Empty },
-                    SupportsParallelExecution = false
-                };
+            {
+                Tasks = new List<string>() { string.Empty },
+                SupportsParallelExecution = false
+            };
 
             if (topicsData.Any())
             {
                 foreach (var topicEntity in topicsData)
                 {
                     var tasks = new List<string>();
-                    var topicTaskEntities = topicEntity.JobTopicTask.Where(x => x.Enabled == true)
+                    var topicTaskEntities = topicEntity.JobSubscriptionTask.Where(x => x.Enabled == true)
                         .OrderBy(x => x.TaskOrder).ToList();
 
                     if (topicTaskEntities.Any())
@@ -54,7 +53,7 @@ namespace ESFA.DC.JobQueueManager
                         tasks.Any() ? new TaskItem(tasks, false) : emptyTaskItem
                     };
 
-                    topics.Add(new TopicItem(topicEntity.TopicName, topicEntity.TopicName, taskItem));
+                    topics.Add(new TopicItem(topicEntity.SubscriptionName, topicEntity.TopicName, taskItem));
                 }
             }
 

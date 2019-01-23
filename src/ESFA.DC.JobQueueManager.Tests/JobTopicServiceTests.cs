@@ -1,22 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.JobContext.Interface;
-using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
-using ESFA.DC.JobQueueManager.Interfaces;
-using ESFA.DC.Logging.Interfaces;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Xunit;
-using Job = ESFA.DC.Jobs.Model.Job;
 using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
 
 namespace ESFA.DC.JobQueueManager.Tests
@@ -37,13 +26,13 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.JobTopic.Add(GetJobTopic(JobType.IlrSubmission, "Validation", "GenerateReport"));
+                    context.JobTopicSubscription.Add(GetJobTopic(1, JobType.IlrSubmission, "TopicA", "Validation", "GenerateReport"));
                     context.SaveChanges();
 
                     var service = new JobTopicTaskService(options);
                     var result = service.GetTopicItems(JobType.IlrSubmission, false).ToList();
                     result.Should().NotBeNull();
-                    result.Count().Should().Be(1);
+                    result.Count.Should().Be(1);
 
                     var topicItem = result.First();
                     topicItem.SubscriptionName.Should().Be("Validation");
@@ -70,8 +59,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.JobTopic.Add(GetJobTopic(jobType, "Validation", "GenerateReport"));
-                    context.JobTopic.Add(GetJobTopic(jobType, "Validation", "GenerateReport", false, false));
+                    context.JobTopicSubscription.Add(GetJobTopic(1, jobType, "TopicA", "Validation", "GenerateReport"));
+                    context.JobTopicSubscription.Add(GetJobTopic(2, jobType, "TopicA", "Validation", "GenerateReport", false, false));
                     context.SaveChanges();
 
                     var service = new JobTopicTaskService(options);
@@ -103,8 +92,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.JobTopic.Add(GetJobTopic(jobType, "Validation", "GenerateReport"));
-                    context.JobTopic.Add(GetJobTopic(jobType, "Funding", "NotEnabledTask", false, true, false));
+                    context.JobTopicSubscription.Add(GetJobTopic(1, jobType, "TopicA", "Validation", "GenerateReport"));
+                    context.JobTopicSubscription.Add(GetJobTopic(2, jobType, "TopicA", "Funding", "NotEnabledTask", false, true, false));
                     context.SaveChanges();
 
                     var service = new JobTopicTaskService(options);
@@ -117,19 +106,22 @@ namespace ESFA.DC.JobQueueManager.Tests
             }
         }
 
-        private JobTopic GetJobTopic(JobType jobType, string topicName, string taskName, bool isFirstStage = false, bool topicEnabled = true, bool taskEnabled = true)
+        private JobTopicSubscription GetJobTopic(int id, JobType jobType, string topicName, string subscriptionName, string taskName, bool isFirstStage = false, bool topicEnabled = true, bool taskEnabled = true)
         {
-            return new JobTopic()
+            return new JobTopicSubscription
             {
+                JobTopicId = id,
                 IsFirstStage = isFirstStage,
                 Enabled = topicEnabled,
                 JobTypeId = (short)jobType,
                 TopicName = topicName,
+                SubscriptionName = subscriptionName,
                 TopicOrder = 1,
-                JobTopicTask = new List<JobTopicTask>()
+                JobSubscriptionTask = new List<JobSubscriptionTask>()
                 {
-                    new JobTopicTask()
+                    new JobSubscriptionTask
                     {
+                        JobTopicTaskId = id,
                         Enabled = taskEnabled,
                         JobTopicId = 1,
                         TaskName = taskName

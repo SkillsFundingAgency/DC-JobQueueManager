@@ -23,7 +23,7 @@ namespace ESFA.DC.JobQueueManager.ExternalData
                 return false;
             }
 
-            if (nextRun?.Month > nowUtc.Month && nextRun?.Day > nowUtc.Day)
+            if (nextRun > nowUtc)
             {
                 // We can't run future.
                 return false;

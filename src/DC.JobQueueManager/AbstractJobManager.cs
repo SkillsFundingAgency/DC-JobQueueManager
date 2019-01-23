@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
-using ESFA.DC.CollectionsManagement.Models;
 using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
-using ESFA.DC.Jobs.Model.Enums;
-using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
 using IReturnCalendarService = ESFA.DC.JobQueueManager.Interfaces.IReturnCalendarService;
+using JobStatusType = ESFA.DC.JobStatus.Interface.JobStatusType;
+using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
+using ReturnPeriod = ESFA.DC.CollectionsManagement.Models.ReturnPeriod;
 
 namespace ESFA.DC.JobQueueManager
 {

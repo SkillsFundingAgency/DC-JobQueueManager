@@ -114,9 +114,9 @@
     <Build Include="DataLoad\Tables\ILR1920.sql" />
     <Build Include="DataLoad\Stored Procedures\usp_Add_OrganisationToCollections.sql" />
     <Build Include="dbo\Stored Procedures\usp_DisplayDeploymentProperties.sql" />
-    <Build Include="dbo\Tables\JobTopicTask.sql" />
-    <Build Include="dbo\Tables\JobTopic.sql" />
-    <None Include="ReferenceData\JobTopicTask.sql" />
+    <Build Include="dbo\Tables\JobSubscriptionTask.sql" />
+    <Build Include="dbo\Tables\JobTopicSubscription.sql" />
+    <None Include="ReferenceData\JobSubscriptionTask.sql" />
     <Build Include="dbo\Views\vw_DisplayJobTaskList.sql" />
     <Build Include="dbo\Views\vw_JobSchedules.sql" />
   </ItemGroup>
@@ -126,7 +126,7 @@
     <None Include="ReferenceData\JobTypeGroup.sql" />
     <Build Include="Security\DataLoad.sql" />
     <None Include="z.ExtendedProperties.sql" />
-    <None Include="ReferenceData\JobTopic.sql" />
+    <None Include="ReferenceData\JobTopicSubscription.sql" />
     <None Include="ReferenceData\ScheduleJobs.sql" />
   </ItemGroup>
   <ItemGroup>

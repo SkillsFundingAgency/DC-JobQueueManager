@@ -17,10 +17,16 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
 
         public virtual DbSet<Collection> Collection { get; set; }
         public virtual DbSet<CollectionType> CollectionType { get; set; }
+        public virtual DbSet<Eas> Eas { get; set; }
+        public virtual DbSet<Efs> Efs { get; set; }
         public virtual DbSet<FileUploadJobMetaData> FileUploadJobMetaData { get; set; }
+        public virtual DbSet<Ilr1819> Ilr1819 { get; set; }
+        public virtual DbSet<Ilr1920> Ilr1920 { get; set; }
         public virtual DbSet<Job> Job { get; set; }
         public virtual DbSet<JobEmailTemplate> JobEmailTemplate { get; set; }
         public virtual DbSet<JobStatusType> JobStatusType { get; set; }
+        public virtual DbSet<JobSubscriptionTask> JobSubscriptionTask { get; set; }
+        public virtual DbSet<JobTopicSubscription> JobTopicSubscription { get; set; }
         public virtual DbSet<JobType> JobType { get; set; }
         public virtual DbSet<JobTypeGroup> JobTypeGroup { get; set; }
         public virtual DbSet<Organisation> Organisation { get; set; }
@@ -72,6 +78,24 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Eas>(entity =>
+            {
+                entity.HasKey(e => e.Ukprn);
+
+                entity.ToTable("EAS", "DataLoad");
+
+                entity.Property(e => e.Ukprn).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<Efs>(entity =>
+            {
+                entity.HasKey(e => e.Ukprn);
+
+                entity.ToTable("EFS", "DataLoad");
+
+                entity.Property(e => e.Ukprn).ValueGeneratedNever();
+            });
+
             modelBuilder.Entity<FileUploadJobMetaData>(entity =>
             {
                 entity.HasIndex(e => e.JobId)
@@ -101,6 +125,24 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                     .HasConstraintName("FK_FileUploadJobMetaData_ToJob");
             });
 
+            modelBuilder.Entity<Ilr1819>(entity =>
+            {
+                entity.HasKey(e => e.Ukprn);
+
+                entity.ToTable("ILR1819", "DataLoad");
+
+                entity.Property(e => e.Ukprn).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<Ilr1920>(entity =>
+            {
+                entity.HasKey(e => e.Ukprn);
+
+                entity.ToTable("ILR1920", "DataLoad");
+
+                entity.Property(e => e.Ukprn).ValueGeneratedNever();
+            });
+
             modelBuilder.Entity<Job>(entity =>
             {
                 entity.Property(e => e.DateTimeSubmittedUtc)
@@ -113,9 +155,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
 
                 entity.Property(e => e.NotifyEmail).HasMaxLength(500);
 
-                entity.Property(e => e.RowVersion)
-                    .IsRequired()
-                    .IsRowVersion();
+                entity.Property(e => e.RowVersion).IsRowVersion();
 
                 entity.Property(e => e.SubmittedBy)
                     .HasMaxLength(50)
@@ -155,6 +195,54 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                     .HasMaxLength(100);
             });
 
+            modelBuilder.Entity<JobSubscriptionTask>(entity =>
+            {
+                entity.HasKey(e => e.JobTopicTaskId);
+
+                entity.Property(e => e.JobTopicTaskId).ValueGeneratedNever();
+
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TaskName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TaskOrder).HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.JobTopic)
+                    .WithMany(p => p.JobSubscriptionTask)
+                    .HasForeignKey(d => d.JobTopicId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobTopicTask_JobTopic");
+            });
+
+            modelBuilder.Entity<JobTopicSubscription>(entity =>
+            {
+                entity.HasKey(e => e.JobTopicId);
+
+                entity.HasIndex(e => e.JobTopicId)
+                    .HasName("IX_JobTopic")
+                    .IsUnique();
+
+                entity.Property(e => e.JobTopicId).ValueGeneratedNever();
+
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.SubscriptionName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TopicName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TopicOrder).HasDefaultValueSql("((1))");
+            });
+
             modelBuilder.Entity<JobType>(entity =>
             {
                 entity.Property(e => e.JobTypeId).ValueGeneratedNever();
@@ -190,6 +278,10 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                 entity.Property(e => e.Email)
                     .HasMaxLength(250)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
