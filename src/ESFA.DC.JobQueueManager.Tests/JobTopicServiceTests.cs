@@ -35,6 +35,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     result.Count.Should().Be(1);
 
                     var topicItem = result.First();
+                    topicItem.SubscriptionSqlFilterValue.Should().Be("TopicA");
                     topicItem.SubscriptionName.Should().Be("Validation");
                     topicItem.Tasks.Count.Should().Be(1);
                     topicItem.Tasks.Any(x => x.Tasks.Contains("GenerateReport")).Should().BeTrue();
@@ -69,6 +70,7 @@ namespace ESFA.DC.JobQueueManager.Tests
                     result.Count().Should().Be(1);
 
                     var topicItem = result.First();
+                    topicItem.SubscriptionSqlFilterValue.Should().Be("TopicA");
                     topicItem.SubscriptionName.Should().Be("Validation");
                     topicItem.Tasks.Count.Should().Be(1);
                 }
