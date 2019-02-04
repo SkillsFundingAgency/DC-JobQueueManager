@@ -8,8 +8,8 @@
     --[CreatedBy]            NVARCHAR (100) CONSTRAINT [def_dbo_JobTopicTask_Createdby] DEFAULT (suser_sname()) NULL,
     --[ModifiedOn]           DATETIME       CONSTRAINT [def_dbo_JobTopicTask_ModifiedOn] DEFAULT (getdate()) NULL,
     --[ModifiedBy]           NVARCHAR (100) CONSTRAINT [def_dbo_JobTopicTask_ModifiedBy] DEFAULT (suser_sname()) NULL,
-    CONSTRAINT [PK_JobTopicTask] PRIMARY KEY CLUSTERED ([JobTopicTaskId] ASC),
-	CONSTRAINT [FK_JobTopicSubscription_JobTopic] FOREIGN KEY ([JobTopicId]) REFERENCES [dbo].[JobTopicSubscription] ([JobTopicId]),
-    CONSTRAINT [FK_JobTopicTask_JobTopic] FOREIGN KEY ([JobTopicId]) REFERENCES [dbo].[JobTopicSubscription] ([JobTopicId])
+    CONSTRAINT [PK_JobSubscriptionTask] PRIMARY KEY CLUSTERED ([JobTopicTaskId] ASC),
+	CONSTRAINT [IX_JobSubscriptionTask] UNIQUE NONCLUSTERED ([JobTopicTaskId] ASC),
+	CONSTRAINT [FK_JobSubscriptionTask_JobTopic] FOREIGN KEY ([JobTopicId]) REFERENCES [dbo].[JobTopicSubscription] ([JobTopicId])
 );
 

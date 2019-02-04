@@ -11,7 +11,7 @@
     --[CreatedBy]            NVARCHAR (100) CONSTRAINT [def_dbo_JobTopic_Createdby] DEFAULT (suser_sname()) NULL,
     --[ModifiedOn]           DATETIME       CONSTRAINT [def_dbo_JobTopic_ModifiedOn] DEFAULT (getdate()) NULL,
     --[ModifiedBy]           NVARCHAR (100) CONSTRAINT [def_dbo_JobTopic_ModifiedBy] DEFAULT (suser_sname()) NULL,
-    CONSTRAINT [PK_JobTopic] PRIMARY KEY CLUSTERED ([JobTopicId] ASC),
-    CONSTRAINT [IX_JobTopic] UNIQUE NONCLUSTERED ([JobTopicId] ASC)
+    CONSTRAINT [PK_JobTopicSubscription] PRIMARY KEY CLUSTERED ([JobTopicId] ASC),
+    CONSTRAINT [IX_JobTopicSubscription] UNIQUE NONCLUSTERED ([JobTopicId] ASC)
 );
 
