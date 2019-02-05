@@ -10,14 +10,16 @@ namespace ESFA.DC.JobQueueManager.Interfaces
     {
         Task<IEnumerable<Job>> GetJobsByPriorityAsync(int resultCount);
 
-        void RemoveJobFromQueue(long jobId);
+        Task RemoveJobFromQueue(long jobId);
 
-        bool UpdateJobStatus(long jobId, JobStatusType status);
+        Task<bool> UpdateJobStatus(long jobId, JobStatusType status);
 
-        bool UpdateJob(Job job);
+        Task<bool> UpdateJob(Job job);
 
-        bool IsCrossLoadingEnabled(JobType jobType);
+        Task<bool> IsCrossLoadingEnabled(JobType jobType);
 
-        bool UpdateCrossLoadingStatus(long jobId, JobStatusType status);
+        Task<bool> UpdateCrossLoadingStatus(long jobId, JobStatusType status);
+
+        void SendEmailNotification(Jobs.Model.Job job);
     }
 }

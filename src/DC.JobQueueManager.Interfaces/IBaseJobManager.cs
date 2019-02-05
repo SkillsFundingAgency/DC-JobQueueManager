@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using ESFA.DC.Jobs.Model;
+using System.Threading.Tasks;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IBaseJobManager<T>
     {
-        long AddJob(T job);
+        Task<long> AddJob(T job);
 
-        T GetJobById(long jobId);
+        Task<T> GetJobById(long jobId);
 
-        IEnumerable<T> GetAllJobs();
+        Task<IEnumerable<T>> GetAllJobs();
 
-        void SendEmailNotification(long jobId);
+        Task SendEmailNotification(long jobId);
     }
 }

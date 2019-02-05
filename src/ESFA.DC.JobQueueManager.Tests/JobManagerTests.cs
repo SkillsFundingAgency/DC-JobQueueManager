@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Autofac;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -24,18 +25,28 @@ namespace ESFA.DC.JobQueueManager.Tests
     public class JobManagerTests
     {
         [Fact]
-        public void AddJob_Null()
+        public async Task AddJob_Null()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentNullException>(() => manager.AddJob(null));
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentNullException>(() => manager.AddJob(null));
+            }
         }
 
         [Fact]
-        public void AddJob_Success()
+        public async Task AddJob_Success()
         {
-            var manager = GetJobManager();
-            var result = manager.AddJob(new Job());
-            result.Should().Be(1);
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                var result = await manager.AddJob(new Job());
+                result.Should().Be(1);
+            }
         }
 
         [Theory]
@@ -44,7 +55,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(JobType.EasSubmission)]
         [InlineData(JobType.ReferenceDataEPA)]
         [InlineData(JobType.ReferenceDataFCS)]
-        public void AddJob_Success_Values(JobType jobType)
+        public async Task AddJob_Success_Values(JobType jobType)
         {
             var job = new Job
             {
@@ -59,12 +70,19 @@ namespace ESFA.DC.JobQueueManager.Tests
                 NotifyEmail = "test@email.com"
             };
 
-            var manager = GetJobManager();
-            manager.AddJob(job);
+            IContainer container = Registrations();
+            Job savedJob;
 
-            var result = manager.GetAllJobs();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(job);
 
-            var savedJob = result.SingleOrDefault();
+                var result = await manager.GetAllJobs();
+
+                savedJob = result.SingleOrDefault();
+            }
+
             savedJob.Should().NotBeNull();
 
             savedJob.JobId.Should().Be(1);
@@ -79,91 +97,111 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
-        public void GetJobById_Success()
+        public async Task GetJobById_Success()
         {
-            var manager = GetJobManager();
-            var jobId = manager.AddJob(new Job());
-            var result = manager.GetJobById(1);
+            IContainer container = Registrations();
+            Job result;
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                var jobId = await manager.AddJob(new Job());
+                result = await manager.GetJobById(1);
+            }
 
             result.Should().NotBeNull();
             result.JobId.Should().Be(1);
         }
 
         [Fact]
-        public void GetJobById_Fail_zeroId()
+        public async Task GetJobById_Fail_zeroId()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.GetJobById(0));
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.GetJobById(0));
+            }
         }
 
         [Fact]
-        public void GetJobById_Fail_IdNotFound()
+        public async Task GetJobById_Fail_IdNotFound()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.GetJobById(100));
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.GetJobById(100));
+            }
         }
 
         [Fact]
-        public void GetAllJobs_Success()
+        public async Task GetAllJobs_Success()
         {
-            var manager = GetJobManager();
-            manager.AddJob(new Job());
-            manager.AddJob(new Job());
-            manager.AddJob(new Job());
+            IContainer container = Registrations();
+            IEnumerable<Job> result;
 
-            var result = manager.GetAllJobs();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                IJobManager manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job());
+                await manager.AddJob(new Job());
+                await manager.AddJob(new Job());
+                result = await manager.GetAllJobs();
+            }
+
             result.Count().Should().Be(3);
         }
 
         public async Task GetJobByPriority_Ilr_NoJobs()
         {
-            using (var connection = new SqliteConnection("DataSource=:memory:"))
-            {
-                connection.Open();
-                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
-                    .UseSqlite(connection)
-                    .Options;
+            IContainer container = Registrations();
+            IEnumerable<Job> result;
 
+            using (var scope = container.BeginLifetimeScope())
+            {
                 // Create the schema in the database
+                var options = scope.Resolve<DbContextOptions<JobQueueDataContext>>();
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
-                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync(100);
-                result.Should().BeEmpty();
+                var manager = container.Resolve<IJobManager>();
+                result = await manager.GetJobsByPriorityAsync(100);
             }
+
+            result.Should().BeEmpty();
         }
 
         public async Task GetJobByPriority_Ilr_submission()
         {
-            using (var connection = new SqliteConnection("DataSource=:memory:"))
-            {
-                connection.Open();
-                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
-                    .UseSqlite(connection)
-                    .Options;
+            IContainer container = Registrations();
 
+            using (var scope = container.BeginLifetimeScope())
+            {
                 // Create the schema in the database
+                var options = scope.Resolve<DbContextOptions<JobQueueDataContext>>();
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
                 }
 
-                var manager = new JobManager(options, new Mock<IDateTimeProvider>().Object, new Mock<IEmailNotifier>().Object, new Mock<IFileUploadJobManager>().Object, new Mock<IEmailTemplateManager>().Object, It.IsAny<ILogger>(), new Mock<IReturnCalendarService>().Object);
-                manager.AddJob(new Job
+                var manager = container.Resolve<IJobManager>();
+                await manager.AddJob(new Job
                 {
                     Priority = 1,
                     Status = JobStatusType.Ready
                 });
-                manager.AddJob(new Job
+                await manager.AddJob(new Job
                 {
                     Priority = 2,
                     Status = JobStatusType.Ready
                 });
 
-                IEnumerable<Job> result = await manager.GetJobsByPriorityAsync(100);
+                IEnumerable<Job> result = (await manager.GetJobsByPriorityAsync(100)).ToList();
                 result.Should().NotBeEmpty();
                 Job job = result.First();
                 job.JobId.Should().Be(2);
@@ -172,17 +210,27 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
-        public void RemoveJobFromQueue_Fail_ZeroId()
+        public async Task RemoveJobFromQueue_Fail_ZeroId()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.RemoveJobFromQueue(0));
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.RemoveJobFromQueue(0));
+            }
         }
 
         [Fact]
-        public void RemoveJobFromQueue_Fail_IdDontExist()
+        public async Task RemoveJobFromQueue_Fail_IdDontExist()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.RemoveJobFromQueue(200));
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.RemoveJobFromQueue(200));
+            }
         }
 
         [Theory]
@@ -192,67 +240,96 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(JobStatusType.Failed)]
         [InlineData(JobStatusType.FailedRetry)]
         [InlineData(JobStatusType.Paused)]
-        public void RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatusType status)
+        public async Task RemoveJobFromQueue_Fail_InvalidJobStatus(JobStatusType status)
         {
-            var manager = GetJobManager();
-            manager.AddJob(new Job
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
             {
-                Status = status
-            });
-            Assert.Throws<ArgumentOutOfRangeException>(() => manager.RemoveJobFromQueue(1));
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
+                {
+                    Status = status
+                });
+
+                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => manager.RemoveJobFromQueue(1));
+            }
         }
 
         [Fact]
-        public void RemoveJobFromQueue_Success()
+        public async Task RemoveJobFromQueue_Success()
         {
-            var manager = GetJobManager();
-            manager.AddJob(new Job
+            IContainer container = Registrations();
+            IEnumerable<Job> jobsAfterRemoval;
+
+            using (var scope = container.BeginLifetimeScope())
             {
-                Status = JobStatusType.Ready
-            });
-            var jobs = manager.GetAllJobs();
-            jobs.Count().Should().Be(1);
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
+                {
+                    Status = JobStatusType.Ready
+                });
+                var jobs = await manager.GetAllJobs();
+                jobs.Count().Should().Be(1);
 
-            manager.RemoveJobFromQueue(1);
+                await manager.RemoveJobFromQueue(1);
 
-            var jobsAfterRemoval = manager.GetAllJobs();
+                jobsAfterRemoval = await manager.GetAllJobs();
+            }
+
             jobsAfterRemoval.Count().Should().Be(0);
         }
 
         [Fact]
-        public void UpdateJob_Fail_Null()
+        public async Task UpdateJob_Fail_Null()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentNullException>(() => manager.UpdateJob(null));
-        }
+            IContainer container = Registrations();
 
-        [Fact]
-        public void UpdateJob_Fail_InvalidJobId()
-        {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.UpdateJob(
-                new Job { JobId = 1000 }));
-        }
-
-        [Fact]
-        public void UpdateJob_Success()
-        {
-            var manager = GetJobManager();
-            manager.AddJob(new Job
+            using (var scope = container.BeginLifetimeScope())
             {
-                Status = JobStatusType.Ready,
-                JobType = JobType.IlrSubmission
-            });
-            var job = manager.GetJobById(1);
-            job.Status = JobStatusType.Completed;
-            job.Priority = 2;
-            job.NotifyEmail = "test@test.com";
-            job.SubmittedBy = "test";
-            job.CrossLoadingStatus = JobStatusType.MovedForProcessing;
+                var manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentNullException>(() => manager.UpdateJob(null));
+            }
+        }
 
-            manager.UpdateJob(job);
+        [Fact]
+        public async Task UpdateJob_Fail_InvalidJobId()
+        {
+            IContainer container = Registrations();
 
-            var updatedJob = manager.GetJobById(1);
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.UpdateJob(new Job { JobId = 1000 }));
+            }
+        }
+
+        [Fact]
+        public async Task UpdateJob_Success()
+        {
+            IContainer container = Registrations();
+            Job updatedJob;
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
+                {
+                    Status = JobStatusType.Ready,
+                    JobType = JobType.IlrSubmission
+                });
+                var job = await manager.GetJobById(1);
+                job.Status = JobStatusType.Completed;
+                job.Priority = 2;
+                job.NotifyEmail = "test@test.com";
+                job.SubmittedBy = "test";
+                job.CrossLoadingStatus = JobStatusType.MovedForProcessing;
+
+                await manager.UpdateJob(job);
+
+                updatedJob = await manager.GetJobById(1);
+            }
+
             updatedJob.JobType.Should().Be(JobType.IlrSubmission);
             updatedJob.DateTimeUpdatedUtc.Should().BeOnOrBefore(DateTime.UtcNow);
             updatedJob.Priority.Should().Be(2);
@@ -263,49 +340,66 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
-        public void UpdateJobStatus_Fail_ZeroId()
+        public async Task UpdateJobStatus_Fail_ZeroId()
         {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(0, JobStatusType.Completed));
-        }
+            IContainer container = Registrations();
 
-        [Fact]
-        public void UpdateJobStatus_Fail_InvalidJobId()
-        {
-            var manager = GetJobManager();
-            Assert.Throws<ArgumentException>(() => manager.UpdateJobStatus(110, JobStatusType.Completed));
-        }
-
-        [Fact]
-        public void UpdateJobStatus_Success()
-        {
-            var manager = GetJobManager();
-            manager.AddJob(new Job
+            using (var scope = container.BeginLifetimeScope())
             {
-                Status = JobStatusType.Ready
-            });
-            manager.UpdateJobStatus(1, JobStatusType.Completed);
+                var manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.UpdateJobStatus(0, JobStatusType.Completed));
+            }
+        }
 
-            var updatedJob = manager.GetJobById(1);
+        [Fact]
+        public async Task UpdateJobStatus_Fail_InvalidJobId()
+        {
+            IContainer container = Registrations();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await Assert.ThrowsAsync<ArgumentException>(() => manager.UpdateJobStatus(110, JobStatusType.Completed));
+            }
+        }
+
+        [Fact]
+        public async Task UpdateJobStatus_Success()
+        {
+            IContainer container = Registrations();
+            Job updatedJob;
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
+                {
+                    Status = JobStatusType.Ready
+                });
+                await manager.UpdateJobStatus(1, JobStatusType.Completed);
+
+                updatedJob = await manager.GetJobById(1);
+            }
+
             updatedJob.Status.Should().Be(JobStatusType.Completed);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData(JobStatusType.MovedForProcessing)]
-        public void UpdateJobStatus_Success_EmailSent(JobStatusType? crossLoadingStatus)
+        public async Task UpdateJobStatus_Success_EmailSent(JobStatusType? crossLoadingStatus)
         {
+            var emailTemplateManager = new Mock<IEmailTemplateManager>();
+            emailTemplateManager.Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>())).Returns("template");
             var emailNotifier = new Mock<IEmailNotifier>();
             emailNotifier.Setup(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()));
 
-            using (var connection = new SqliteConnection("DataSource=:memory:"))
-            {
-                connection.Open();
-                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
-                    .UseSqlite(connection)
-                    .Options;
+            IContainer container = Registrations(emailTemplateManager.Object, emailNotifier.Object);
 
+            using (var scope = container.BeginLifetimeScope())
+            {
                 // Create the schema in the database
+                var options = scope.Resolve<DbContextOptions<JobQueueDataContext>>();
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
@@ -329,29 +423,17 @@ namespace ESFA.DC.JobQueueManager.Tests
                     }
                 }
 
-                var emailTemplateManager = new Mock<IEmailTemplateManager>();
-                emailTemplateManager
-                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>()))
-                    .Returns("template");
-
-                var manager = new JobManager(
-                    options,
-                    new Mock<IDateTimeProvider>().Object,
-                    emailNotifier.Object,
-                    new Mock<IFileUploadJobManager>().Object,
-                    emailTemplateManager.Object,
-                    It.IsAny<ILogger>(),
-                    new Mock<IReturnCalendarService>().Object);
-                manager.AddJob(new Job
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
                 {
                     Status = JobStatusType.Ready,
                     JobType = JobType.IlrSubmission,
                     CrossLoadingStatus = crossLoadingStatus
                 });
 
-                manager.UpdateJobStatus(1, JobStatusType.Completed);
+                await manager.UpdateJobStatus(1, JobStatusType.Completed);
 
-                var updatedJob = manager.GetJobById(1);
+                var updatedJob = await manager.GetJobById(1);
                 updatedJob.Status.Should().Be(JobStatusType.Completed);
 
                 emailNotifier.Verify(
@@ -360,19 +442,19 @@ namespace ESFA.DC.JobQueueManager.Tests
         }
 
         [Fact]
-        public void UpdateCrossLoadingStatus_Success_EmailSent()
+        public async Task UpdateCrossLoadingStatus_Success_EmailSent()
         {
+            var emailTemplateManager = new Mock<IEmailTemplateManager>();
+            emailTemplateManager.Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>())).Returns("template");
             var emailNotifier = new Mock<IEmailNotifier>();
             emailNotifier.Setup(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()));
 
-            using (var connection = new SqliteConnection("DataSource=:memory:"))
-            {
-                connection.Open();
-                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
-                    .UseSqlite(connection)
-                    .Options;
+            IContainer container = Registrations(emailTemplateManager.Object, emailNotifier.Object);
 
+            using (var scope = container.BeginLifetimeScope())
+            {
                 // Create the schema in the database
+                var options = scope.Resolve<DbContextOptions<JobQueueDataContext>>();
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
@@ -393,45 +475,31 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.SaveChanges();
                 }
 
-                var emailTemplateManager = new Mock<IEmailTemplateManager>();
-                emailTemplateManager
-                    .Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>()))
-                    .Returns("template");
-
-                var manager = new JobManager(
-                    options,
-                    new Mock<IDateTimeProvider>().Object,
-                    emailNotifier.Object,
-                    new Mock<IFileUploadJobManager>().Object,
-                    emailTemplateManager.Object,
-                    It.IsAny<ILogger>(),
-                    new Mock<IReturnCalendarService>().Object);
-                manager.AddJob(new Job
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
                 {
                     Status = JobStatusType.Ready,
                     JobType = JobType.IlrSubmission,
                     CrossLoadingStatus = JobStatusType.MovedForProcessing
                 });
 
-                manager.UpdateCrossLoadingStatus(1, JobStatusType.Completed);
+                await manager.UpdateCrossLoadingStatus(1, JobStatusType.Completed);
 
-                var updatedJob = manager.GetJobById(1);
+                var updatedJob = await manager.GetJobById(1);
                 updatedJob.CrossLoadingStatus.Should().Be(JobStatusType.Completed);
                 emailNotifier.Verify(x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), Times.Never);
             }
         }
 
         [Fact]
-        public void IsCrossLoadingEnabled_Success()
+        public async Task IsCrossLoadingEnabled_Success()
         {
-            using (var connection = new SqliteConnection("DataSource=:memory:"))
-            {
-                connection.Open();
-                var options = new DbContextOptionsBuilder<JobQueueDataContext>()
-                    .UseSqlite(connection)
-                    .Options;
+            IContainer container = Registrations();
 
+            using (var scope = container.BeginLifetimeScope())
+            {
                 // Create the schema in the database
+                var options = scope.Resolve<DbContextOptions<JobQueueDataContext>>();
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
@@ -452,16 +520,8 @@ namespace ESFA.DC.JobQueueManager.Tests
                     context.SaveChanges();
                 }
 
-                var manager = new JobManager(
-                    options,
-                    new Mock<IDateTimeProvider>().Object,
-                    new Mock<IEmailNotifier>().Object,
-                    new Mock<IFileUploadJobManager>().Object,
-                    new Mock<IEmailTemplateManager>().Object,
-                    It.IsAny<ILogger>(),
-                    new Mock<IReturnCalendarService>().Object);
-
-                manager.IsCrossLoadingEnabled(JobType.IlrSubmission).Should().BeTrue();
+                var manager = scope.Resolve<IJobManager>();
+                (await manager.IsCrossLoadingEnabled(JobType.IlrSubmission)).Should().BeTrue();
             }
         }
 
@@ -478,16 +538,30 @@ namespace ESFA.DC.JobQueueManager.Tests
             return options;
         }
 
-        private JobManager GetJobManager(IDateTimeProvider dateTimeProvider = null, IEmailNotifier emailNotifier = null, IEmailTemplateManager emailTemplateManager = null)
+        private IContainer Registrations(IEmailTemplateManager emailTemplateManager = null, IEmailNotifier emailNotifier = null)
         {
-            return new JobManager(
-                GetContextOptions(),
-                dateTimeProvider ?? new Mock<IDateTimeProvider>().Object,
-                emailNotifier ?? new Mock<IEmailNotifier>().Object,
-                new Mock<IFileUploadJobManager>().Object,
-                emailTemplateManager ?? new Mock<IEmailTemplateManager>().Object,
-                It.IsAny<ILogger>(),
-                new Mock<IReturnCalendarService>().Object);
+            ContainerBuilder builder = new ContainerBuilder();
+
+            builder.RegisterInstance(new Mock<IDateTimeProvider>().Object).As<IDateTimeProvider>().SingleInstance();
+            builder.RegisterInstance(emailTemplateManager ?? new Mock<IEmailTemplateManager>().Object).As<IEmailTemplateManager>().SingleInstance();
+            builder.RegisterInstance(emailNotifier ?? new Mock<IEmailNotifier>().Object).As<IEmailNotifier>().SingleInstance();
+            builder.RegisterInstance(new Mock<IFileUploadJobManager>().Object).As<IFileUploadJobManager>().SingleInstance();
+            builder.RegisterInstance(new Mock<ILogger>().Object).As<ILogger>().SingleInstance();
+            builder.RegisterInstance(new Mock<IReturnCalendarService>().Object).As<IReturnCalendarService>().SingleInstance();
+
+            builder.RegisterType<JobManager>().As<IJobManager>().InstancePerLifetimeScope();
+            builder.RegisterType<JobQueueDataContext>().As<IJobQueueDataContext>().InstancePerDependency();
+            builder.Register(context =>
+                {
+                    SqliteConnection connection = new SqliteConnection("DataSource=:memory:");
+                    connection.Open();
+                    return GetContextOptions();
+                })
+                .As<DbContextOptions<JobQueueDataContext>>()
+                .SingleInstance();
+
+            IContainer container = builder.Build();
+            return container;
         }
     }
 }

@@ -51,5 +51,8 @@ RAISERROR('		         User DSCI',10,1) WITH NOWAIT;
 ALTER USER [User_DSCI] WITH PASSWORD = N'$(DsciUserPassword)';
 GO
 
+DROP PROCEDURE IF EXISTS [dbo].[usp_Add_OrganisationToCollections];
+GO
+
 RAISERROR('Completed',10,1) WITH NOWAIT;
 GO

@@ -1,9 +1,11 @@
-﻿using ESFA.DC.JobQueueManager.Data.Entities;
+﻿using System;
+using System.Threading;
+using ESFA.DC.JobQueueManager.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager.Data
 {
-    public interface IJobQueueDataContext
+    public interface IJobQueueDataContext : IDisposable
     {
         DbSet<Collection> Collection { get; set; }
         DbSet<CollectionType> CollectionType { get; set; }
@@ -23,5 +25,8 @@ namespace ESFA.DC.JobQueueManager.Data
         DbSet<OrganisationCollection> OrganisationCollection { get; set; }
         DbSet<ReturnPeriod> ReturnPeriod { get; set; }
         DbSet<Schedule> Schedule { get; set; }
+        int SaveChanges();
+        System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry Entry(object entity);
     }
 }

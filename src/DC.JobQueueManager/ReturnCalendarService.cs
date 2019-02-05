@@ -9,27 +9,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESFA.DC.JobQueueManager
 {
-    public class ReturnCalendarService : IReturnCalendarService, IDisposable
+    public class ReturnCalendarService : IReturnCalendarService
     {
-        private readonly JobQueueDataContext _collectionsManagementContext;
+        private readonly Func<IJobQueueDataContext> _contextFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public ReturnCalendarService(DbContextOptions<JobQueueDataContext> dbContextOptions, IDateTimeProvider dateTimeProvider)
+        public ReturnCalendarService(Func<IJobQueueDataContext> contextFactory, IDateTimeProvider dateTimeProvider)
         {
-            _collectionsManagementContext = new JobQueueDataContext(dbContextOptions);
+            _contextFactory = contextFactory;
             _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ReturnPeriod> GetPeriodAsync(string collectionName, DateTime dateTimeUtc)
         {
-            var data = await _collectionsManagementContext.ReturnPeriod.Include(x => x.Collection).Where(x =>
-                    x.Collection.Name == collectionName &&
-                    dateTimeUtc >= x.StartDateTimeUtc
-                    && dateTimeUtc <= x.EndDateTimeUtc)
-                .FirstOrDefaultAsync();
-            if (data != null)
+            using (var context = _contextFactory())
             {
-                return Convert(data);
+                var data = await context.ReturnPeriod.Include(x => x.Collection).Where(x =>
+                        x.Collection.Name == collectionName &&
+                        dateTimeUtc >= x.StartDateTimeUtc
+                        && dateTimeUtc <= x.EndDateTimeUtc)
+                    .FirstOrDefaultAsync();
+                if (data != null)
+                {
+                    return Convert(data);
+                }
             }
 
             return null;
@@ -37,11 +40,14 @@ namespace ESFA.DC.JobQueueManager
 
         public async Task<ReturnPeriod> GetPreviousPeriodAsync(string collectionName, DateTime dateTimeUtc)
         {
-            var data = await _collectionsManagementContext.ReturnPeriod.Include(x => x.Collection).Where(x =>
-                    x.Collection.Name == collectionName &&
-                    x.StartDateTimeUtc < dateTimeUtc).OrderByDescending(x => x.StartDateTimeUtc)
-                .FirstOrDefaultAsync();
-            return Convert(data);
+            using (var context = _contextFactory())
+            {
+                var data = await context.ReturnPeriod.Include(x => x.Collection).Where(x =>
+                        x.Collection.Name == collectionName &&
+                        x.StartDateTimeUtc < dateTimeUtc).OrderByDescending(x => x.StartDateTimeUtc)
+                    .FirstOrDefaultAsync();
+                return Convert(data);
+            }
         }
 
         public async Task<ReturnPeriod> GetCurrentPeriodAsync(string collectionName)
@@ -53,11 +59,14 @@ namespace ESFA.DC.JobQueueManager
         public async Task<ReturnPeriod> GetNextPeriodAsync(string collectionName)
         {
             var currentDateTime = _dateTimeProvider.GetNowUtc();
-            var data = await _collectionsManagementContext.ReturnPeriod.Include(x => x.Collection).Where(x =>
-                    x.Collection.Name == collectionName &&
-                    x.StartDateTimeUtc > currentDateTime).OrderBy(x => x.StartDateTimeUtc)
-                .FirstOrDefaultAsync();
-            return Convert(data);
+            using (var context = _contextFactory())
+            {
+                var data = await context.ReturnPeriod.Include(x => x.Collection).Where(x =>
+                        x.Collection.Name == collectionName &&
+                        x.StartDateTimeUtc > currentDateTime).OrderBy(x => x.StartDateTimeUtc)
+                    .FirstOrDefaultAsync();
+                return Convert(data);
+            }
         }
 
         public ReturnPeriod Convert(Data.Entities.ReturnPeriod data)
@@ -77,11 +86,6 @@ namespace ESFA.DC.JobQueueManager
                 CollectionName = data.Collection.Name
             };
             return period;
-        }
-
-        public void Dispose()
-        {
-            _collectionsManagementContext.Dispose();
         }
     }
 }

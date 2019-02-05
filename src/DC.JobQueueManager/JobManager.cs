@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
@@ -15,7 +14,7 @@ namespace ESFA.DC.JobQueueManager
 {
     public sealed class JobManager : AbstractJobManager, IJobManager
     {
-        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
+        private readonly Func<IJobQueueDataContext> _contextFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IEmailNotifier _emailNotifier;
         private readonly IFileUploadJobManager _fileUploadJobManager;
@@ -23,16 +22,16 @@ namespace ESFA.DC.JobQueueManager
         private readonly ILogger _logger;
 
         public JobManager(
-            DbContextOptions<JobQueueDataContext> contextOptions,
+            Func<IJobQueueDataContext> contextFactory,
             IDateTimeProvider dateTimeProvider,
             IEmailNotifier emailNotifier,
             IFileUploadJobManager fileUploadJobManager,
             IEmailTemplateManager emailTemplateManager,
             ILogger logger,
             IReturnCalendarService returnCalendarService)
-            : base(contextOptions, returnCalendarService, emailTemplateManager)
+            : base(contextFactory, returnCalendarService, emailTemplateManager)
         {
-            _contextOptions = contextOptions;
+            _contextFactory = contextFactory;
             _dateTimeProvider = dateTimeProvider;
             _emailNotifier = emailNotifier;
             _fileUploadJobManager = fileUploadJobManager;
@@ -40,14 +39,14 @@ namespace ESFA.DC.JobQueueManager
             _logger = logger;
         }
 
-        public long AddJob(Jobs.Model.Job job)
+        public async Task<long> AddJob(Jobs.Model.Job job)
         {
             if (job == null)
             {
                 throw new ArgumentNullException();
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
                 var entity = new Job
                 {
@@ -57,8 +56,7 @@ namespace ESFA.DC.JobQueueManager
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
                     NotifyEmail = job.NotifyEmail,
-                    CrossLoadingStatus =
-                        IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
+                    CrossLoadingStatus = (await IsCrossLoadingEnabled(job.JobType)) ? (short)JobStatusType.Ready : (short?)null
                 };
                 context.Job.Add(entity);
                 context.SaveChanges();
@@ -66,28 +64,28 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public IEnumerable<Jobs.Model.Job> GetAllJobs()
+        public async Task<IEnumerable<Jobs.Model.Job>> GetAllJobs()
         {
             var jobs = new List<Jobs.Model.Job>();
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var jobEntities = context.Job.ToList();
+                var jobEntities = await context.Job.ToListAsync();
                 jobEntities.ForEach(x => jobs.Add(JobConverter.Convert(x)));
             }
 
             return jobs;
         }
 
-        public Jobs.Model.Job GetJobById(long jobId)
+        public async Task<Jobs.Model.Job> GetJobById(long jobId)
         {
             if (jobId == 0)
             {
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var entity = context.Job.SingleOrDefault(x => x.JobId == jobId);
+                var entity = await context.Job.SingleOrDefaultAsync(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -102,7 +100,7 @@ namespace ESFA.DC.JobQueueManager
         public async Task<IEnumerable<Jobs.Model.Job>> GetJobsByPriorityAsync(int resultCount)
         {
             List<Jobs.Model.Job> jobs = new List<Jobs.Model.Job>();
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
                 Job[] jobEntities = await context.Job.FromSql("dbo.GetJobByPriority @ResultCount={0}", resultCount).ToArrayAsync();
 
@@ -115,16 +113,16 @@ namespace ESFA.DC.JobQueueManager
             return jobs;
         }
 
-        public void RemoveJobFromQueue(long jobId)
+        public async Task RemoveJobFromQueue(long jobId)
         {
             if (jobId == 0)
             {
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var jobEntity = context.Job.SingleOrDefault(x => x.JobId == jobId);
+                var jobEntity = await context.Job.SingleOrDefaultAsync(x => x.JobId == jobId);
                 if (jobEntity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -136,20 +134,20 @@ namespace ESFA.DC.JobQueueManager
                 }
 
                 context.Job.Remove(jobEntity);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public bool UpdateJob(Jobs.Model.Job job)
+        public async Task<bool> UpdateJob(Jobs.Model.Job job)
         {
             if (job == null)
             {
                 throw new ArgumentNullException();
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var entity = context.Job.SingleOrDefault(x => x.JobId == job.JobId);
+                Job entity = await context.Job.SingleOrDefaultAsync(x => x.JobId == job.JobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {job.JobId} does not exist");
@@ -159,13 +157,12 @@ namespace ESFA.DC.JobQueueManager
 
                 JobConverter.Convert(job, entity);
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
-                context.Entry(entity).Property("RowVersion").OriginalValue =
-                    job.RowVersion == null ? null : Convert.FromBase64String(job.RowVersion);
+                context.Entry(entity).Property("RowVersion").OriginalValue = job.RowVersion == null ? null : Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
 
                 try
                 {
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
 
                     if (statusChanged)
                     {
@@ -182,16 +179,16 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool UpdateJobStatus(long jobId, JobStatusType status)
+        public async Task<bool> UpdateJobStatus(long jobId, JobStatusType status)
         {
             if (jobId == 0)
             {
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var entity = context.Job.SingleOrDefault(x => x.JobId == jobId);
+                var entity = await context.Job.SingleOrDefaultAsync(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -203,7 +200,7 @@ namespace ESFA.DC.JobQueueManager
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 if (statusChanged)
                 {
@@ -214,16 +211,16 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public bool UpdateCrossLoadingStatus(long jobId, JobStatusType status)
+        public async Task<bool> UpdateCrossLoadingStatus(long jobId, JobStatusType status)
         {
             if (jobId == 0)
             {
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var entity = context.Job.SingleOrDefault(x => x.JobId == jobId);
+                var entity = await context.Job.SingleOrDefaultAsync(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -233,7 +230,7 @@ namespace ESFA.DC.JobQueueManager
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 return true;
             }
@@ -243,8 +240,7 @@ namespace ESFA.DC.JobQueueManager
         {
             try
             {
-                var template =
-                    _emailTemplateManager.GetTemplate(job.JobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
+                var template = _emailTemplateManager.GetTemplate(job.JobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
 
                 if (!string.IsNullOrEmpty(template))
                 {
@@ -264,9 +260,9 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public void SendEmailNotification(long jobId)
+        public async Task SendEmailNotification(long jobId)
         {
-            var job = GetJobById(jobId);
+            var job = await GetJobById(jobId);
             SendEmailNotification(job);
         }
     }

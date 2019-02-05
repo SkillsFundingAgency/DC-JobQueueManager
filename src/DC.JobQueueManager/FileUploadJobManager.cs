@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
@@ -19,36 +19,36 @@ namespace ESFA.DC.JobQueueManager
 {
     public sealed class FileUploadJobManager : AbstractJobManager, IFileUploadJobManager
     {
-        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
+        private readonly Func<IJobQueueDataContext> _contextFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IEmailNotifier _emailNotifier;
         private readonly ILogger _logger;
 
         public FileUploadJobManager(
-            DbContextOptions<JobQueueDataContext> contextOptions,
+            Func<IJobQueueDataContext> contextFactory,
             IDateTimeProvider dateTimeProvider,
             IReturnCalendarService returnCalendarService,
             IEmailTemplateManager emailTemplateManager,
             IEmailNotifier emailNotifier,
             ILogger logger)
-        : base(contextOptions, returnCalendarService, emailTemplateManager)
+        : base(contextFactory, returnCalendarService, emailTemplateManager)
         {
-            _contextOptions = contextOptions;
+            _contextFactory = contextFactory;
             _dateTimeProvider = dateTimeProvider;
             _emailNotifier = emailNotifier;
             _logger = logger;
         }
 
-        public FileUploadJob GetJobById(long jobId)
+        public async Task<FileUploadJob> GetJobById(long jobId)
         {
             if (jobId == 0)
             {
                 throw new ArgumentException("Job id can not be 0");
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entity = context.FileUploadJobMetaData.Include(x => x.Job).SingleOrDefault(x => x.JobId == jobId);
+                var entity = await context.FileUploadJobMetaData.Include(x => x.Job).SingleOrDefaultAsync(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -60,14 +60,14 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public long AddJob(FileUploadJob job)
+        public async Task<long> AddJob(FileUploadJob job)
         {
             if (job == null)
             {
                 throw new ArgumentNullException();
             }
 
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
                 var entity = new Job
                 {
@@ -77,7 +77,7 @@ namespace ESFA.DC.JobQueueManager
                     Status = (short)job.Status,
                     SubmittedBy = job.SubmittedBy,
                     NotifyEmail = job.NotifyEmail,
-                    CrossLoadingStatus = IsCrossLoadingEnabled(job.JobType) ? (short)JobStatusType.Ready : (short?)null
+                    CrossLoadingStatus = (await IsCrossLoadingEnabled(job.JobType)) ? (short)JobStatusType.Ready : (short?)null
                 };
 
                 var metaEntity = new FileUploadJobMetaData()
@@ -95,23 +95,23 @@ namespace ESFA.DC.JobQueueManager
                 };
                 context.Job.Add(entity);
                 context.FileUploadJobMetaData.Add(metaEntity);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 //send email on create for esf and eas
                 if (job.JobType != JobType.IlrSubmission)
                 {
-                    SendEmailNotification(entity.JobId);
+                    await SendEmailNotification(entity.JobId);
                 }
 
                 return entity.JobId;
             }
         }
 
-        public bool UpdateJobStage(long jobId, bool isFirstStage)
+        public async Task<bool> UpdateJobStage(long jobId, bool isFirstStage)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entity = context.FileUploadJobMetaData.SingleOrDefault(x => x.JobId == jobId);
+                var entity = await context.FileUploadJobMetaData.SingleOrDefaultAsync(x => x.JobId == jobId);
                 if (entity == null)
                 {
                     throw new ArgumentException($"Job id {jobId} does not exist");
@@ -122,7 +122,7 @@ namespace ESFA.DC.JobQueueManager
 
                 try
                 {
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                     return true;
                 }
                 catch (DbUpdateConcurrencyException exception)
@@ -132,55 +132,55 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public IEnumerable<FileUploadJob> GetJobsByUkprn(long ukprn)
+        public async Task<IEnumerable<FileUploadJob>> GetJobsByUkprn(long ukprn)
         {
-            var items = new List<FileUploadJob>();
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entities = context.FileUploadJobMetaData.Include(x => x.Job).Where(x => x.Ukprn == ukprn)
-                    .ToList();
+                var entities = await context.FileUploadJobMetaData.Include(x => x.Job).Where(x => x.Ukprn == ukprn)
+                    .ToListAsync();
                 return ConvertJobs(entities);
             }
         }
 
-        public IEnumerable<FileUploadJob> GetJobsByUkprnForDateRange(long ukprn, DateTime startDateTimeUtc, DateTime endDateTimeUtc)
+        public async Task<IEnumerable<FileUploadJob>> GetJobsByUkprnForDateRange(long ukprn, DateTime startDateTimeUtc,
+            DateTime endDateTimeUtc)
         {
-            var items = new List<FileUploadJob>();
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entities = context.FileUploadJobMetaData
+                var entities = await context.FileUploadJobMetaData
                     .Include(x => x.Job)
                     .Where(x => x.Ukprn == ukprn &&
                                 x.Job.DateTimeSubmittedUtc >= startDateTimeUtc &&
                                 x.Job.DateTimeSubmittedUtc <= endDateTimeUtc)
-                    .ToList();
+                    .ToListAsync();
                 return ConvertJobs(entities);
             }
         }
 
-        public IEnumerable<FileUploadJob> GetJobsByUkprnForPeriod(long ukprn, int period)
+        public async Task<IEnumerable<FileUploadJob>> GetJobsByUkprnForPeriod(long ukprn, int period)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entities = context.FileUploadJobMetaData.Include(x => x.Job)
+                var entities = await context.FileUploadJobMetaData.Include(x => x.Job)
                     .Where(x => x.Ukprn == ukprn && x.PeriodNumber == period)
-                    .ToList();
+                    .ToListAsync();
                 return ConvertJobs(entities);
             }
         }
 
-        public IEnumerable<FileUploadJob> GetLatestJobsPerPeriodByUkprn(long ukprn, DateTime startDateTimeUtc, DateTime endDateTimeUtc)
+        public async Task<IEnumerable<FileUploadJob>> GetLatestJobsPerPeriodByUkprn(long ukprn,
+            DateTime startDateTimeUtc, DateTime endDateTimeUtc)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entities = context.FileUploadJobMetaData.Include(x => x.Job)
+                var entities = await context.FileUploadJobMetaData.Include(x => x.Job)
                     .Where(x => x.Ukprn == ukprn && 
                                 x.Job.Status == (short)JobStatusType.Completed &&
                                 x.Job.DateTimeSubmittedUtc >= startDateTimeUtc &&
                                 x.Job.DateTimeSubmittedUtc <= endDateTimeUtc)
                     .GroupBy(x => new { x.CollectionYear, x.PeriodNumber, x.Job.JobType})
                     .Select(g => g.OrderByDescending(x => x.Job.DateTimeSubmittedUtc).FirstOrDefault())
-                    .ToList();
+                    .ToListAsync();
                 return ConvertJobs(entities);
             }
         }
@@ -188,7 +188,7 @@ namespace ESFA.DC.JobQueueManager
         public FileUploadJob GetLatestJobByUkprn(long ukprn, string collectionName)
         {
             var result = new FileUploadJob();
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
                 var entity = context.FileUploadJobMetaData
                     .Include(x => x.Job)
@@ -202,11 +202,11 @@ namespace ESFA.DC.JobQueueManager
             return result;
         }
 
-        public IEnumerable<FileUploadJob> GetLatestJobByUkprn(long[] ukprns)
+        public async Task<IEnumerable<FileUploadJob>> GetLatestJobByUkprn(long[] ukprns)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entities = context.FileUploadJobMetaData
+                var entities = await context.FileUploadJobMetaData
                     .Join(context.Job,
                         metadata => metadata.JobId,
                         job => job.JobId,
@@ -214,7 +214,7 @@ namespace ESFA.DC.JobQueueManager
                     .Where(x => ukprns.Contains(x.metadata.Ukprn))
                     .GroupBy(x => x.metadata.Ukprn)
                     .Select(g => g.OrderByDescending(x => x.job.DateTimeSubmittedUtc).FirstOrDefault())
-                    .ToList();
+                    .ToListAsync();
 
                 entities.ForEach(x => x.metadata.Job = x.job);
 
@@ -222,20 +222,21 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public FileUploadJob GetLatestJobByUkprnAndContractReference(long ukprn, string contractReference, string collectionName)
+        public async Task<FileUploadJob> GetLatestJobByUkprnAndContractReference(long ukprn, string contractReference,
+            string collectionName)
         {
             var result = new FileUploadJob();
             var fileNameSearchQuery = $"{ukprn}/SUPPDATA-{ukprn}-{contractReference}-";
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entity = context.FileUploadJobMetaData
+                var entity = await context.FileUploadJobMetaData
                     .Include(x => x.Job)
                     .Where(
                         x => x.Ukprn == ukprn &&
                              x.CollectionName.Equals(collectionName, StringComparison.CurrentCultureIgnoreCase) &&
                              x.FileName.StartsWith(fileNameSearchQuery))
                     .OrderByDescending(x => x.Job.DateTimeSubmittedUtc)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
 
                 JobConverter.Convert(entity, result);
             }
@@ -244,11 +245,11 @@ namespace ESFA.DC.JobQueueManager
         }
 
 
-        public IEnumerable<FileUploadJob> GetAllJobs()
+        public async Task<IEnumerable<FileUploadJob>> GetAllJobs()
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entities = context.FileUploadJobMetaData.Include(x => x.Job).ToList();
+                var entities = await context.FileUploadJobMetaData.Include(x => x.Job).ToListAsync();
                 return ConvertJobs(entities);
             }
         }
@@ -266,11 +267,11 @@ namespace ESFA.DC.JobQueueManager
             return items;
         }
 
-        public void SendEmailNotification(long jobId)
+        public async Task SendEmailNotification(long jobId)
         {
             try
             {
-                var job = GetJobById(jobId);
+                var job = await GetJobById(jobId);
                 var template = GetTemplate(jobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
 
                 if (!string.IsNullOrEmpty(template))

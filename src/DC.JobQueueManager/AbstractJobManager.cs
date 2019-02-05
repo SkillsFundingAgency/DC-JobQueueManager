@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
+using System.Threading.Tasks;
 using ESFA.DC.JobQueueManager.Data;
-using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using IReturnCalendarService = ESFA.DC.JobQueueManager.Interfaces.IReturnCalendarService;
@@ -13,25 +12,25 @@ namespace ESFA.DC.JobQueueManager
 {
     public abstract class AbstractJobManager
     {
-        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
+        private readonly Func<IJobQueueDataContext> _contextFactory;
         private readonly IReturnCalendarService _returnCalendarService;
         private readonly IEmailTemplateManager _emailTemplateManager;
 
         protected AbstractJobManager(
-            DbContextOptions<JobQueueDataContext> contextOptions,
+            Func<IJobQueueDataContext> contextFactory,
             IReturnCalendarService returnCalendarService,
             IEmailTemplateManager emailTemplateManager)
         {
-            _contextOptions = contextOptions;
+            _contextFactory = contextFactory;
             _returnCalendarService = returnCalendarService;
             _emailTemplateManager = emailTemplateManager;
         }
 
-        public bool IsCrossLoadingEnabled(JobType jobType)
+        public async Task<bool> IsCrossLoadingEnabled(JobType jobType)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (var context = _contextFactory())
             {
-                var entity = context.JobType.SingleOrDefault(x => x.JobTypeId == (short)jobType);
+                var entity = await context.JobType.SingleOrDefaultAsync(x => x.JobTypeId == (short)jobType);
                 return entity != null && entity.IsCrossLoadingEnabled;
             }
         }
