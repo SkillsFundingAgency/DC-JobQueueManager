@@ -6,27 +6,27 @@ BEGIN
 	MERGE INTO [dbo].[JobTopicSubscription] AS Target
 	USING (VALUES
 			-- ILR Data
-			(1,  1, 1, N'ilr1819submissiontopic', N'FileValidation', 1, 1, 1),
-			(2,  1, 1, N'ilr1819submissiontopic', N'Validation', 2, 1, 1),
-			(3,  1, 1, N'ilr1819submissiontopic', N'Reports', 3, 1, 1),
-			(4,  1, 1, N'ilr1819submissiontopic', N'FileValidation', 1, 0, 1),
-			(5,  1, 1, N'ilr1819submissiontopic', N'Validation', 2, 0, 1),
-			(6,  1, 1, N'ilr1819submissiontopic', N'Funding', 3, 0, 1),
-		   (12,  1, 1, N'ilr1819submissiontopic', N'GenerateFM36Payments', 4, 0, 0),
-			(7,  1, 1, N'ilr1819submissiontopic', N'Deds', 5, 0, 1),
-			(8,  1, 1, N'ilr1819submissiontopic', N'Reports', 6, 0, 1),
+			(1,  1, 1, N'FileValidation', N'ilr1819submissiontopic', 1, 1, 1),
+			(2,  1, 1,  N'Validation', N'ilr1819submissiontopic', 2, 1, 1),
+			(3,  1, 1, N'Reports', N'ilr1819submissiontopic', 3, 1, 1),
+			(4,  1, 1,  N'FileValidation', N'ilr1819submissiontopic', 1, 0, 1),
+			(5,  1, 1, N'Validation', N'ilr1819submissiontopic',  2, 0, 1),
+			(6,  1, 1, N'Funding', N'ilr1819submissiontopic',  3, 0, 1),
+		   (12,  1, 1,  N'GenerateFM36Payments', N'ilr1819submissiontopic', 4, 0, 0),
+			(7,  1, 1,  N'Deds', N'ilr1819submissiontopic', 5, 0, 1),
+			(8,  1, 1, N'Reports', N'ilr1819submissiontopic',  6, 0, 1),
 
 			-- EAS Submission
-			(9,  2, 2, N'eas1819submissiontopic', N'Process', 1, null, 1),
-			(10, 2, 2, N'eas1819submissiontopic', N'Reports', 1, null, 1),
+			(9,  2, 2, N'Process', N'eas1819submissiontopic',  1, null, 1),
+			(10, 2, 2,  N'Reports', N'eas1819submissiontopic', 1, null, 1),
 
 			-- ESF Submission
-			(11, 3, 3, N'esfv1submissiontopic', N'Process', 1, null, 1),
+			(11, 3, 3,  N'Process', N'esfv1submissiontopic',1, null, 1),
 
 			-- Reference Data
-			(13, 40, 4, N'referencedatatopic', N'Process', 1, null, 0),
-			(14, 41, 4, N'referencedatatopic', N'Process', 1, null, 0),
-			(15, 42, 4, N'referencedatatopic', N'Process', 1, null, 0)
+			(13, 40, 4, N'Process', N'referencedatatopic',  1, null, 0),
+			(14, 41, 4, N'Process', N'referencedatatopic',  1, null, 0),
+			(15, 42, 4, N'Process', N'referencedatatopic',  1, null, 0)
 		  )
 		AS Source([JobTopicId],[JobTypeId],[CollectionId],[SubscriptionName],[TopicName],[TopicOrder],[IsFirstStage],[Enabled] )
 		ON Target.[JobTopicId] = Source.[JobTopicId]
