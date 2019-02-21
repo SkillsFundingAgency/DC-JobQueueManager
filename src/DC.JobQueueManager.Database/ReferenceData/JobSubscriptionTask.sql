@@ -24,6 +24,7 @@ BEGIN
 			(17, 8,  N'TaskGenerateAppsIndicativeEarningsReport', 8, 1),        -- ILR Stage 2
 			(18, 8,  N'TaskGenerateTrailblazerEmployerIncentivesReport', 9, 1), -- ILR Stage 2
 			(27, 8,  N'TaskGenerateFundingClaim1619Report', 10, 1),             -- ILR Stage 2
+			(31, 8,  N'TaskGenerateTrailblazerAppsOccupancyReport', 11, 1),     -- ILR Stage 2
 
 			(19, 9,  N'Validation', 1, 1),								-- EAS Submission : Process
 			(20, 9,  N'Storage', 2, 1),									-- EAS Submission : Process
