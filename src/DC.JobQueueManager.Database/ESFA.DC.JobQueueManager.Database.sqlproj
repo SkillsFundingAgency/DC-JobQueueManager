@@ -119,6 +119,7 @@
     <None Include="ReferenceData\JobSubscriptionTask.sql" />
     <Build Include="dbo\Views\vw_DisplayJobTaskList.sql" />
     <Build Include="dbo\Views\vw_JobSchedules.sql" />
+    <Build Include="dbo\Tables\JobSubmission.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zzDeploymentProfiles\zz.Local.Dev.Version.publish.xml" />

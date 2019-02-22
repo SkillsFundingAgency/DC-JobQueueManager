@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ESFA.DC.DateTimeProvider.Interface;
 using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
+using ESFA.DC.JobQueueManager.Data.Entities;
 using ESFA.DC.JobQueueManager.Interfaces;
 using ESFA.DC.Logging.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -160,6 +161,15 @@ namespace ESFA.DC.JobQueueManager
                 context.Entry(entity).Property("RowVersion").OriginalValue = job.RowVersion == null ? null : Convert.FromBase64String(job.RowVersion);
                 context.Entry(entity).State = EntityState.Modified;
 
+                if (job.Status == JobStatusType.Ready)
+                {
+                    context.JobSubmission.Add(new JobSubmission()
+                    {
+                        DateTimeUtc = _dateTimeProvider.GetNowUtc(),
+                        JobId = job.JobId
+                    });
+                }
+
                 try
                 {
                     await context.SaveChangesAsync();
@@ -199,6 +209,15 @@ namespace ESFA.DC.JobQueueManager
                 entity.Status = (short)status;
                 entity.DateTimeUpdatedUtc = _dateTimeProvider.GetNowUtc();
                 context.Entry(entity).State = EntityState.Modified;
+
+                if (status == JobStatusType.Ready)
+                {
+                    context.JobSubmission.Add(new JobSubmission()
+                    {
+                        DateTimeUtc = _dateTimeProvider.GetNowUtc(),
+                        JobId = jobId
+                    });
+                }
 
                 await context.SaveChangesAsync();
 
