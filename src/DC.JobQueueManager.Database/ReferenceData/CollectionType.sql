@@ -8,7 +8,8 @@ BEGIN
 			(1, N'ILR', N'Upload ILR (Individualised Learner Records) data'),
 			(2, N'EAS', N'Update EAS (Earnings Adjustment Statement)'),
 			(3, N'ESF', N'Upload ESF (European Social Fund) supplementary data'),
-			(4, N'REF', N'Internal reference data job')
+			(4, N'REF', N'Internal reference data job'),
+			(5, N'NCS', N'Upload NCS (National Careers Service) data')
 		  )
 		AS Source([CollectionTypeId], [Type], [Description])
 		ON Target.[CollectionTypeId] = Source.[CollectionTypeId]
