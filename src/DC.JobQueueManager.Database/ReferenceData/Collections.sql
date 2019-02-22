@@ -12,6 +12,7 @@ BEGIN
 				UNION SELECT 2 AS [CollectionId], N'EAS1819' as [Name], 1 as [IsOpen], N'EAS' as [CollectionType], '1819' as [CollectionYear]
 				UNION SELECT 3 AS [CollectionId], N'ESF'     as [Name], 1 as [IsOpen], N'ESF' as [CollectionType], '1819' as [CollectionYear]
 				UNION SELECT 4 AS [CollectionId], N'ReferenceData1819'     as [Name], 0 as [IsOpen], N'REF' as [CollectionType], '1819' as [CollectionYear]
+				UNION SELECT 5 AS [CollectionId], N'NCS1819'     as [Name], 1 as [IsOpen], N'NCS' as [CollectionType], '1819' as [CollectionYear]
 				--UNION SELECT 4 AS [CollectionId], N'EAS1920' as [Name], 1 as [IsOpen], N'EAS' as [CollectionType], '1920' as [CollectionYear]
 				--UNION SELECT 5 AS [CollectionId], N'ILR1920' as [Name], 1 as [IsOpen], N'ILR' as [CollectionType], '1920' as [CollectionYear]
 			) AS NewRecords
