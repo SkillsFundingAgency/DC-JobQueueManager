@@ -91,7 +91,7 @@ BEGIN
 					  ,[SubmittedBy]
 					  ,[NotifyEmail]
 					  ,[CrossLoadingStatus],
-					  ROW_NUMBER() OVER(PARTITION BY [Ukprn] ORDER BY [Priority] DESC) rn
+					  ROW_NUMBER() OVER(PARTITION BY [Ukprn] ORDER BY [Priority] DESC, j.JobId) rn
 				FROM [dbo].[Job] j WITH (nolock) 
 				INNER JOIN [dbo].[JobType] jt WITH (nolock) 
 					on jt.JobTypeId = j.JobType
