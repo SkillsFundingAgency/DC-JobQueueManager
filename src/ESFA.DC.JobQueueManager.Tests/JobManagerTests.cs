@@ -379,9 +379,38 @@ namespace ESFA.DC.JobQueueManager.Tests
                 await manager.UpdateJobStatus(1, JobStatusType.Completed);
 
                 updatedJob = await manager.GetJobById(1);
+
+                var context = scope.Resolve<IJobQueueDataContext>();
+                context.JobSubmission.FirstOrDefault(x => x.JobId == 1).Should().BeNull();
             }
 
             updatedJob.Status.Should().Be(JobStatusType.Completed);
+        }
+
+        [Theory]
+        [InlineData(JobStatusType.Failed)]
+        [InlineData(JobStatusType.Waiting)]
+        [InlineData(JobStatusType.FailedRetry)]
+        public async Task UpdateJobStatus_Ready(JobStatusType existingStatus)
+        {
+            IContainer container = Registrations();
+            Job updatedJob;
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var manager = scope.Resolve<IJobManager>();
+                await manager.AddJob(new Job
+                {
+                    Status = existingStatus
+                });
+                await manager.UpdateJobStatus(1, JobStatusType.Ready);
+
+                updatedJob = await manager.GetJobById(1);
+
+                var context = scope.Resolve<IJobQueueDataContext>();
+                updatedJob.Status.Should().Be(JobStatusType.Ready);
+                context.JobSubmission.FirstOrDefault(x => x.JobId == 1).Should().NotBeNull();
+            }
         }
 
         [Theory]
@@ -435,6 +464,11 @@ namespace ESFA.DC.JobQueueManager.Tests
 
                 var updatedJob = await manager.GetJobById(1);
                 updatedJob.Status.Should().Be(JobStatusType.Completed);
+
+                using (var context = new JobQueueDataContext(options))
+                {
+                    context.JobSubmission.FirstOrDefault(x => x.JobId == 1).Should().BeNull();
+                }
 
                 emailNotifier.Verify(
                     x => x.SendEmail(It.IsAny<string>(), "template", It.IsAny<Dictionary<string, dynamic>>()), Times.Once());

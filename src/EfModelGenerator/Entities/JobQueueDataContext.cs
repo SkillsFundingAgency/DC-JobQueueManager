@@ -25,7 +25,9 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public virtual DbSet<Job> Job { get; set; }
         public virtual DbSet<JobEmailTemplate> JobEmailTemplate { get; set; }
         public virtual DbSet<JobStatusType> JobStatusType { get; set; }
+        public virtual DbSet<JobSubmission> JobSubmission { get; set; }
         public virtual DbSet<JobSubscriptionTask> JobSubscriptionTask { get; set; }
+        public virtual DbSet<JobTopic> JobTopic { get; set; }
         public virtual DbSet<JobTopicSubscription> JobTopicSubscription { get; set; }
         public virtual DbSet<JobType> JobType { get; set; }
         public virtual DbSet<JobTypeGroup> JobTypeGroup { get; set; }
@@ -39,7 +41,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.\\;Database=JobManagement;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLOCALDB;Database=JobManagement;Trusted_Connection=True;");
             }
         }
 
@@ -195,9 +197,26 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                     .HasMaxLength(100);
             });
 
+            modelBuilder.Entity<JobSubmission>(entity =>
+            {
+                entity.Property(e => e.DateTimeUtc)
+                    .HasColumnName("DateTimeUTC")
+                    .HasColumnType("datetime");
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.JobSubmission)
+                    .HasForeignKey(d => d.JobId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobSubmission_Job");
+            });
+
             modelBuilder.Entity<JobSubscriptionTask>(entity =>
             {
                 entity.HasKey(e => e.JobTopicTaskId);
+
+                entity.HasIndex(e => e.JobTopicTaskId)
+                    .HasName("IX_JobSubscriptionTask")
+                    .IsUnique();
 
                 entity.Property(e => e.JobTopicTaskId).ValueGeneratedNever();
 
@@ -215,7 +234,32 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                     .WithMany(p => p.JobSubscriptionTask)
                     .HasForeignKey(d => d.JobTopicId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_JobTopicTask_JobTopic");
+                    .HasConstraintName("FK_JobSubscriptionTask_JobTopic");
+            });
+
+            modelBuilder.Entity<JobTopic>(entity =>
+            {
+                entity.HasIndex(e => e.JobTopicId)
+                    .HasName("IX_JobTopic")
+                    .IsUnique();
+
+                entity.Property(e => e.JobTopicId).ValueGeneratedNever();
+
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TopicName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TopicOrder).HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.JobTopicNavigation)
+                    .WithOne(p => p.InverseJobTopicNavigation)
+                    .HasForeignKey<JobTopic>(d => d.JobTopicId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobTopic_JobTopic");
             });
 
             modelBuilder.Entity<JobTopicSubscription>(entity =>
@@ -223,7 +267,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
                 entity.HasKey(e => e.JobTopicId);
 
                 entity.HasIndex(e => e.JobTopicId)
-                    .HasName("IX_JobTopic")
+                    .HasName("IX_JobTopicSubscription")
                     .IsUnique();
 
                 entity.Property(e => e.JobTopicId).ValueGeneratedNever();

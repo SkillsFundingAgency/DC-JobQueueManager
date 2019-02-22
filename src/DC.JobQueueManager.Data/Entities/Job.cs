@@ -8,6 +8,7 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public Job()
         {
             FileUploadJobMetaData = new HashSet<FileUploadJobMetaData>();
+            JobSubmission = new HashSet<JobSubmission>();
         }
 
         public long JobId { get; set; }
@@ -22,5 +23,6 @@ namespace ESFA.DC.JobQueueManager.Data.Entities
         public short? CrossLoadingStatus { get; set; }
 
         public ICollection<FileUploadJobMetaData> FileUploadJobMetaData { get; set; }
+        public ICollection<JobSubmission> JobSubmission { get; set; }
     }
 }

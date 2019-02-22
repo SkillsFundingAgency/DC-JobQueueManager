@@ -1,1 +1,1 @@
-﻿dotnet.exe ef dbcontext scaffold "Server=.\;Database=JobManagement;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Entities -c JobQueueDataContext -force
+﻿dotnet.exe ef dbcontext scaffold "Server=.\;Database=JobManagement;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Entities -c JobQueueDataContext --force
