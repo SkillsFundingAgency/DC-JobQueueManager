@@ -303,7 +303,7 @@ namespace ESFA.DC.JobQueueManager
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Sending email failed for job {jobId}", ex);
+                _logger.LogError($"Sending email failed for job {jobId}", ex, jobIdOverride: jobId);
             }
         }
     }
