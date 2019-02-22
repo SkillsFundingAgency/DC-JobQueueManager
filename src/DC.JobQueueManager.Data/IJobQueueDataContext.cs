@@ -25,6 +25,7 @@ namespace ESFA.DC.JobQueueManager.Data
         DbSet<OrganisationCollection> OrganisationCollection { get; set; }
         DbSet<ReturnPeriod> ReturnPeriod { get; set; }
         DbSet<Schedule> Schedule { get; set; }
+        DbSet<JobSubmission> JobSubmission { get; set; }
         int SaveChanges();
         System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
         Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry Entry(object entity);
