@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -45,6 +51,7 @@ namespace ESFA.DC.JobQueueManager.Data
                 optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLOCALDB;Database=JobManagement;Trusted_Connection=True;");
             }
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -389,6 +396,16 @@ namespace ESFA.DC.JobQueueManager.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Schedule_JobType");
             });
+        }
+
+        public async Task<IList<T>> FromSqlAsync<T>(CommandType commandType, string sql, object parameters)
+        {
+            using (var connection = new SqlConnection(Database.GetDbConnection().ConnectionString))
+            { 
+                await connection.OpenAsync();
+                
+                return (await connection.QueryAsync<T>(sql, parameters,commandType:commandType)).ToList();
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading;
+using System.Threading.Tasks;
 using ESFA.DC.JobQueueManager.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,5 +32,7 @@ namespace ESFA.DC.JobQueueManager.Data
         int SaveChanges();
         System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
         Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry Entry(object entity);
+        Task<IList<T>> FromSqlAsync<T>(CommandType commandType, string sql, object parameters);
+
     }
 }

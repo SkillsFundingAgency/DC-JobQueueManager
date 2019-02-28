@@ -6,7 +6,7 @@
     <RootNamespace>ESFA.DC.JobQueueManager</RootNamespace>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.66</Version>
+    <Version>0.1.82</Version>
     <Authors>DC</Authors>
     <Company>ESFA</Company>
     <Description>Implementation of Job Queue Manager</Description>
@@ -35,6 +35,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />
     <PackageReference Include="Notify" Version="2.1.0" />
+    <PackageReference Include="Dapper" Version="1.50.7" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
