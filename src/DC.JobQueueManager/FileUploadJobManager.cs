@@ -272,7 +272,7 @@ namespace ESFA.DC.JobQueueManager
             try
             {
                 var job = await GetJobById(jobId);
-                var template = GetTemplate(jobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
+                var template = await GetTemplate(jobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
 
                 if (!string.IsNullOrEmpty(template))
                 {
@@ -298,7 +298,7 @@ namespace ESFA.DC.JobQueueManager
                         personalisation.Add("NextReturnOpenDate", nextReturnPeriod.StartDateTimeUtc.ToString("dd MMMM yyyy"));
                     }
 
-                    _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
+                    await _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
                 }
             }
             catch (Exception ex)

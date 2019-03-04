@@ -20,6 +20,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 
         Task<bool> UpdateCrossLoadingStatus(long jobId, JobStatusType status);
 
-        void SendEmailNotification(Jobs.Model.Job job);
+        Task SendEmailNotification(Jobs.Model.Job job);
     }
 }
