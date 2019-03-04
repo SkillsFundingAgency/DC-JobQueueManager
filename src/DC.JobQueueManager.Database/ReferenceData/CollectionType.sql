@@ -5,9 +5,11 @@ BEGIN
 
 	MERGE INTO [dbo].[CollectionType] AS Target
 	USING (VALUES
-			(1, N'ILR', N'ILR (Individualised Learner Records)'),
-			(2, N'EAS', N'EAS (Earnings Adjustment Statement)'),
-			(3, N'ESF', N'ESF (European Social Fund) supplementary data')
+			(1, N'ILR', N'Upload ILR (Individualised Learner Records) data'),
+			(2, N'EAS', N'Update EAS (Earnings Adjustment Statement)'),
+			(3, N'ESF', N'Upload ESF (European Social Fund) supplementary data'),
+			(4, N'REF', N'Internal reference data job'),
+			(5, N'NCS', N'Upload NCS (National Careers Service) data')
 		  )
 		AS Source([CollectionTypeId], [Type], [Description])
 		ON Target.[CollectionTypeId] = Source.[CollectionTypeId]
@@ -32,5 +34,5 @@ BEGIN
 		SET @UpdateCount_CT = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_CollectionType WHERE [Action] = 'Update' GROUP BY Action),0);
 		SET @DeleteCount_CT = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_CollectionType WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-		RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'CollectionType', @AddCount_CT, @UpdateCount_CT, @DeleteCount_CT) WITH NOWAIT;
+		RAISERROR('		        %s - Added %i - Update %i - Delete %i',10,1,'CollectionType', @AddCount_CT, @UpdateCount_CT, @DeleteCount_CT) WITH NOWAIT;
 END

@@ -7,15 +7,17 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet>DC.JobQueueManager.Interfaces.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>DC.JobQueueManager.Interfaces.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.21-beta0001" />
+    <PackageReference Include="ESFA.DC.CollectionsManagement.Models" Version="0.1.6-beta0001" />
+    <PackageReference Include="ESFA.DC.JobContext.Interface" Version="0.1.16-beta0001" />
+    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.27-beta0001" />
     <PackageReference Include="ESFA.DC.JobStatus.Interface" Version="0.1.12-beta0001" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>

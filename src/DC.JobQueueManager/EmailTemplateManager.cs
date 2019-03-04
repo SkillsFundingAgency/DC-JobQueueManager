@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using ESFA.DC.CollectionsManagement.Models;
-using ESFA.DC.CollectionsManagement.Services.Interface;
 using ESFA.DC.DateTimeProvider.Interface;
-using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Interfaces;
-using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -17,35 +13,35 @@ namespace ESFA.DC.JobQueueManager
 {
     public class EmailTemplateManager : IEmailTemplateManager
     {
-        private readonly DbContextOptions _contextOptions;
+        private readonly Func<IJobQueueDataContext> _contextFactory;
         private readonly IReturnCalendarService _returnCalendarService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public EmailTemplateManager(
-            DbContextOptions contextOptions,
+            Func<IJobQueueDataContext> contextFactory,
             IReturnCalendarService returnCalendarService,
             IDateTimeProvider dateTimeProvider)
         {
-            _contextOptions = contextOptions;
+            _contextFactory = contextFactory;
             _returnCalendarService = returnCalendarService;
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public string GetTemplate(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc)
+        public async Task<string> GetTemplate(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc)
         {
-            using (var context = new JobQueueDataContext(_contextOptions))
+            using (IJobQueueDataContext context = _contextFactory())
             {
-                var job = context.FileUploadJobMetaDataEntities.SingleOrDefault(x => x.JobId == jobId);
+                var job = await context.FileUploadJobMetaData.SingleOrDefaultAsync(x => x.JobId == jobId);
 
                 ReturnPeriod period = null;
                 if (job != null)
                 {
-                    period = GetReturnPeriod(job.CollectionName, dateTimeJobSubmittedUtc);
+                    period = await GetReturnPeriod(job.CollectionName, dateTimeJobSubmittedUtc);
                 }
 
-                var emailTemplate =
-                    context.JobEmailTemplates.SingleOrDefault(
-                        x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active);
+                var emailTemplate = await 
+                    context.JobEmailTemplate.SingleOrDefaultAsync(
+                        x => x.JobType == (short)jobType && x.JobStatus == (short)status && x.Active.Value);
 
                 if (emailTemplate == null)
                 {
@@ -61,14 +57,14 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public ReturnPeriod GetReturnPeriod(string collectionName, DateTime dateTimeUtc)
+        public async Task<ReturnPeriod> GetReturnPeriod(string collectionName, DateTime dateTimeUtc)
         {
             if (string.IsNullOrEmpty(collectionName))
             {
                 return null;
             }
 
-            return _returnCalendarService.GetPeriodAsync(collectionName, _dateTimeProvider.ConvertUtcToUk(dateTimeUtc)).Result;
+            return await _returnCalendarService.GetPeriodAsync(collectionName, _dateTimeProvider.ConvertUtcToUk(dateTimeUtc));
         }
     }
 }

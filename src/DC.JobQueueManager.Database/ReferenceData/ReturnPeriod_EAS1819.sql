@@ -1,11 +1,11 @@
 ﻿
-GO
-DECLARE @CollectionName NVARCHAR(100) = 'ILR1819';
+DECLARE @CollectionNameEAS1819 NVARCHAR(100) = 'EAS1819';
 SET NOCOUNT ON;
-DECLARE @MinsToRemove INT = 715;
-DECLARE @DataTable TABLE ([CollectionId] INT NOT NULL, [PeriodNumber] INT	NOT NULL, [StartDateTimeUTC] DATETIME NOT NULL, [EndDateTimeUTC] DATETIME NOT NULL, [CalendarMonth] INT NOT NULL, [CalendarYear] INT NOT NULL );--PRIMARY KEY ([CollectionId],[PeriodNumber]));
+DECLARE @MinsToRemove_EAS1819 INT = 715;
+DECLARE @DataTable_EAS1819 TABLE ([CollectionId] INT NOT NULL, [PeriodNumber] INT	NOT NULL, [StartDateTimeUTC] DATETIME NOT NULL, [EndDateTimeUTC] DATETIME NOT NULL, [CalendarMonth] INT NOT NULL, [CalendarYear] INT NOT NULL, PRIMARY KEY ([CollectionId],[PeriodNumber]));
 
-DECLARE @CollectionId INT = (SELECT [CollectionId] FROM [dbo].[Collection] WHERE [Name] = @CollectionName)
+DECLARE @CollectionId_EAS1819 INT = (SELECT [CollectionId] FROM [dbo].[Collection] WHERE [Name] = @CollectionNameEAS1819)
+DECLARE @SummaryOfChanges_ReturnPeriod_EAS1819 TABLE ([CollectionId] INT, [PeriodNumber] INT, [Action] VARCHAR(100));
 
 ;WITH CTE_RAW_Data([PeriodNumber],[EndDateTimeUTC])
 AS
@@ -25,19 +25,20 @@ AS
 	UNION SELECT 13 as [PeriodNumber] , CONVERT(DATETIME, N'2019-09-13T18:05:00.000') as [EndDateTimeUTC]
 	UNION SELECT 14 as [PeriodNumber] , CONVERT(DATETIME, N'2019-10-17T18:05:00.000') as [EndDateTimeUTC]
 )
-, CTE_Full([CollectionName],[PeriodNumber],[StartDateTimeUTC],[EndDateTimeUTC])
+, CTE_Full([CollectionId],[CollectionName],[PeriodNumber],[StartDateTimeUTC],[EndDateTimeUTC])
 AS
 (	   
 	SELECT 	 
-		 @CollectionName as [CollectionName]
+		 @CollectionId_EAS1819 as [CollectionNameId]
+		,@CollectionNameEAS1819 as [CollectionName]
 		,[PeriodNumber] 
-		,DATEADD(MI,@MinsToRemove,LAG([EndDateTimeUTC], 1,CONVERT(DATETIME,CONVERT(CHAR(4),YEAR([EndDateTimeUTC])) + '-08-22T18:05:00.000')) OVER (ORDER BY [PeriodNumber])) as [StartDateTimeUTC]
+		,DATEADD(MI,@MinsToRemove_EAS1819,LAG([EndDateTimeUTC], 1,CONVERT(DATETIME,CONVERT(CHAR(4),YEAR([EndDateTimeUTC])) + '-08-22T18:05:00.000')) OVER (ORDER BY [PeriodNumber])) as [StartDateTimeUTC]
 		,[EndDateTimeUTC]	
 	FROM CTE_RAW_Data
 )
 
-INSERT INTO @DataTable([CollectionId], [PeriodNumber], [StartDateTimeUTC], [EndDateTimeUTC], [CalendarMonth], [CalendarYear])
-SELECT    @CollectionId as [CollectionId]
+INSERT INTO @DataTable_EAS1819([CollectionId], [PeriodNumber], [StartDateTimeUTC], [EndDateTimeUTC], [CalendarMonth], [CalendarYear])
+SELECT    @CollectionId_EAS1819 as [CollectionId]
 		, NewRecords.[PeriodNumber]
 		, NewRecords.[StartDateTimeUTC]
 		, NewRecords.[EndDateTimeUTC]
@@ -45,20 +46,17 @@ SELECT    @CollectionId as [CollectionId]
 		, YEAR([StartDateTimeUTC]) as [CalendarYear]
 FROM CTE_Full NewRecords
 
---SELECT * FROM  @DataTable
-
-BEGIN TRAN
-
+--SELECT * FROM @DataTable_EAS1819
 
 BEGIN
-	DECLARE @SummaryOfChanges_ReturnPeriod TABLE ([CollectionId] INT, [PeriodNumber] INT, [Action] VARCHAR(100));
+	BEGIN TRAN
 
 	BEGIN TRY
 
 		MERGE INTO [dbo].[ReturnPeriod] AS Target
 		USING (
 				SELECT  [CollectionId], [PeriodNumber], [StartDateTimeUTC], [EndDateTimeUTC], [CalendarMonth], [CalendarYear]
-				FROM @DataTable
+				FROM @DataTable_EAS1819
 			  )
 			AS Source([CollectionId], [PeriodNumber], [StartDateTimeUTC], [EndDateTimeUTC], [CalendarMonth], [CalendarYear])
 			 ON Target.[CollectionId] = Source.[CollectionId]
@@ -81,21 +79,21 @@ BEGIN
 								  Target.[CalendarYear] = Source.[CalendarYear]
 			WHEN NOT MATCHED BY TARGET THEN INSERT([StartDateTimeUTC], [EndDateTimeUTC], [PeriodNumber], [CollectionId], [CalendarMonth], [CalendarYear]) 
 										   VALUES ([StartDateTimeUTC], [EndDateTimeUTC], [PeriodNumber], [CollectionId], [CalendarMonth], [CalendarYear])
-			WHEN NOT MATCHED BY Source AND Target.[CollectionId] = @CollectionId THEN DELETE
+			WHEN NOT MATCHED BY Source AND Target.[CollectionId] = @CollectionId_EAS1819 THEN DELETE
 			OUTPUT ISNULL(Inserted.[CollectionId],deleted.[CollectionId]),
 				   ISNULL(Inserted.[PeriodNumber],deleted.[PeriodNumber]),
 				   $action 
-			  INTO @SummaryOfChanges_ReturnPeriod([CollectionId],[PeriodNumber],[Action])
+			  INTO @SummaryOfChanges_ReturnPeriod_EAS1819([CollectionId],[PeriodNumber],[Action])
 			;
 
-			DECLARE @AddCount_RT INT, @UpdateCount_RT INT, @DeleteCount_RT INT
-			SET @AddCount_RT  = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod WHERE [Action] = 'Insert' GROUP BY Action),0);
-			SET @UpdateCount_RT = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod WHERE [Action] = 'Update' GROUP BY Action),0);
-			SET @DeleteCount_RT = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod WHERE [Action] = 'Delete' GROUP BY Action),0);
+			DECLARE @AddCount_RT_EAS1819 INT, @UpdateCount_RT_EAS1819 INT, @DeleteCount_RT_EAS1819 INT
+			SET @AddCount_RT_EAS1819  = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1819 WHERE [Action] = 'Insert' GROUP BY Action),0);
+			SET @UpdateCount_RT_EAS1819 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1819 WHERE [Action] = 'Update' GROUP BY Action),0);
+			SET @DeleteCount_RT_EAS1819 = ISNULL((SELECT Count(*) FROM @SummaryOfChanges_ReturnPeriod_EAS1819 WHERE [Action] = 'Delete' GROUP BY Action),0);
 
-			RAISERROR('		      %s - Added %i - Update %i - Delete %i',10,1,'  ReturnPeriod', @AddCount_RT, @UpdateCount_RT, @DeleteCount_RT) WITH NOWAIT;
+			RAISERROR('		      %s : %s - Added %i - Update %i - Delete %i',10,1,'    ReturnPeriod',@CollectionNameEAS1819, @AddCount_RT_EAS1819, @UpdateCount_RT_EAS1819, @DeleteCount_RT_EAS1819) WITH NOWAIT;
 
-			--SELECT t.*, soc.Action FROM @DataTable t LEFT JOIN @SummaryOfChanges_ReturnPeriod soc ON t.[CollectionId] = soc.[CollectionId] AND t.[PeriodNumber] = soc.[PeriodNumber]
+			--SELECT t.*, soc.Action FROM @DataTable_EAS1819 t LEFT JOIN @SummaryOfChanges_ReturnPeriod_EAS1819 soc ON t.[CollectionId] = soc.[CollectionId] AND t.[PeriodNumber] = soc.[PeriodNumber]
 			
 			COMMIT
 	END TRY
@@ -106,22 +104,22 @@ BEGIN
 -- 
 	BEGIN CATCH
 
-		DECLARE   @ErrorMessage		NVARCHAR(4000)
-				, @ErrorSeverity	INT 
-				, @ErrorState		INT
-				, @ErrorNumber		INT
+		DECLARE   @ErrorMessage_EAS1819		NVARCHAR(4000)
+				, @ErrorSeverity_EAS1819	INT 
+				, @ErrorState_EAS1819		INT
+				, @ErrorNumber_EAS1819		INT
 						
-		SELECT	  @ErrorNumber		= ERROR_NUMBER()
-				, @ErrorMessage		= 'Error in :' + ISNULL(OBJECT_NAME(@@PROCID),'') + ' - Error was :' + ERROR_MESSAGE()
-				, @ErrorSeverity	= ERROR_SEVERITY()
-				, @ErrorState		= ERROR_STATE();
+		SELECT	  @ErrorNumber_EAS1819		= ERROR_NUMBER()
+				, @ErrorMessage_EAS1819		= 'Error in :' + ISNULL(OBJECT_NAME(@@PROCID),'') + ' - Error was :' + ERROR_MESSAGE()
+				, @ErrorSeverity_EAS1819	= ERROR_SEVERITY()
+				, @ErrorState_EAS1819		= ERROR_STATE();
 	
 		IF (@@TRANCOUNT>0)
 			ROLLBACK;
 		
-		RAISERROR (  @ErrorMessage		-- Message text.
-					, @ErrorSeverity	-- Severity.
-					, @ErrorState		-- State.
+		RAISERROR (  @ErrorMessage_EAS1819		-- Message text.
+					, @ErrorSeverity_EAS1819	-- Severity.
+					, @ErrorState_EAS1819		-- State.
 				  );
 				  
 	END CATCH

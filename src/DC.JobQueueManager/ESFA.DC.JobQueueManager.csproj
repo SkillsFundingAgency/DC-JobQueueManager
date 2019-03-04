@@ -6,7 +6,7 @@
     <RootNamespace>ESFA.DC.JobQueueManager</RootNamespace>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.38</Version>
+    <Version>0.1.82</Version>
     <Authors>DC</Authors>
     <Company>ESFA</Company>
     <Description>Implementation of Job Queue Manager</Description>
@@ -18,22 +18,24 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet>DC.JobQueueManager.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>DC.JobQueueManager.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ESFA.DC.CollectionsManagement.Services.Interface" Version="0.1.17-beta0001" />
     <PackageReference Include="ESFA.DC.DateTimeProvider.Interface" Version="0.1.5-beta0001" />
-    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.21-beta0001" />
+    <PackageReference Include="ESFA.DC.JobContext" Version="0.1.16-beta0001" />
+    <PackageReference Include="ESFA.DC.JobContext.Interface" Version="0.1.16-beta0001" />
+    <PackageReference Include="ESFA.DC.Jobs.Model" Version="0.1.27-beta0001" />
     <PackageReference Include="ESFA.DC.JobStatus.Interface" Version="0.1.12-beta0001" />
-    <PackageReference Include="ESFA.DC.Logging" Version="0.1.1-beta0001" />
+    <PackageReference Include="ESFA.DC.Logging" Version="0.1.3-beta0001" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />
     <PackageReference Include="Notify" Version="2.1.0" />
+    <PackageReference Include="Dapper" Version="1.50.7" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -1,25 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <TargetDatabaseName>JobQueue</TargetDatabaseName>
-    <DeployScriptFileName>ESFA.DC.JobQueueManager.Database.sql</DeployScriptFileName>
-    <TargetConnectionString>Data Source=(local);Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>    
+    <TargetDatabaseName>JobManagement</TargetDatabaseName>
+    <DeployScriptFileName>ESFA.DC.JobManagement.Database.sql</DeployScriptFileName>
+    <TargetConnectionString>Data Source=(local);Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
+    <ProfileVersionNumber>1</ProfileVersionNumber>
   </PropertyGroup>
   <ItemGroup>
-    <SqlCmdVariable Include="JobQueueManagerApiUserPwd">
-      <Value>NotUsedLocally!</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="JobQueueManagerSchedulerUserPwd">
-      <Value>NotUsedLocally!</Value>
+    <SqlCmdVariable Include="BUILD_BRANCHNAME">
+      <Value>xxx.xxx.xxx</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="BUILD_BUILDNUMBER">
-      <Value>X.Y.Z-LocalDev</Value>
+      <Value>yyy.yyy.yyy</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="BUILD_BRANCHNAME">
-      <Value>Local Machine</Value>
+    <SqlCmdVariable Include="DsciUserPassword">
+      <Value>NotUsedlocally3</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="JobManagementApiUserPwd">
+      <Value>NotUsedlocally1</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="JobManagementSchedulerUserPwd">
+      <Value>NotUsedlocally2</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="RELEASE_RELEASENAME">
-      <Value>Local Machine</Value>
+      <Value>LocalRelease</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ROUserPassword">
+      <Value>NotUsedlocally4</Value>
     </SqlCmdVariable>
   </ItemGroup>
 </Project>

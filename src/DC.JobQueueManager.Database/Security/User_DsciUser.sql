@@ -1,0 +1,5 @@
+﻿
+CREATE USER [User_DSCI] WITH PASSWORD = N'$(DsciUserPassword)';
+GO
+GRANT CONNECT TO [User_DSCI]
+GO

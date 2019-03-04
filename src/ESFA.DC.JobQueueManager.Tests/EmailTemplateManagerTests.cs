@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
-using ESFA.DC.CollectionsManagement.Models;
-using ESFA.DC.CollectionsManagement.Services.Interface;
+using Autofac;
 using ESFA.DC.DateTimeProvider.Interface;
+using ESFA.DC.JobNotifications.Interfaces;
 using ESFA.DC.JobQueueManager.Data;
 using ESFA.DC.JobQueueManager.Data.Entities;
-using ESFA.DC.Jobs.Model.Enums;
-using ESFA.DC.JobStatus.Interface;
+using ESFA.DC.JobQueueManager.Interfaces;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
+using JobStatusType = ESFA.DC.JobStatus.Interface.JobStatusType;
+using JobType = ESFA.DC.Jobs.Model.Enums.JobType;
+using ReturnPeriod = ESFA.DC.CollectionsManagement.Models.ReturnPeriod;
 
 namespace ESFA.DC.JobQueueManager.Tests
 {
@@ -25,49 +25,53 @@ namespace ESFA.DC.JobQueueManager.Tests
         [InlineData(false)]
         public void GetTemplate_Success(bool isClose)
         {
-            var contextOptions = GetContextOptions();
             var returnCalendarMock = new Mock<IReturnCalendarService>();
-            var dateTimeProviderMock = new Mock<IDateTimeProvider>();
-
             returnCalendarMock.Setup(x => x.GetPeriodAsync("ILR1819", It.IsAny<DateTime>())).ReturnsAsync(() => isClose ? null : new ReturnPeriod());
 
-            var templateManager = new EmailTemplateManager(contextOptions, returnCalendarMock.Object, dateTimeProviderMock.Object);
+            IContainer container = Registrations(returnCalendarMock.Object);
 
-            // Create the schema in the database
-            using (var context = new JobQueueDataContext(contextOptions))
+            using (var scope = container.BeginLifetimeScope())
             {
-                context.Database.EnsureCreated();
-                context.JobEmailTemplates.Add(new JobEmailTemplateEntity()
-                {
-                    JobType = (short)JobType.IlrSubmission,
-                    JobStatus = (short)JobStatusType.Completed,
-                    Active = true,
-                    TemplateOpenPeriod = "template_open",
-                    TemplateClosePeriod = "template_close"
-                });
-                context.FileUploadJobMetaDataEntities.Add(new FileUploadJobMetaDataEntity()
-                {
-                    Job = new JobEntity()
-                    {
-                        JobId = 1,
-                        JobType = (short)JobType.IlrSubmission
-                    },
-                    CollectionName = "ILR1819",
-                    PeriodNumber = 1,
-                    FileName = "test",
-                    FileSize = 100,
-                    IsFirstStage = false,
-                    StorageReference = "test"
-                });
-                context.SaveChanges();
-            }
+                var templateManager = scope.Resolve<IEmailTemplateManager>();
+                var options = scope.Resolve<DbContextOptions<JobQueueDataContext>>();
 
-            var template = templateManager.GetTemplate(1, JobStatusType.Completed, JobType.IlrSubmission, DateTime.Now);
-            template.Should().NotBeNull();
-            template.Should().Be(isClose ? "template_close" : "template_open");
+                // Create the schema in the database
+                using (var context = new JobQueueDataContext(options))
+                {
+                    context.Database.EnsureCreated();
+                    context.JobEmailTemplate.Add(new JobEmailTemplate()
+                    {
+                        JobType = (short)JobType.IlrSubmission,
+                        JobStatus = (short)JobStatusType.Completed,
+                        Active = true,
+                        TemplateOpenPeriod = "template_open",
+                        TemplateClosePeriod = "template_close"
+                    });
+                    context.FileUploadJobMetaData.Add(new FileUploadJobMetaData()
+                    {
+                        Job = new Job()
+                        {
+                            JobId = 1,
+                            JobType = (short)JobType.IlrSubmission
+                        },
+                        CollectionName = "ILR1819",
+                        PeriodNumber = 1,
+                        FileName = "test",
+                        FileSize = 100,
+                        IsFirstStage = false,
+                        StorageReference = "test"
+                    });
+                    context.SaveChanges();
+                }
+
+                var template =
+                    templateManager.GetTemplate(1, JobStatusType.Completed, JobType.IlrSubmission, DateTime.Now).Result;
+                template.Should().NotBeNull();
+                template.Should().Be(isClose ? "template_close" : "template_open");
+            }
         }
 
-        private DbContextOptions GetContextOptions([CallerMemberName]string functionName = "")
+        private DbContextOptions<JobQueueDataContext> GetContextOptions([CallerMemberName]string functionName = "")
         {
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()
@@ -78,6 +82,28 @@ namespace ESFA.DC.JobQueueManager.Tests
                 .UseInternalServiceProvider(serviceProvider)
                 .Options;
             return options;
+        }
+
+        private IContainer Registrations(IReturnCalendarService returnCalendarService = null)
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+
+            builder.RegisterInstance(new Mock<IDateTimeProvider>().Object).As<IDateTimeProvider>().SingleInstance();
+            builder.RegisterInstance(returnCalendarService ?? new Mock<IReturnCalendarService>().Object).As<IReturnCalendarService>().SingleInstance();
+            builder.RegisterType<EmailTemplateManager>().As<IEmailTemplateManager>().InstancePerLifetimeScope();
+
+            builder.RegisterType<JobQueueDataContext>().As<IJobQueueDataContext>().InstancePerDependency();
+            builder.Register(context =>
+                {
+                    SqliteConnection connection = new SqliteConnection("DataSource=:memory:");
+                    connection.Open();
+                    return GetContextOptions();
+                })
+                .As<DbContextOptions<JobQueueDataContext>>()
+                .SingleInstance();
+
+            IContainer container = builder.Build();
+            return container;
         }
     }
 }

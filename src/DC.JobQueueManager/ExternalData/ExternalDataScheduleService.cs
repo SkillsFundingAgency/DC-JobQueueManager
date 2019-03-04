@@ -14,7 +14,7 @@ namespace ESFA.DC.JobQueueManager.ExternalData
 {
     public sealed class ExternalDataScheduleService : IExternalDataScheduleService
     {
-        private readonly DbContextOptions _contextOptions;
+        private readonly DbContextOptions<JobQueueDataContext> _contextOptions;
 
         private readonly IScheduleService _scheduleService;
 
@@ -22,7 +22,7 @@ namespace ESFA.DC.JobQueueManager.ExternalData
 
         private readonly ILogger _logger;
 
-        public ExternalDataScheduleService(DbContextOptions contextOptions, IScheduleService scheduleService, IDateTimeProvider dateTimeProvider, ILogger logger)
+        public ExternalDataScheduleService(DbContextOptions<JobQueueDataContext> contextOptions, IScheduleService scheduleService, IDateTimeProvider dateTimeProvider, ILogger logger)
         {
             _contextOptions = contextOptions;
             _scheduleService = scheduleService;
@@ -30,17 +30,17 @@ namespace ESFA.DC.JobQueueManager.ExternalData
             _logger = logger;
         }
 
-        public async Task<IEnumerable<string>> GetJobs(bool removeOldDates, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Jobs.Model.Enums.JobType>> GetJobs(bool removeOldDates, CancellationToken cancellationToken)
         {
             DateTime nowUtc = _dateTimeProvider.GetNowUtc().TrimSeconds();
 
-            HashSet<string> jobs = new HashSet<string>();
+            HashSet<int> jobs = new HashSet<int>();
 
             try
             {
                 using (JobQueueDataContext db = new JobQueueDataContext(_contextOptions))
                 {
-                    IQueryable<Schedule> nonRun = db.Schedules.Where(x => x.Enabled);
+                    IQueryable<Schedule> nonRun = db.Schedule.Where(x => x.Enabled);
                     foreach (Schedule schedule in nonRun)
                     {
                         if (!_scheduleService.CanExecuteSchedule(schedule, nowUtc, removeOldDates))
@@ -48,10 +48,10 @@ namespace ESFA.DC.JobQueueManager.ExternalData
                             continue;
                         }
 
-                        jobs.Add(schedule.ExternalDataType);
+                        jobs.Add(schedule.JobTypeId);
                         if (schedule.ExecuteOnceOnly)
                         {
-                            db.Schedules.Remove(schedule);
+                            db.Schedule.Remove(schedule);
                         }
                         else
                         {
@@ -67,7 +67,7 @@ namespace ESFA.DC.JobQueueManager.ExternalData
                 _logger.LogError("Failed to retrieve and process external data schedules", ex);
             }
 
-            return jobs;
+            return jobs.Select(x => (Jobs.Model.Enums.JobType)x);
         }
     }
 }

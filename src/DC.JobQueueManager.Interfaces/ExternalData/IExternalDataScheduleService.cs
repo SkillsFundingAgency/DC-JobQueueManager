@@ -6,6 +6,6 @@ namespace ESFA.DC.JobQueueManager.Interfaces.ExternalData
 {
     public interface IExternalDataScheduleService
     {
-        Task<IEnumerable<string>> GetJobs(bool removeOldDates, CancellationToken cancellationToken);
+        Task<IEnumerable<Jobs.Model.Enums.JobType>> GetJobs(bool removeOldDates, CancellationToken cancellationToken);
     }
 }

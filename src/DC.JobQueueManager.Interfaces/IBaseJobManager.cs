@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IBaseJobManager<T>
     {
-        long AddJob(T job);
+        Task<long> AddJob(T job);
 
-        T GetJobById(long jobId);
+        Task<T> GetJobById(long jobId);
 
-        IEnumerable<T> GetAllJobs();
+        Task<IEnumerable<T>> GetAllJobs();
 
-        void PopulatePersonalisation(long jobId, Dictionary<string, dynamic> personalisation);
+        Task SendEmailNotification(long jobId);
     }
 }

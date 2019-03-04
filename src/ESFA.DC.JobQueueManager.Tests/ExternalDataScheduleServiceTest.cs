@@ -42,11 +42,25 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.Schedules.Add(new Schedule
+                    context.JobTypeGroup.Add(new JobTypeGroup
+                    {
+                        JobTypeGroupId = 3,
+                        Description = "Reference Data",
+                        ConcurrentExecutionCount = 25
+                    });
+                    context.JobType.Add(new JobType
+                    {
+                        JobTypeId = 40,
+                        JobTypeGroupId = 3,
+                        Description = "ReferenceData EPA",
+                        Title = "ReferenceData EPA",
+                        IsCrossLoadingEnabled = false
+                    });
+                    context.Schedule.Add(new Schedule
                     {
                         Enabled = true,
                         ExecuteOnceOnly = true,
-                        ExternalDataType = "ULN"
+                        JobTypeId = 40
                     });
                     await context.SaveChangesAsync();
 
@@ -55,10 +69,10 @@ namespace ESFA.DC.JobQueueManager.Tests
                         scheduleService.Object,
                         dateTimeProvider.Object,
                         logger.Object);
-                    IEnumerable<string> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
+                    IEnumerable<Jobs.Model.Enums.JobType> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
                     results.Should().HaveCount(1);
 
-                    var schedules = await context.Schedules.ToListAsync();
+                    var schedules = await context.Schedule.ToListAsync();
                     schedules.Should().BeEmpty();
                 }
             }
@@ -88,10 +102,24 @@ namespace ESFA.DC.JobQueueManager.Tests
                 using (var context = new JobQueueDataContext(options))
                 {
                     context.Database.EnsureCreated();
-                    context.Schedules.Add(new Schedule
+                    context.JobTypeGroup.Add(new JobTypeGroup
+                    {
+                        JobTypeGroupId = 3,
+                        Description = "Reference Data",
+                        ConcurrentExecutionCount = 25
+                    });
+                    context.JobType.Add(new JobType
+                    {
+                        JobTypeId = 40,
+                        JobTypeGroupId = 3,
+                        Description = "ReferenceData EPA",
+                        Title = "ReferenceData EPA",
+                        IsCrossLoadingEnabled = false
+                    });
+                    context.Schedule.Add(new Schedule
                     {
                         Enabled = true,
-                        ExternalDataType = "ULN"
+                        JobTypeId = 40
                     });
                     await context.SaveChangesAsync();
                 }
@@ -101,12 +129,12 @@ namespace ESFA.DC.JobQueueManager.Tests
                     scheduleService.Object,
                     dateTimeProvider.Object,
                     logger.Object);
-                IEnumerable<string> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
+                IEnumerable<Jobs.Model.Enums.JobType> results = await externalDataScheduleService.GetJobs(true, CancellationToken.None);
                 results.Should().HaveCount(1);
 
                 using (var context = new JobQueueDataContext(options))
                 {
-                    var schedules = await context.Schedules.ToListAsync();
+                    var schedules = await context.Schedule.ToListAsync();
                     schedules.Should().HaveCount(1);
                     schedules[0].LastExecuteDateTime.Should().Be(utcNow.TrimSeconds());
                 }

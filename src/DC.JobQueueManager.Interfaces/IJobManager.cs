@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ESFA.DC.Jobs.Model;
 using ESFA.DC.Jobs.Model.Enums;
 using ESFA.DC.JobStatus.Interface;
@@ -7,16 +8,18 @@ namespace ESFA.DC.JobQueueManager.Interfaces
 {
     public interface IJobManager : IBaseJobManager<Job>
     {
-        Job GetJobByPriority();
+        Task<IEnumerable<Job>> GetJobsByPriorityAsync(int resultCount);
 
-        void RemoveJobFromQueue(long jobId);
+        Task RemoveJobFromQueue(long jobId);
 
-        bool UpdateJobStatus(long jobId, JobStatusType status);
+        Task<bool> UpdateJobStatus(long jobId, JobStatusType status);
 
-        bool UpdateJob(Job job);
+        Task<bool> UpdateJob(Job job);
 
-        bool IsCrossLoadingEnabled(JobType jobType);
+        Task<bool> IsCrossLoadingEnabled(JobType jobType);
 
-        bool UpdateCrossLoadingStatus(long jobId, JobStatusType status);
+        Task<bool> UpdateCrossLoadingStatus(long jobId, JobStatusType status);
+
+        Task SendEmailNotification(Jobs.Model.Job job);
     }
 }

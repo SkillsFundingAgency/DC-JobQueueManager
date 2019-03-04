@@ -12,78 +12,47 @@ Post-Deployment Script Template
 SET NOCOUNT ON; 
 
 GO
-RAISERROR('		   Extended Property',10,1) WITH NOWAIT;
-GO
-
-RAISERROR('		         %s - %s',10,1,'BuildNumber','$(BUILD_BUILDNUMBER)') WITH NOWAIT;
-IF NOT EXISTS (SELECT name, value FROM fn_listextendedproperty('BuildNumber', default, default, default, default, default, default))
-	EXEC sp_addextendedproperty @name = N'BuildNumber', @value = '$(BUILD_BUILDNUMBER)';  
-ELSE
-	EXEC sp_updateextendedproperty @name = N'BuildNumber', @value = '$(BUILD_BUILDNUMBER)';  
+-- Set ExtendedProperties fro DB.
+	:r .\z.ExtendedProperties.sql
 	
-GO
-RAISERROR('		         %s - %s',10,1,'BuildBranch','$(BUILD_BRANCHNAME)') WITH NOWAIT;
-IF NOT EXISTS (SELECT name, value FROM fn_listextendedproperty('BuildBranch', default, default, default, default, default, default))
-	EXEC sp_addextendedproperty @name = N'BuildBranch', @value = '$(BUILD_BRANCHNAME)';  
-ELSE
-	EXEC sp_updateextendedproperty @name = N'BuildBranch', @value = '$(BUILD_BRANCHNAME)';  
-
-GO
-DECLARE @DeploymentTime VARCHAR(35) = CONVERT(VARCHAR(35),GETUTCDATE(),113);
-RAISERROR('		         %s - %s',10,1,'DeploymentDatetime',@DeploymentTime) WITH NOWAIT;
-IF NOT EXISTS (SELECT name, value FROM fn_listextendedproperty('DeploymentDatetime', default, default, default, default, default, default))
-	EXEC sp_addextendedproperty @name = N'DeploymentDatetime', @value = @DeploymentTime;  
-ELSE
-	EXEC sp_updateextendedproperty @name = N'DeploymentDatetime', @value = @DeploymentTime;  
-GO
-
-RAISERROR('		         %s - %s',10,1,'ReleaseName','$(RELEASE_RELEASENAME)') WITH NOWAIT;
-IF NOT EXISTS (SELECT name, value FROM fn_listextendedproperty('ReleaseName', default, default, default, default, default, default))
-	EXEC sp_addextendedproperty @name = N'ReleaseName', @value = '$(RELEASE_RELEASENAME)';  
-ELSE
-	EXEC sp_updateextendedproperty @name = N'ReleaseName', @value = '$(RELEASE_RELEASENAME)';  
-GO
-
-
-IF EXISTS (SELECT * FROM [sys].[objects] WHERE [type] = 'V' AND Name = 'DisplayDeploymentProperties_VW')
-BEGIN 
-	DROP VIEW [dbo].[DisplayDeploymentProperties_VW];
-END
-
-GO
-EXEC ('CREATE VIEW [dbo].[DisplayDeploymentProperties_VW]
-AS
-	SELECT name, value 
-	FROM fn_listextendedproperty(default, default, default, default, default, default, default);  
-	');
-
 GO
 
 RAISERROR('		   Ref Data',10,1) WITH NOWAIT;
 	:r .\ReferenceData\JobStatusType.sql
+	:r .\ReferenceData\JobTypeGroup.sql
 	:r .\ReferenceData\JobType.sql
 	:r .\ReferenceData\JobEmailTemplate.sql
 	:r .\ReferenceData\CollectionType.sql
 	:r .\ReferenceData\Collections.sql
-	:r .\ReferenceData\ReturnPeriod.sql
+	:r .\ReferenceData\ReturnPeriod_ESF.sql
+	:r .\ReferenceData\ReturnPeriod_EAS1819.sql
+	--:r .\ReferenceData\ReturnPeriod_EAS1920.sql
+	:r .\ReferenceData\ReturnPeriod_ILR1819.sql
+	--:r .\ReferenceData\ReturnPeriod_ILR1920.sql
+	:r .\ReferenceData\JobTopicSubscription.sql
+	:r .\ReferenceData\JobSubscriptionTask.sql
+	:r .\ReferenceData\ReturnPeriod_NCS1819.sql
 
 RAISERROR('		   Update User Account Passwords',10,1) WITH NOWAIT;
-GO
---RAISERROR('		         JobQueueManagerApiUser',10,1) WITH NOWAIT;
---ALTER USER [JobQueueManagerApiUser] WITH PASSWORD = N'$(JobQueueManagerApiUserPwd)';
-GO
-
---RAISERROR('		         JobQueueManagerSchedulerUser',10,1) WITH NOWAIT;
---ALTER USER [JobQueueManagerSchedulerUser] WITH PASSWORD = N'$(JobQueueManagerSchedulerUserPwd)';
 GO
 
 RAISERROR('		         JobManagementApiUser',10,1) WITH NOWAIT;
 ALTER USER [JobManagementApiUser] WITH PASSWORD = N'$(JobManagementApiUserPwd)';
-
 GO
 
 RAISERROR('		         JobManagementSchedulerUser',10,1) WITH NOWAIT;
 ALTER USER [JobManagementSchedulerUser] WITH PASSWORD = N'$(JobManagementSchedulerUserPwd)';
+GO
+
+RAISERROR('		         JobManagementSchedulerUser',10,1) WITH NOWAIT;
+ALTER USER [JobManagement_RO_User] WITH PASSWORD = N'$(ROUserPassword)';
+GO
+
+RAISERROR('		         User DSCI',10,1) WITH NOWAIT;
+ALTER USER [User_DSCI] WITH PASSWORD = N'$(DsciUserPassword)';
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[usp_Add_OrganisationToCollections];
 GO
 
 RAISERROR('Completed',10,1) WITH NOWAIT;

@@ -112,4 +112,53 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="TemplateClosePeriod" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d36f301e-aadf-46c8-b58d-df46fb605ef1" ChangeDateTime="11/15/2018 09:45:46">
+    <Property Name="ElementName" Value="[dbo].[JobTypeGroup].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobTypeGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobGroupId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9e9ab061-cb19-410f-a999-6b0699be58b7" ChangeDateTime="11/15/2018 09:57:45">
+    <Property Name="ElementName" Value="[dbo].[JobTypeGroup].[JobGroupId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobTypeGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTypeGroupId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f95b4823-ddcc-474b-bebd-7b0275f1d06e" ChangeDateTime="11/15/2018 09:57:53">
+    <Property Name="ElementName" Value="[dbo].[JobType].[JobGroupId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTypeGroupId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="22e41eec-998d-4ec7-8274-8fd4b73e40c9" ChangeDateTime="11/15/2018 10:47:14">
+    <Property Name="ElementName" Value="[dbo].[Schedule].[ExternalDataType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Schedule]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTypeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="704750f6-7c09-4d1b-b6a2-1486c2d15483" ChangeDateTime="11/16/2018 09:41:05">
+    <Property Name="ElementName" Value="[dbo].[Collection].[CollectioinYear]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Collection]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CollectionYear" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="249f6057-c458-47d7-9d0a-cbb7a317cad9" ChangeDateTime="12/06/2018 13:39:41">
+    <Property Name="ElementName" Value="[dbo].[JobTopic].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobTopic]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTopicId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="35f2de0e-5d3e-42aa-92b8-520c414df662" ChangeDateTime="12/06/2018 13:39:58">
+    <Property Name="ElementName" Value="[dbo].[JobTopicTask].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[JobTopicTask]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="JobTopicTaskId" />
+  </Operation>
 </Operations>
