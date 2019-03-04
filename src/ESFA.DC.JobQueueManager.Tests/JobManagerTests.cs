@@ -419,7 +419,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public async Task UpdateJobStatus_Success_EmailSent(JobStatusType? crossLoadingStatus)
         {
             var emailTemplateManager = new Mock<IEmailTemplateManager>();
-            emailTemplateManager.Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>())).Returns("template");
+            emailTemplateManager.Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>())).Returns(Task.FromResult("template"));
             var emailNotifier = new Mock<IEmailNotifier>();
             emailNotifier.Setup(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()));
 
@@ -479,7 +479,7 @@ namespace ESFA.DC.JobQueueManager.Tests
         public async Task UpdateCrossLoadingStatus_Success_EmailSent()
         {
             var emailTemplateManager = new Mock<IEmailTemplateManager>();
-            emailTemplateManager.Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>())).Returns("template");
+            emailTemplateManager.Setup(x => x.GetTemplate(It.IsAny<long>(), It.IsAny<JobStatusType>(), It.IsAny<JobType>(), It.IsAny<DateTime>())).Returns(Task.FromResult("template"));
             var emailNotifier = new Mock<IEmailNotifier>();
             emailNotifier.Setup(x => x.SendEmail(It.IsAny<string>(), "test", It.IsAny<Dictionary<string, dynamic>>()));
 

@@ -40,9 +40,9 @@ namespace ESFA.DC.JobQueueManager
             return _returnCalendarService.GetNextPeriodAsync(collectionName).Result;
         }
 
-        public string GetTemplate(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc)
+        public async Task<string> GetTemplate(long jobId, JobStatusType status, JobType jobType, DateTime dateTimeJobSubmittedUtc)
         {
-            return _emailTemplateManager.GetTemplate(jobId, status, jobType, dateTimeJobSubmittedUtc);
+            return await _emailTemplateManager.GetTemplate(jobId, status, jobType, dateTimeJobSubmittedUtc);
         }
     }
 }

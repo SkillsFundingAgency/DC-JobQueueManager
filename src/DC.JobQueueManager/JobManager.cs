@@ -176,7 +176,7 @@ namespace ESFA.DC.JobQueueManager
 
                     if (statusChanged)
                     {
-                        SendEmailNotification(job);
+                        await SendEmailNotification(job);
                     }
 
                     return true;
@@ -223,7 +223,7 @@ namespace ESFA.DC.JobQueueManager
 
                 if (statusChanged)
                 {
-                    SendEmailNotification(jobId);
+                    await SendEmailNotification(jobId);
                 }
 
                 return true;
@@ -255,11 +255,11 @@ namespace ESFA.DC.JobQueueManager
             }
         }
 
-        public void SendEmailNotification(Jobs.Model.Job job)
+        public async Task SendEmailNotification(Jobs.Model.Job job)
         {
             try
             {
-                var template = _emailTemplateManager.GetTemplate(job.JobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
+                var template = await _emailTemplateManager.GetTemplate(job.JobId, job.Status, job.JobType, job.DateTimeSubmittedUtc);
 
                 if (!string.IsNullOrEmpty(template))
                 {
@@ -270,7 +270,9 @@ namespace ESFA.DC.JobQueueManager
                     personalisation.Add("Name", job.SubmittedBy);
                     personalisation.Add("DateTimeSubmitted", string.Concat(submittedAt.ToString("hh:mm tt"), " on ", submittedAt.ToString("dddd dd MMMM yyyy")));
 
-                    _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
+                    await _emailNotifier.SendEmail(job.NotifyEmail, template, personalisation);
+
+                    _logger.LogInfo($"Sent email for jobId : {job.JobId}");
                 }
             }
             catch (Exception ex)
@@ -282,7 +284,7 @@ namespace ESFA.DC.JobQueueManager
         public async Task SendEmailNotification(long jobId)
         {
             var job = await GetJobById(jobId);
-            SendEmailNotification(job);
+            await SendEmailNotification(job);
         }
     }
 }

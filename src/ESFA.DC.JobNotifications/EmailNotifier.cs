@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ESFA.DC.JobNotifications.Interfaces;
 using Notify.Client;
 
@@ -14,7 +15,7 @@ namespace ESFA.DC.JobNotifications
             _config = config;
         }
 
-        public string SendEmail(string toEmail, string templateId, Dictionary<string, dynamic> parameters)
+        public Task<string> SendEmail(string toEmail, string templateId, Dictionary<string, dynamic> parameters)
         {
             if (string.IsNullOrEmpty(_config.ApiKey))
             {
@@ -24,7 +25,7 @@ namespace ESFA.DC.JobNotifications
             var client = new NotificationClient(_config.ApiKey);
             var response = client.SendEmail(toEmail, templateId, parameters);
 
-            return response.reference;
+            return Task.FromResult(response.reference);
         }
     }
 }
